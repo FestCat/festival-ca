@@ -1,0 +1,133 @@
+festival-ca (1.0.2-1) unstable; urgency=low
+
+  * Initial release (Closes: #484532)
+
+ -- Sergio Oller <sergioller@gmail.com>  Thu, 01 Sep 2011 14:46:10 +0200
+
+festival-ca (1.0-1) maverick; urgency=low
+
+  * New upstream release
+     - Symbols "<" and ">"
+     - Repetitions like "TamTam"
+     - "am" and "pm"
+
+ -- Sergio Oller <sergioller@gmail.com>  Fri, 19 Aug 2011 00:09:28 +0200
+
+festival-ca (0.92) maverick; urgency=low
+
+  * Bump.
+
+ -- Sergio Oller <sergioller@gmail.com>  Fri, 19 Dec 2010 22:06:47 +0100
+
+festival-ca (0.91) maverick; urgency=low
+  * Lintian fixes:
+      debhelper-but-no-misc-depends festival-ca
+      binary-arch-rules-but-pkg-is-arch-indep
+      out-of-date-standards-version 3.8.0 (current is 3.9.1)
+
+ -- Sergio Oller <sergioller@gmail.com>  Fri, 17 Dec 2010 10:06:47 +0100
+
+festival-ca (0.90) maverick; urgency=low
+
+  * Fix with '<' and '>'
+
+ -- Sergio Oller <sergioller@gmail.com>  Fri, 17 Dec 2010 09:06:47 +0100
+
+festival-ca (0.88) karmic; urgency=low
+
+  * Fix in pos_tagger. Variables were not properly set when
+    selecting the pos_tagger not for the first time.
+
+ -- Sergio Oller <sergioller@gmail.com>  Mon, 05 Apr 2010 13:58:05 +0200
+
+festival-ca (0.87) karmic; urgency=medium
+
+  * Fix in tokenizer. It had problems saying hours or words with "am" or "pm".
+
+ -- Sergio Oller <sergioller@gmail.com>  Tue, 23 Mar 2010 23:09:35 +0100
+
+festival-ca (0.85) karmic; urgency=low
+
+  * Added UTF-8 support. Now we detect if input is in UTF-8 or ISO-8859-15 and we choose accordingly.
+  * If a letter can not be said, skip it. (Better stability).
+  * Still many known problems, but now Festival won't crash (hopefully).
+  * Punctuation, currently applied in Text Module has to be adapted to UTF-8.
+
+ -- Sergio Oller <sergioller@gmail.com>  Sat, 20 Mar 2010 10:35:17 +0100
+
+festival-ca (0.76) karmic; urgency=low
+
+  * Added debug options through command: (set! debugcatalan 1)
+
+ -- Sergio Oller <sergioller@gmail.com>  Sun, 17 Jan 2010 16:25:36 +0100
+
+festival-ca (0.75) karmic; urgency=low
+
+  * Updated debian/control to Recommend a catalan voice.
+  * Added catalan-default-voices to language_catalan.scm
+
+ -- Sergio Oller <sergioller@gmail.com>  Thu, 07 Jan 2010 22:08:55 +0100
+
+festival-ca (0.74) karmic; urgency=low
+
+  * language_catalan.scm: Add catalan language support for festival
+    in package festival-ca instead of festival
+
+ -- Sergio Oller <sergioller@gmail.com>  Wed, 30 Dec 2009 02:20:40 +0100
+
+festival-ca (0.72) karmic; urgency=low
+
+  * upc_catalan/upc_catalan_tokenizer.scm: Fixed problem with words 
+    with two caps like "TamTam".
+
+ -- Sergio Oller <sergioller@gmail.com>  Wed, 30 Dec 2009 02:02:40 +0100
+
+
+festival-ca (0.71) karmic; urgency=low
+
+  * dicts/upc/upc_catalan_lts_rules.scm: Added "ñ" sound (J)
+
+ -- Sergio Oller <sergioller@gmail.com>  Wed, 30 Dec 2009 02:02:40 +0100
+festival-ca (0.70) karmic; urgency=low
+
+  * Still troubles with libdir and datadir. Finally solved I believe
+
+ -- Sergio Oller <sergioller@gmail.com>  Fri, 13 Nov 2009 13:22:58 +0100
+festival-ca (0.63) karmic; urgency=low
+
+  * Still troubles with libdir and datadir. Finally solved I believe
+
+ -- Sergio Oller <sergioller@gmail.com>  Thu, 05 Nov 2009 21:17:35 +0100
+festival-ca (0.62) karmic; urgency=low
+
+  * Still troubles with libdir and datadir. Updating to karmic
+
+ -- Sergio Oller <sergioller@gmail.com>  Sun, 01 Nov 2009 15:31:13 +0100
+festival-ca (0.61) jaunty; urgency=low
+
+  * Tries to use datadir, if is not defined then uses libdir.
+
+ -- Sergio Oller <sergioller@gmail.com>  Mon, 19 Oct 2009 23:52:27 +0200
+festival-ca (0.51) jaunty; urgency=low
+
+  * Version update
+
+ -- Sergio Oller <sergioller@gmail.com>  Fri, 16 Oct 2009 00:00:09 +0200
+
+festival-ca (0.4-1) jaunty; urgency=low
+
+  * Pointing to datadir instead of libdir when required
+
+ -- Sergio Oller <sergioller@gmail.com>  Thu, 15 Oct 2009 09:31:09 +0200
+
+festival-ca (0.2-1) jaunty; urgency=low
+
+  * Fixed some errors with links
+
+ -- Sergio Oller <sergioller@gmail.com>  Thu, 03 Sep 2009 17:42:01 +0200
+
+festival-ca (0.1-1) jaunty; urgency=low
+
+  * Initial release
+
+ -- Sergio Oller <sergioller@gmail.com>  Thu, 03 Sep 2009 08:51:01 +0200
