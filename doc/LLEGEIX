@@ -1,0 +1,206 @@
+
+
+==============================================================
+FestCat: Síntesis de la parla en català fent servir Festival
+
+  http://www.talp.upc.edu/festcat
+  Antonio Bonafonte
+  Centre de recerca TALP, UPC
+  Barcelona, Novembre 2007
+
+==============================================================
+
+1. QUÈ?
+2. QUI?
+3. CONDICIONS D'ÚS
+4. REQUISITS DEL SISTEMA
+5. INSTAL·LACIÓ
+6. EXECUCIÓ
+7. AGRAÏMENTS
+
+===================================================
+
+
+1. QUÈ?  
+"Festival parla català"
+
+El paquet FestCat és una llibreria i dades per estendre Festival 
+per tal que parli català. 
+
+   http://www.talp.upc.edu/festcat
+
+Està format per dues components principals:
+
+(1) Dades lingüístiques i codi per estendre Festival pel català.
+    Diccionaris, transcripció fonètica, etiquetador morfo-sintàctic, etc.
+
+    Inclou dues carpetes:
+    dicts/upc (bàsicament diccionaris)
+    upc_catalan (bàsicament codi)
+
+(2) Veus: dades dependents del locutor 
+    Hi ha una carpeta per cada veu
+    voices/catalan/upc_ca_'nom-locutor'
+
+    Actualment hi ha diverses veus disponibles.
+    Visiteu la pàgina web per obtenir últimes versions. 
+
+2. QUI?
+
+Aquest projecte ha estat desenvolupat inicialment pel Centre TALP,
+de la Universitat Politècnica de Catalunya, a Barcelona.
+La major part del codi i de les dades ha estat desenvolupat 
+específicament per aquest projecte.
+
+	www.talp.upc.edu/festcat
+	www.talp.upc.edu
+	www.upc.edu
+
+Una excepció important són els diccionaris.
+
+La font més important per construir els diccionaris és el lèxic català
+proporcionat pel projecte FreeLing, també desenvolupat, entre altres,
+pel Centre de Recerca TALP. Per més informació, visiteu les pàgines web
+de FreeLing:
+	http://garraf.epsevg.upc.es/freeling/
+
+El lèxic ha estat enriquit de la forma següent:
+ - Les transcripcions fonètiques s'han generat automàticament utilitzant
+   les eines de transcripció fonètica del TALP
+
+ - S'ha afegit noves paraules utilitzant per assegurar millor cobertura en 
+   el disseny de les veus.  
+
+3. CONDICIONS D'ÚS
+   Tot el codi i recursos lingüístics es proporcionen sota la llicència
+   LGPL (veieu el fitxer COPIA).
+
+
+4. REQUISITS DEL SISTEMA
+   És necessari un sistema 'Festival' en funcionament.
+   Comproveu la vostra distribució Linux o la pàgina web de 'Festival'
+   http://www.cstr.ed.ac.uk/projects/festival/
+
+   Aquest paquet s'ha desenvolupat i provat amb la versió 2.1 
+   de Novembre 2010
+   (Executeu $ festival --version )
+
+5. INSTAĿLACIÓ
+
+   Hem desenvolupat diverses veus en català.                               
+   Totes comparteixen una llibreria, relacionada amb el llenguatge.
+   Per tant, necessiteu el paquet bàsic més les veus específiques
+   que us interessin.
+
+   Tan sols heu de copiar diverses carpetes en el 'datadir' de Festival.
+   Per trobar aquest directori, podeu executar                
+   $ festival -b '(print datadir)'
+   Si aquest directori no està definit, heu de fer servir el directori
+   'libdir':
+   $ festival -b '(print libdir)'
+
+
+   * PAQUET COMÚ *
+   Descarregueu-vos el fitxer upc_ca_base.tgz i extraieu els fitxers:
+      $ tar -zxf upc_ca_base.tgz
+   Traslladeu els fitxers extrets al 'datadir' de Festival:
+
+   a) Diccionaris:
+      Copieu la carpeta dicts/upc a 'datadir'/dicts/upc
+
+   b) Normalitzador de text, etiquetat POS, etc.  
+      Copieu el fitxer upc_catalan a 'datadir'/upc_catalan
+
+   c) Si voleu que 'Festival' interpreti la opció --language i exporti
+      els locutors catalans a altres aplicacions, necessiteu 
+      actualitzar el fitxer languages.scm i afegir-hi el Català.
+      Proporcionem el fitxer actualitzat:
+         languages.scm => 'datadir'/languages.scm
+
+   * PAQUETS ESPECÍFICS DE LA VEU *
+
+   Descarregueu el fitxer de cada veu (mireu a la web per actualitzacions,
+   http://www.talp.upc.edu/festcat ) i extraieu el contingut.
+   Ex: 
+      $ tar -zxf upc_ca_ona_hts.tgz
+   
+   e) Copieu cada veu catalana, per ex: upc_ca_ona_hts, al directori de 
+      veus. Per Exemple:
+      upc_ca_ona_hts => 'datadir'/voices/catalan/upc_ca_ona_hts
+
+
+6. EXECUCIÓ
+
+   Hi ha diversos programes que poden utilitzar 'Festival', com 
+   gnopernicus, o emacs-speak ... Aquí farem referència només a la 
+   utilització directa de 'Festival'. 
+
+   ALERTA ALERTA ALERTA !!!
+     El 'Festival' espera  codificació ISO-8859-15. Assegureu-vos que utilitzeu                    
+     aquesta codificació en el vostre terminal o fitxers. Si el vostre sistema                          
+     utilitza UTF-8 (tal i com ho fan moltes distribucions actuals), necessiteu
+     convertir el fitxer abans de la lectura. Alguns programes, com gnopernicus, 
+     fan la conversió internament.
+
+     Podeu fer servir la opcions de guardar del editor gedit, o fer servir
+     programes conversors de format, com iconv:
+     $ iconv -f utf8 -t ISO-8859-15//TRANSLIT bon_dia_utf8.text > bon_dia_iso.text
+
+   !!!
+
+   * Un test ràpid:
+     $ echo "Bon dia, Catalunya" | festival --tts --language catalan
+
+   * També podeu executar 'Festival' de manera interactiva:
+     $ festival
+     (language_catalan)
+     (intro-catalan)
+     (SayText "Bon dia, Catalunya.")
+     (SayText "Bona nit.")
+     (exit)
+
+     Si voleu especificar el locutor, introduïu la comanda per seleccionar
+     el locutor, en lloc de la comanda de selecció de llenguatge:
+
+     (voice_upc_ca_ona_hts)
+     (SayText "I tu, qui ets?")
+     (voice_upc_ca_pau_hts)
+     (SayText "Jo sóc, el que tu ets, i si et faig mal, em faig mal a mi mateix.")
+     (voice_upc_ca_ona_hts)
+     (SayText "Que maco. Això és de l'assemblea dels infants, oi?")
+     (exit)
+
+     O per llegir un fitxer de text, per exemple "bon_dia.txt": 
+
+     $ echo "Bon dia, Catalunya." > bon_dia.txt
+     $ festival
+     (language_catalan)
+     (tts_file "bon_dia.txt")
+     (exit)
+
+   * O utilitzeu l'script text2wave per crear un fitxer .wav:
+     $ text2wave -o bondia.wav   -eval '(language_catalan)' bon_dia.txt 
+
+     Si voleu especificar el locutor:
+     $ text2wave -o bondia.wav   -eval '(voice_upc_ca_ona_hts)' bon_dia.txt 
+
+
+7. AGRAÏMENTS
+   Aquest treball ha estat finançat per la Generalitat de Catalunya.
+   www.gencat.cat
+
+   El projecte ha estat promogut per diversos Departaments de la Generalitat 
+   de Catalunya:   
+    - Departament d'Educació
+    - Secretaria de Telecomunicacions i Societat de la Informació 
+      del Departament de Presidència. 
+
+   i per la Universitat Politècnica de Catalunya (UPC):
+
+    - Centre de Recerca TALP
+    - Càtedra d'Accessibilitat
+    - Càtedra de Programari Lliure
+
+
+   Llegiu el fitxer AGRAIMENTS per veure la llista de gent que ha contribuït a 
+   aquest projecte.
