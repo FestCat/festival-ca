@@ -38,11 +38,15 @@
 
 (set! upc_ca_phrase_cart_tree
 '
-((lisp_token_end_punc in ("'" "\"" "?" "." "," ":" ";"))
+(
+(lisp_token_end_punc in ("'" "\"" "?" "." "," ":" ";"))
   ((B))
   ((n.name is 0)
-   ((B))
-   ((NB)))))
+     ((B))
+     ((NB))
+  )
+)
+)
 
 (define (upc_ca_generic::select_phrasing)
   "(upc_ca_generic::select_phrasing)

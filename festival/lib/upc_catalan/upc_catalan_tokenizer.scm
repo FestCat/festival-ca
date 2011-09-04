@@ -182,15 +182,76 @@ of words that expand given token with name."
    ((string-matches name "[0-9]+-[0-9]+") (catala_score name))
     
    ;; WWW
+    ; Només www:
    ((string-equal name "www") (append (list "tres" "#ws") ))
    ((string-equal name "WWW") (append (list "tres" "#ws") ))
-   ((string-matches name "www.*") (append (list "tres" "#ws") (upc_catalan::token_to_words token (string-after name "www"))))
-   ((string-matches name ".*www.*") (append (upc_catalan::token_to_words token (string-before name "www")) (list "tres" "#ws") (upc_catalan::token_to_words token (string-after name "www"))))
-  ((string-matches name "WWW.*") (append (list "tres" "#ws") (upc_catalan::token_to_words token (string-after name "WWW"))))
-  ((string-matches name ".*WWW.*") (append (upc_catalan::token_to_words token (string-before name "WWW")) (list "tres" "#ws") (upc_catalan::token_to_words token (string-after name "WWW"))))
-  
-   ((string-matches name "[\.][a-z\.]+") (append (list "punt") (upc_catalan::token_to_words token (string-after name "\."))))
-   ((string-matches name "[a-z]+[\.][a-z\.]+") (append (upc_catalan::token_to_words token (string-before name "\.")) (list "punt") 							(upc_catalan::token_to_words token (string-after name "\."))))
+     ; www seguit del que sigui:
+   ((string-matches name "www.*") 
+            (append (list "tres" "#ws") 
+                    (upc_catalan::token_to_words token (string-after name "www"))
+            )
+   )
+   ((string-matches name ".*www.*")
+           (append (upc_catalan::token_to_words token (string-before name "www")) 
+                   (list "tres" "#ws") 
+                   (upc_catalan::token_to_words token (string-after name "www"))
+           )
+   )
+  ((string-matches name "WWW.*") 
+           (append (list "tres" "#ws") 
+                   (upc_catalan::token_to_words token (string-after name "WWW"))
+           )
+  )
+  ((string-matches name ".*WWW.*")
+           (append (upc_catalan::token_to_words token (string-before name "WWW"))
+                   (list "tres" "#ws")
+                   (upc_catalan::token_to_words token (string-after name "WWW"))
+           )
+  )
+  ((string-matches name ".*/.*") ; si trobem un text separat per barres festcat.cat/cosa/bossa/prova ...
+     (let ( (tmplist) (tmplist2) (elem) )
+       (set! tmplist ; Apliquem token_to_words a cada part de la paraula (fescat.cat, cosa, bossa...) i guardem el resultat a tmplist.
+        (mapcar 
+             (lambda (d) (upc_catalan::token_to_words token d) ) 
+             (split name "/")
+          )
+       )
+       ; Per cada resultat...
+       (while (car tmplist)
+          (set! elem (car tmplist))
+         (if (eq? (length elem 0)) ; Afegim la paraula o les paraules del token_to_words a tmplist2, separades per la paraula barra.
+                                   ; TODO: Falta afegir una petita pausa amb la barra a upc_ca_generic_phrasing
+          (set! tmplist2 (append tmplist2 (list elem)  (list "barra") ))
+          (set! tmplist2 (append tmplist2 elem (list "barra")))
+         )
+          (set! tmplist (cdr tmplist))
+       )
+      ; Movem a tmplist el resultat, traient el darrer "barra" que sobra.
+      (set! tmplist (reverse (cdr (reverse tmplist2))) )
+      ; Eliminem totes les paraules buides "":
+      (set! tmplist2 nil)
+      (while (car tmplist)
+         (set! elem (car tmplist))
+         (if (not (string-equal elem ""))
+           (set! tmplist2 (append tmplist2 (list elem)))
+         )
+         (set! tmplist (cdr tmplist))
+      )
+     ; Donem la resta de paraules:
+     tmplist2
+     )
+   )
+   ((string-matches name "[\.][a-z\.]+") 
+        (append (list "punt") 
+                (upc_catalan::token_to_words token (string-after name "\."))
+        )
+   )
+   ((string-matches name "[a-z]+[\.][a-z\.]+") 
+        (append (upc_catalan::token_to_words token (string-before name "\.")) 
+                (list "punt")
+                (upc_catalan::token_to_words token (string-after name "\."))
+        )
+   )
 
    ;; e-m@il
    ((string-matches name "<.*@.*>")  ;; quoted e-mail
@@ -823,14 +884,14 @@ Find char1 in name and replace it by char2."
        (symbolexplode name))
       subwords))
 
-(define (split_string name position)
-"(split_string NAME POSITION)
-Splits the string or symbol provided at NAME in two parts. POSITION defines the split point. 
+(define (cut_string name position)
+"(cut_string NAME POSITION)
+Cuts the string or symbol provided at NAME in two parts. POSITION defines the cut point. 
 Set POSITION to 0 and the first part will be empty, set POSITION to the length of NAME and the
 second part will be empty."
- (if (eq? nil debugcatalan) nil (format t "split_string %s %d\n" name position))
-  (let ( (explosion (utf8explode name)) (part1 "") (part2 "") 
-         (currentpos 0) (lengthname (length (utf8explode name)))
+ (if (eq? nil debugcatalan) nil (format t "split_string_at_pos %s %d\n" name position))
+  (let ( (explosion (symbolexplode name)) (part1 "") (part2 "") 
+         (currentpos 0) (lengthname (length (symbolexplode name)))
        )
      ;Check position is in lengthname:
      (if (> position lengthname) (set! position lengthname) )
@@ -851,11 +912,36 @@ second part will be empty."
   )
 )
 
+(define (split name character)
+"(split NAME CHARACTER)
+Example: (split \"hello/my/friend\" \"/\") returns (\"hello\" \"my\" \"friend\")"
+  (let ( (explosion (symbolexplode name)) (result) (currstring "") 
+         (currentpos 0)
+         (currsymbol)
+       )
+     
+     ;Check position is in lengthname:
+     (while (car explosion)
+        (set! currsymbol (car explosion))
+        (if (string-equal currsymbol character)
+            (begin 
+                   (set! result (append result (list currstring)))
+                   (set! currstring "")
+            )
+            (set! currstring (string-append currstring currsymbol))
+        )
+        (set! explosion (cdr explosion))
+     )
+     (set! result (append result (list currstring)))
+  result
+  )
+)
+
 (define (catala_splitter name)
 "(catala_splitter name)
 Split name in two words that start with a cap letter."
 
- (let ( (wordout1 ) (wordout2 "") (letters (utf8explode name)) (caps))
+ (let ( (wordout1 ) (wordout2 "") (letters (symbolexplode name)) (caps))
    (set! wordout1 (string-append "" (car letters)))
    (set! letters (cdr letters))
    (while (and (not (string-matches (car letters) catalan-regex-upcase-letters))

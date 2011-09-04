@@ -1,6 +1,7 @@
 (defvar catalan-regex-upcase-letters "[A-ZÀÁÈÉÌÍÒÓÙÚÏÜÑÇ]")
 (defvar catalan-regex-downcase-letters "[a-zàéèíòóúïüñç]")
 (defvar catalan-regex-all-letters "[a-zàéèíòóúïüñçA-ZÀÁÈÉÌÍÒÓÙÚÏÜÑÇ·]")
+(defvar catalan-regex-all-letters-and-numbers "[a-zàéèíòóúïüñçA-ZÀÁÈÉÌÍÒÓÙÚÏÜÑÇ·0-9]")
 (define (catala_tok_rex sc)
   "(cat_tok_rex sc)
 Returns 1 if King like title is within 3 tokens before or 2 after."
