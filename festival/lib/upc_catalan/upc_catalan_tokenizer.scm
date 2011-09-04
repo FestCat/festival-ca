@@ -241,6 +241,7 @@ of words that expand given token with name."
      tmplist2
      )
    )
+   
    ((string-matches name "[\.][a-z\.]+") 
         (append (list "punt") 
                 (upc_catalan::token_to_words token (string-after name "\."))
@@ -314,12 +315,7 @@ of words that expand given token with name."
 
 ;; "<" ">" com cometes:
    ((string-matches name (string-append "<+" catalan-regex-all-letters "+>+"))
-     (let ( (upc_cat_temp name) )
-       (while (string-matches upc_cat_temp "<.*")
-           (set! upc_cat_temp (string-after upc_cat_temp "<"))
-       )
-       (upc_catalan::token_to_words token (string-before upc_cat_temp ">")  )
-     )
+       (upc_catalan::token_to_words token (string-after+ (string-before name ">") "<" ) )
    )
 
 ;; BEGIN Apòstrofs
@@ -780,25 +776,61 @@ of words that expand given token with name."
    
   
   ;; Separació de Paraules tipus WindowsXP
-   ((string-equal "1" (catala_two_caps name)) 
-    (append (upc_catalan::token_to_words token (car (catala_splitter name))) (upc_catalan::token_to_words token (car (cdr (catala_splitter name))))))
+   ((string-equal "1" (catala_two_caps name))
+          (append (upc_catalan::token_to_words token (car (catala_splitter name))) 
+                  (upc_catalan::token_to_words token (car (cdr (catala_splitter name))))
+          )
+   )
 
   ;; Paraules compostes amb text y número separades per apòstrofs: Ex. Sidney'02
-  ((string-matches name (string-append catalan-regex-all-letters "+\'[0-9]+")) (append (upc_catalan::token_to_words token (string-before name "\'")) (upc_catalan::token_to_words token (string-after name "\'"))))
+  ((string-matches name (string-append catalan-regex-all-letters "+\'[0-9]+")) 
+        (append (upc_catalan::token_to_words token (string-before name "\'")) 
+                (upc_catalan::token_to_words token (string-after name "\'"))
+        )
+  )
 
   ;; Paraules compostes amb text y número separades per apòstrofs: Ex. Barcelona-92
-  ((string-matches name "[A-Za-z·ÀÈÉÍÏÒÓÚÜÇàèéíïòóúüç]+\-[0-9]+") (append (upc_catalan::token_to_words token (string-before name "\-")) (upc_catalan::token_to_words token (string-after name "\-"))))
+  ((string-matches name (string-append catalan-regex-all-letters "+\-[0-9]+" ) )
+        (append (upc_catalan::token_to_words token (string-before name "\-"))
+                (upc_catalan::token_to_words token (string-after name "\-"))
+        )
+  )
  
 
-  ((string-matches name "_____+")
-   (list "ratlla" "de" "subratllats"))
-  ((string-matches name "=====+")
-   (list "ratlla" "de" "iguals"))
-  ((string-matches name "-----+")
-   (list "ratlla" "de" "guionets"))
-  ((string-matches name "\\*\\*\\*\\*\\*+")
-   (list "ratlla" "de" "asteriscos"))
+  ((string-matches name ".*_____+.*")
+        (append (upc_catalan::token_to_words token (string-before name "_"))
+           (list "ratlla" "de" "subratllats")
+           (upc_catalan::token_to_words token (string-after+ name "_"))
+        )
+  )
 
+  ((string-matches name ".*=====+.*")
+        (append (upc_catalan::token_to_words token (string-before name "="))
+           (list "ratlla" "d'" "iguals")
+           (upc_catalan::token_to_words token (string-after+ name "="))
+        )
+  )
+
+  ((string-matches name ".*-----+.*")
+        (append (upc_catalan::token_to_words token (string-before name "-"))
+           (list "ratlla" "de" "guionets")
+           (upc_catalan::token_to_words token (string-after+ name "-"))
+        )
+  )
+
+  ((string-matches name ".*\\*\\*\\*\\*\\*+.*")
+        (append (upc_catalan::token_to_words token (string-before name "*"))
+           (list "ratlla" "d'" "asteriscs")
+           (upc_catalan::token_to_words token (string-after+ name "*"))
+        )
+  )
+
+  ((string-matches name ".#####+.*")
+        (append (upc_catalan::token_to_words token (string-before name "#"))
+           (list "ratlla" "de" "coixinets")
+           (upc_catalan::token_to_words token (string-after+ name "#"))
+        )
+  )
 
   ;; Lletres: acepten #a (per dir a1, i no la neutra ax)
   ((string-matches name "#[A-Za-z·ÀÈÉÍÏÒÓÚÜÇàèéíïòóúüç]") (list name))
@@ -882,41 +914,26 @@ Find char1 in name and replace it by char2."
 		(t
 		  (string-append letter))))))
        (symbolexplode name))
-      subwords))
+      subwords)
+)
 
 (define (cut_string name position)
 "(cut_string NAME POSITION)
 Cuts the string or symbol provided at NAME in two parts. POSITION defines the cut point. 
 Set POSITION to 0 and the first part will be empty, set POSITION to the length of NAME and the
 second part will be empty."
- (if (eq? nil debugcatalan) nil (format t "split_string_at_pos %s %d\n" name position))
-  (let ( (explosion (symbolexplode name)) (part1 "") (part2 "") 
-         (currentpos 0) (lengthname (length (symbolexplode name)))
+  (let ( (lengthname (string-length  name))
        )
-     ;Check position is in lengthname:
-     (if (> position lengthname) (set! position lengthname) )
-
-     ;;letters before POSITION go to part1
-     (while (< currentpos position)
-       (set! part1 (string-append part1 (car explosion)))
-       (set! explosion (cdr explosion))
-       (set! currentpos (+ currentpos 1))
-     )
-     ;;letters after POSITION go to part2
-     (while (< currentpos lengthname) 
-       (set! part2 (string-append part2 (car explosion)))
-       (set! explosion (cdr explosion))
-       (set! currentpos (+ currentpos 1))
-     )
-(list part1 part2)
+     (list (substring name 0 position) (substring name position lengthname))
   )
 )
 
 (define (split name character)
 "(split NAME CHARACTER)
 Example: (split \"hello/my/friend\" \"/\") returns (\"hello\" \"my\" \"friend\")"
-  (let ( (explosion (symbolexplode name)) (result) (currstring "") 
-         (currentpos 0)
+  (let ( (explosion (symbolexplode name))
+         (result) 
+         (currstring "") 
          (currsymbol)
        )
      
@@ -934,6 +951,59 @@ Example: (split \"hello/my/friend\" \"/\") returns (\"hello\" \"my\" \"friend\")
      )
      (set! result (append result (list currstring)))
   result
+  )
+)
+
+(define (join mylist character)
+"(join LIST CHARACTER)
+Example: (join (\"hello\" \"my\" \"friend\") \"/\") returns \"hello/my/friend\""
+  (let ( (tmpstring "")
+         (first t)
+       )
+      (while (car mylist)
+         (if (not first)
+            (set! tmpstring (string-append tmpstring character (car mylist)))
+            (begin
+              (set! tmpstring (string-append (car mylist)))
+              (set! first nil)
+            )
+         )
+         (set! mylist (cdr mylist))
+      )
+  tmpstring
+  )
+)
+
+
+(define (strconcat mylist)                                                  
+"convert list into string"
+  (if (null mylist)
+      ""
+      (string-append (car mylist) (strconcat (cdr mylist)))
+  )
+)
+
+
+(define (string-reverse STRING)
+"Reverses the string"
+  (strconcat (reverse (symbolexplode STRING)))
+)
+
+
+(define (string-after-greedy ATOM AFTER)
+"Like string after, but returning the least possible number of characters"
+ (string-reverse (string-before (string-reverse ATOM) AFTER))
+)
+
+(define (string-after+ ATOM AFTER)
+"Like string after, but discards consecutive AFTER characters"
+  (let ( (str (string-after ATOM AFTER) )
+       )
+       (set! str (symbolexplode str))
+       (while (string-equal (car str) AFTER)
+          (set! str (cdr str))
+       )
+       (strconcat str)
   )
 )
 
