@@ -229,16 +229,8 @@ of words that expand given token with name."
       ; Movem a tmplist el resultat, traient el darrer "barra" que sobra.
       (set! tmplist (reverse (cdr (reverse tmplist2))) )
       ; Eliminem totes les paraules buides "":
-      (set! tmplist2 nil)
-      (while (car tmplist)
-         (set! elem (car tmplist))
-         (if (not (string-equal elem ""))
-           (set! tmplist2 (append tmplist2 (list elem)))
-         )
-         (set! tmplist (cdr tmplist))
-      )
-     ; Donem la resta de paraules:
-     tmplist2
+      ; i tornem la resta de paraules:
+       (remove_empty tmplist)
      )
    )
    
@@ -798,41 +790,51 @@ of words that expand given token with name."
  
 
   ((string-matches name ".*_____+.*")
+     (remove_empty
         (append (upc_catalan::token_to_words token (string-before name "_"))
            (list "ratlla" "de" "subratllats")
            (upc_catalan::token_to_words token (string-after+ name "_"))
         )
+     )
   )
 
   ((string-matches name ".*=====+.*")
+     (remove_empty
         (append (upc_catalan::token_to_words token (string-before name "="))
            (list "ratlla" "d'" "iguals")
            (upc_catalan::token_to_words token (string-after+ name "="))
         )
+     )
   )
 
   ((string-matches name ".*-----+.*")
+     (remove_empty
         (append (upc_catalan::token_to_words token (string-before name "-"))
            (list "ratlla" "de" "guionets")
            (upc_catalan::token_to_words token (string-after+ name "-"))
         )
+     )
   )
 
   ((string-matches name ".*\\*\\*\\*\\*\\*+.*")
+     (remove_empty
         (append (upc_catalan::token_to_words token (string-before name "*"))
            (list "ratlla" "d'" "asteriscs")
            (upc_catalan::token_to_words token (string-after+ name "*"))
         )
+     )
   )
 
   ((string-matches name ".#####+.*")
+     (remove_empty
         (append (upc_catalan::token_to_words token (string-before name "#"))
            (list "ratlla" "de" "coixinets")
            (upc_catalan::token_to_words token (string-after+ name "#"))
         )
+     )
   )
 
-  ;; Lletres: acepten #a (per dir a1, i no la neutra ax)
+  ;; Lletres: acceptem #a (per dir a1, i no la neutra ax)
   ((string-matches name "#[A-Za-z·ÀÈÉÍÏÒÓÚÜÇàèéíïòóúüç]") (list name))
  
 
@@ -840,7 +842,7 @@ of words that expand given token with name."
   ((and (string-matches name "[A-ZÇÑa-zçñ]+") (not (string-matches name ".*[AEIOUÁÉÍÓÚÜÏÀÈÒaeiouàèéíòóúïü]+.*")))
    (catala_speller name))
 
-  ;; Signes puntuacio aillats : bug: no es tracten bé, com puntuació ...
+  ;; Signes puntuacio aïllats : bug: no es tracten bé, com puntuació ...
   ((string-matches name "([.,?¿!¡:;])")(list name))
 
 
@@ -863,6 +865,7 @@ of words that expand given token with name."
 	         ((string-matches letter ":") (list "dos" "punts"))
 	         ((string-matches letter "-") (list "guió" ))
 	         ((string-matches letter "/") (list "barra" ))
+	         ((string-matches letter "#") (list "coixinet" ))
 	         ((string-matches letter "\\+") (list "més" ))
 ;		 (t (list letter))
 		 ))))
@@ -1004,6 +1007,27 @@ Example: (join (\"hello\" \"my\" \"friend\") \"/\") returns \"hello/my/friend\""
           (set! str (cdr str))
        )
        (strconcat str)
+  )
+)
+
+(define (remove_empty mylist)
+  (let ( (output) )
+   (while (car mylist)
+         (set! elem (car mylist))
+         (if (symbol? elem)
+         (begin
+            (set! output (append output (list elem)))
+            (set! mylist (cdr mylist))
+         )
+         (begin
+            (if (> (string-length elem) 0 )
+              (set! output (append output (list elem)))
+            )
+            (set! mylist (cdr mylist))
+         )
+         )
+   )
+  output
   )
 )
 
