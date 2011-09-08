@@ -81,9 +81,10 @@ Return pronunciation of word not in lexicon."
 Basic lexicon should (must ?) have basic letters, symbols and punctuation."
 
 ;;; Pronunciation of letters in the alphabet
-  ; gmail, hotmail
+  ; gmail, hotmail, facebook
   (lex.add.entry '("hotmail" n ( ((o1 t) 1 ) ( ( m E1 i1 l ) 0 ) ) ) )
   (lex.add.entry '("gmail" n ( ((Z E1) 1 ) ( ( m E1 i1 l ) 0 ) ) ) )
+  (lex.add.entry '("facebook" n ( ((f E1 i1 s) 1 ) ( ( b u k ) 0 ) ) ) )
 
 ; ;;; Symbols ...
   (lex.add.entry '("*" n (((ax s) 0) ((t e1) 0) ((r i1 s k) 1))))
@@ -92,7 +93,7 @@ Basic lexicon should (must ?) have basic letters, symbols and punctuation."
   (lex.add.entry '("=" n (((i) 0) ((G w a1 l) 1))))
   (lex.add.entry '("¤" n (((e1 uw) 1) ((r u) 0))))
   (lex.add.entry '("$" n (((d o1 ) 1) ((l ax r) 0))))
-  (lex.add.entry '("@" n (((ax ) 0) ((r o1) 1) ((B ax) 0))))
+  (lex.add.entry '("@" n (((ax ) 0) ((r o1) 1) ((b ax) 0))))
   (lex.add.entry '("%" n (((p ax r) 0) ((s e1 n ) 1))))
   (lex.add.entry '("/" n (((b a1 ) 1) ((rr ax ) 0))))
 
