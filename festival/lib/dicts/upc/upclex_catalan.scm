@@ -93,7 +93,7 @@ Basic lexicon should (must ?) have basic letters, symbols and punctuation."
   (lex.add.entry '("=" n (((i) 0) ((G w a1 l) 1))))
   (lex.add.entry '("¤" n (((e1 uw) 1) ((r u) 0))))
   (lex.add.entry '("$" n (((d o1 ) 1) ((l ax r) 0))))
-  (lex.add.entry '("@" n (((ax ) 0) ((r o1) 1) ((b ax) 0))))
+  (lex.add.entry '("@" n (((ax ) 0) ((rr o1) 1) ((b ax) 0))))
   (lex.add.entry '("%" n (((p ax r) 0) ((s e1 n ) 1))))
   (lex.add.entry '("/" n (((b a1 ) 1) ((rr ax ) 0))))
 

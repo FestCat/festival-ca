@@ -249,10 +249,10 @@ of words that expand given token with name."
    ;; e-m@il
    ((string-matches name "<.*@.*>")  ;; quoted e-mail
     (let ((nick (string-after (string-before name "@") "<")) (server (string-before (string-after name "@") ">")))
-       (append (upc_catalan::token_to_words token nick) (list "arrova") (upc_catalan::token_to_words token server))))
+       (append (upc_catalan::token_to_words token nick) (list "@") (upc_catalan::token_to_words token server))))
    ((string-matches name ".*@.*")  ;; e-mail
     (let ((nick (string-before name "@")) (server (string-after name "@")))
-       (append (upc_catalan::token_to_words token nick) (list "arrova") (upc_catalan::token_to_words token server))))
+       (append (upc_catalan::token_to_words token nick) (list "@") (upc_catalan::token_to_words token server))))
 
 
    ;; Números
