@@ -79,6 +79,12 @@ Return pronunciation of word not in lexicon."
 (define (upc_catalan_addenda)
   "(upc_catalan_addenda)
 Basic lexicon should (must ?) have basic letters, symbols and punctuation."
+;;; Words to be added in future versions:
+   ; rínxol pedagog pedagogs
+   ; Currently prediction is bad for these words:
+  (lex.add.entry '("rínxol" n ( ((rr i1 n ) 1 ) ( ( S u l ) 0) )  )  )
+  (lex.add.entry '("pedagog" n ( (( p ax ) 0 ) (( d ax ) 0 ) ( ( g O1 k ) 1) )  )  )
+  (lex.add.entry '("pedagogs" n ( (( p ax ) 0 ) (( d ax ) 0 ) ( ( g O1 k s ) 1) )  )  )
 
 ;;; Pronunciation of letters in the alphabet
   ; gmail, hotmail, facebook
