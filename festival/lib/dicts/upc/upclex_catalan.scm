@@ -84,6 +84,8 @@ Basic lexicon should (must ?) have basic letters, symbols and punctuation."
    ; Currently prediction is bad for these words:
   (lex.add.entry '("rínxol" n ( ((rr i1 n ) 1 ) ( ( S u l ) 0) )  )  )
   (lex.add.entry '("rínxols" n ( ((rr i1 n ) 1 ) ( ( S u l s ) 0) )  )  )
+  (lex.add.entry '("gínjol" n ( ((Z i1 n ) 1 ) ( ( Z u l ) 0) )  )  )
+  (lex.add.entry '("gínjols" n ( ((Z i1 n ) 1 ) ( ( Z u l s ) 0) )  )  )
   (lex.add.entry '("pedagog" n ( (( p ax ) 0 ) (( d ax ) 0 ) ( ( g O1 k ) 1) )  )  )
   (lex.add.entry '("pedagogs" n ( (( p ax ) 0 ) (( d ax ) 0 ) ( ( g O1 k s ) 1) )  )  )
 
