@@ -1,3 +1,28 @@
+;;; Copyright (C) 2009-2011  Antonio Bonafonte et al.
+;;;            Universitat PolitËcnica de Catalunya, Barcelona, Spain
+;;;
+;;;  This script is free software; you can redistribute it and/or
+;;;  modify it under the terms of the GNU Lesser General Public
+;;;  License as published by the Free Software Foundation; either
+;;;  version 2.1 of the License, or (at your option) any later version.
+;;;
+;;;  This library is distributed in the hope that it will be useful,
+;;;  but WITHOUT ANY WARRANTY; without even the implied warranty of
+;;;  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+;;;  Lesser General Public License for more details.
+;;;
+;;;  You should have received a copy of the GNU Lesser General Public
+;;;  License along with this library; if not, write to the Free Software
+;;;  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; We want to acknowledge the original English version lib/tokenpos.scm
+;;; by the "Centre for Speech Technology Research;University of Edinburgh, UK"
+;;; available in Festival which served as a reference to this script.
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;
+;;;  Functions used in identifying token types.
+;;;
+
 (defvar catalan-regex-upcase-letters "[A-Z¿¡»…ÃÕ“”Ÿ⁄œ‹—«]")
 (defvar catalan-regex-downcase-letters "[a-z‡ÈËÌÚÛ˙Ô¸ÒÁ]")
 (defvar catalan-regex-all-letters "[a-z‡ÈËÌÚÛ˙Ô¸ÒÁA-Z¿¡»…ÃÕ“”Ÿ⁄œ‹—«∑]")
@@ -75,14 +100,14 @@ Returns 1 if name start with a caps letter and the 2nd letter isn't a cap letter
 (define (tok_allcaps sc)
   "(tok_allcaps sc)
 Returns 1 if sc's name is all capitals, 0 otherwise"
-  (if (string-matches (item.name sc) "[A-Z]+")
+  (if (string-matches (item.name sc) (string-append catalan-regex-upcase-letters "+"))
       "1"
       "0"))
 
 
 (define (catala_two_caps name)
-  "(tok_allcaps name)
-Returns 1 if sc's name have two capitals letters (one at start) with a no capital letter between them at least, 0 otherwise"
+  "(catala_two_caps name)
+Returns 1 if name has two capitals letters (one at start) with a no capital letter between them at least, 0 otherwise"
   (let ((explode (symbolexplode name)) (letter) (output "0"))
      (set! letter (car explode))
      (if (string-matches letter catalan-regex-upcase-letters)
