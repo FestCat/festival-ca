@@ -173,10 +173,16 @@ of words that expand given token with name."
 ;;     (print "telefon mode")
      (catala_speller name))
    
-   ;; Llista de números (són lletrejades les xifres) => Falla si el penúltim número té un sola xifra (no lletreja el darrer nombre)
+   ;; Llista de números (són lletrejades les xifres)
    ((and (string-matches name "[0-9]+") 
-	(or (string-matches (item.feat token "n.name") "[1-9][0-9]+") (string-matches (item.feat token "p.name") "[1-9][0-9]+")))
-      (catala_speller name))
+	 (or (string-matches (item.feat token "n.name") "[1-9][0-9]+") 
+             (or (string-matches (item.feat token "p.name") "[1-9][0-9]+")
+                 (string-matches (item.feat token "p.p.name") "[1-9][0-9]+")
+             )
+         )
+    )
+      (catala_speller name)
+   )
     
    ;; Resultats esportius
    ((string-matches name "[0-9]+-[0-9]+") (catala_score name))
@@ -208,31 +214,9 @@ of words that expand given token with name."
                    (upc_catalan::token_to_words token (string-after name "WWW"))
            )
   )
-  ((string-matches name ".*/.*") ; si trobem un text separat per barres festcat.cat/cosa/bossa/prova ...
-     (let ( (tmplist) (tmplist2) (elem) )
-       (set! tmplist ; Apliquem token_to_words a cada part de la paraula (fescat.cat, cosa, bossa...) i guardem el resultat a tmplist.
-        (mapcar 
-             (lambda (d) (upc_catalan::token_to_words token d) ) 
-             (split name "/")
-          )
-       )
-       ; Per cada resultat...
-       (while (car tmplist)
-          (set! elem (car tmplist))
-         (if (eq? (length elem 0)) ; Afegim la paraula o les paraules del token_to_words a tmplist2, separades per la paraula barra.
-                                   ; TODO: Falta afegir una petita pausa amb la barra a upc_ca_generic_phrasing
-          (set! tmplist2 (append tmplist2 (list elem)  (list "barra") ))
-          (set! tmplist2 (append tmplist2 elem (list "barra")))
-         )
-          (set! tmplist (cdr tmplist))
-       )
-      ; Movem a tmplist el resultat, traient el darrer "barra" que sobra.
-      (set! tmplist (reverse (cdr (reverse tmplist2))) )
-      ; Eliminem totes les paraules buides "":
-      ; i tornem la resta de paraules:
-       (remove_empty tmplist)
-     )
-   )
+  ((string-matches name ".*/.*")
+    ( catala_divide_by_separator token name "/" "barra")
+  )
    
    ((string-matches name "[\.][a-z\.]+") 
         (append (list "punt") 
@@ -753,11 +737,19 @@ of words that expand given token with name."
 						(list "abans" "de" "Crist"))
 
 
-   ((or (string-matches name "telf\.") (string-matches name "telf") (string-matches name "tel")) (list "telèfon")) ; FIXME: el "tel" és el que es forma a la llet escalfada!
-   ((or (string-matches name "[Ss][tT]\.") (string-matches name "[sS][tT]")) (list "sant"))  
+   ((or (string-matches name "telf\.") 
+        (string-matches name "telf") 
+        (and (string-matches name "tel") 
+             (string-matches (item.feat token "n.name") "[-0-9]+" ) 
+        )
+    )
+     (list "telèfon")
+   )
+
+   ((string-matches name "[Ss][tT]\.?") (list "sant"))
+   ((string-equal name "i/o") (list "i" "o") )
 
    ;; Abreviatures d'adreces
-   ((string-equal name "i/o") (append (upc_catalan::token_to_words token "i") (upc_catalan::token_to_words token "o")) )
    ((string-matches name "[Cc][/\.]+") 	(list "carrer"))
    ((string-matches name "[Aa]v[/\.]+") 	(list "avinguda"))
    ((string-matches name "[Pp]g[/\.]+")	(list "passeig"))
@@ -845,6 +837,18 @@ of words that expand given token with name."
   ;; Signes puntuacio aïllats : bug: no es tracten bé, com puntuació ...
   ((string-matches name "([.,?¿!¡:;])")(list name))
 
+;; Paraules diferents, enganxades per algun caràcter com_això_que_també-es-pot#pronunciar
+  ((or(string-matches name ".+_.*")
+      (string-matches name ".*_.+")
+   )
+    ( catala_divide_by_separator token name "_" "")
+  )
+
+  ((or(string-matches name ".+#.*")
+      (string-matches name ".*#.+")
+   )
+    ( catala_divide_by_separator token name "#" "")
+  )
 
   ;; Codis
    ((not (lts.in.alphabet name 'catala_downcase_letters))
@@ -864,6 +868,7 @@ of words that expand given token with name."
                  ((string-matches letter "[\.]") (list "punt"))
 	         ((string-matches letter ":") (list "dos" "punts"))
 	         ((string-matches letter "-") (list "guió" ))
+	         ((string-matches letter "_") (list "guió" "baix" ))
 	         ((string-matches letter "/") (list "barra" ))
 	         ((string-matches letter "#") (list "coixinet" ))
 	         ((string-matches letter "\\+") (list "més" ))
@@ -896,7 +901,7 @@ Split a string into letters, numbers or symbol chars."
 		  (list (string-append "#" (car (catala_downcase letter)))))
                  ((string-matches letter "[\.]") (list "punt"))
 	         ((string-matches letter ":") (list "dos" "punts"))
-		 ((string-matches letter "_") (list "guió" "baix")) 
+		 ((string-matches letter "_") (list "guió" "baix"))
 		 (t
 		  (list letter))))))
        (symbolexplode name))
@@ -1052,6 +1057,37 @@ Split name in two words that start with a cap letter."
  )
 )
    
+(define (catala_divide_by_separator token name separator separator_name)
+"(catala_divide_by_separator token name separator separator_name) example:
+Calling from token_to_words using (catala_divide_by_separator token name \"/\" \"barra\")
+with a name as \"festcat.cat/cosa/bossa/prova\" will separate the string and convert to words 
+every part. It will also add \"barra\" between each part leading to:
+\"festcat punt cat barra cosa barra bossa barra prova\" as expected.
+"
+ (let ( (tmplist) (tmplist2) (elem) )
+       (set! tmplist ; Apliquem token_to_words a cada part de la paraula (fescat.cat, cosa, bossa...) i guardem el resultat a tmplist.
+        (mapcar 
+             (lambda (d) (upc_catalan::token_to_words token d) ) 
+             (split name separator)
+          )
+       )
+       ; Per cada resultat...
+       (while (car tmplist)
+          (set! elem (car tmplist))
+         (if (eq? (length elem 0)) ; Afegim la paraula o les paraules del token_to_words a tmplist2, separades per la paraula barra.
+                                   ; TODO: Falta afegir una petita pausa amb la barra a upc_ca_generic_phrasing
+          (set! tmplist2 (append tmplist2 (list elem)  (list separator_name ) ))
+          (set! tmplist2 (append tmplist2 elem (list separator_name)))
+         )
+          (set! tmplist (cdr tmplist))
+       )
+      ; Movem a tmplist el resultat, traient el darrer "barra" que sobra.
+      (set! tmplist (reverse (cdr (reverse tmplist2))) )
+      ; Eliminem totes les paraules buides "":
+      ; i tornem la resta de paraules:
+       (remove_empty tmplist)
+ )
+)
    
 (define (catala_able_to_say name)
 "(catala_able_to_say name)
