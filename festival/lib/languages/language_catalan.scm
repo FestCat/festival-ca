@@ -30,9 +30,9 @@
 	     (set! voice_default (intern (string-append "voice_" voice)))
                (set! finish t)
             )
-	     )
-	 (set! voices (cdr voices))
 	 )
+	 (set! voices (cdr voices))
+       )
        (if (eq finish nil)
          (begin 
             (print "Could not find any of these voices")
@@ -50,9 +50,8 @@ Inicialitza les veus catalanes per defecte."
   (set! male1   (lambda () (voice_upc_ca_pau_hts)))
   (Param.set 'Language 'catalan)
 
-  (if (boundp 'catalan-default-voices) ;if is defined 'catalan-default-voices
-      nil
-      (set! catalan-default-voices (append (list 'upc_ca_ona_hts) (list 'upc_ca_pau_hts)))
+  (if (not (boundp 'catalan-default-voices))
+      (set! catalan-default-voices (list 'upc_ca_ona_hts 'upc_ca_pau_hts))
   )
   (set_voice_default catalan-default-voices)
   (eval (list voice_default))
