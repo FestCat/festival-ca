@@ -52,31 +52,6 @@
 (set! upc_catalan::token.singlecharsymbols "")
 ;(set! token.unknown_word_name "")
 
-(define (upc_catalan::eliminacaracter token name caracter function)
-"(upc_catalan::eliminacaracter token name caracter function)
- Aquesta funció elimina el caracter 'caracter' de la cadena 'name'
- i crida function amb els parametres token i els corresponents texts"
- (print (string-append "eliminacaracter " name))
- (cond
-   ((string-matches name (string-append ".+" caracter "$"))
-      (print "Hola1")
-                (append (function token (string-before name caracter))
-                )
-   )
-   ((string-matches name (string-append "^" caracter ".+"))
-      (print "Hola2")
-                (append (function token ( string-after name caracter))
-                )
-   )
-   ((string-matches name (string-append ".+" caracter ".+"))
-      (print "Hola3")
-                (append (function token (string-before name caracter)) 
-                        (function token ( string-after name caracter))
-                )
-   )
- )
-)
-
 ;;; "Voice/ca token_to_word rules 
 (define (upc_catalan::token_to_words token name)
   "(upc_catalan::token_to_words token name)
@@ -217,7 +192,7 @@ of words that expand given token with name."
   ((string-matches name ".*/.*")
     ( catala_divide_by_separator token name "/" "barra")
   )
-   
+   ;; This interferes with bad punctuation
    ((string-matches name "[\.][a-z\.]+") 
         (append (list "punt") 
                 (upc_catalan::token_to_words token (string-after name "\."))
@@ -850,6 +825,31 @@ of words that expand given token with name."
     ( catala_divide_by_separator token name "#" "")
   )
 
+  ((and (or (string-matches name ".*,.+")
+            (string-matches name ".+,.*")
+            (string-matches name ",.+,")
+        )
+        (not (string-matches name ",+")) ; fix iff there is more than just ","
+   )
+   (catala_reparapuntuacio token name "," "punc")
+  )
+
+  ((and (or (string-matches name ".*;.+")
+            (string-matches name ".+;.*")
+            (string-matches name ";.+;")
+        )
+        (not (string-matches name ";+")) ; fix iff there is more than just ";"
+   )
+   (catala_reparapuntuacio token name ";" "punc")
+  )
+
+  ((and (or (string-matches name "^\..+")
+        )
+        (not (string-matches name ".+")) ; fix iff there is more than just "."
+   )
+   (catala_reparapuntuacio token name "." "punc")
+  )
+
   ;; Codis
    ((not (lts.in.alphabet name 'catala_downcase_letters))
 ;   (print "codis: " name)
@@ -866,6 +866,7 @@ of words that expand given token with name."
 		 ((string-matches letter "[a-záéíóúüïñçàèòA-ZÁÉÍÓÚÜÏÑÇÀÈÒ]")
 		    (list (string-append "#" (car (catala_downcase letter)))))
                  ((string-matches letter "[\.]") (list "punt"))
+         ;        ((string-matches letter ",") (list "coma"))
 	         ((string-matches letter ":") (list "dos" "punts"))
 	         ((string-matches letter "-") (list "guió" ))
 	         ((string-matches letter "_") (list "guió" "baix" ))
@@ -877,7 +878,7 @@ of words that expand given token with name."
        (symbolexplode name))
       subwords))
    (t ;; when no specific rules apply do the general ones
-   ; (format t "General Rule: %s\n" name)
+;    (format t "General Rule: %s\n" name)
     (list name)))
 )
 
@@ -906,6 +907,56 @@ Split a string into letters, numbers or symbol chars."
 		  (list letter))))))
        (symbolexplode name))
       subwords))
+
+(define (catala_reparapuntuacio token name punctchar feature)
+"Separa \"paraules,que\" en dos tokens."
+  (let ( (llista)p (elem) (currtok token) (output) (posa_punc_al_final nil) )
+      (set! llista (split name punctchar))
+      ; Mirem si l'últim token ha de tenir puntuació:
+      (if (string-equal (car (reverse llista)) "")
+          (set! posa_punc_al_final punctchar)
+      )
+      (if (not (eq? 0 (item.feat token feature)) )
+          (set! posa_punc_al_final (item.feat token feature))
+      )
+ 
+ 
+      ; Mirem si el token anterior ha de tenir puntuació, i ho fem:
+      (if (and (string-equal (car llista) "")
+               (item.prev token)
+          )
+          (item.set_feat (item.prev token) feature punctchar)
+      )
+      
+      ; Eliminem elements buits ( "paraules,,que" -> "paraules,que" )
+      (set! llista (remove_empty llista))
+      
+      (if (car llista) 
+          (begin ; modifiquem el token actual, el processem i afegim tants tokens com calgui a continuació.
+             (set! elem (car llista))
+             (item.set_name token elem)
+             (item.set_feat token feature punctchar)
+             (set! output (upc_catalan::token_to_words token elem))
+             (set! llista (cdr llista))
+             ;; Afegim tokens:
+             (while (car llista)
+                (set! elem (car llista))
+                (item.insert currtok elem)
+                (set! currtok (item.next currtok))
+                (item.set_name currtok elem)
+                (item.set_feat currtok feature punctchar)
+                (set! llista (cdr llista))
+             )
+           (if posa_punc_al_final
+              (item.set_feat currtok feature posa_punc_al_final)
+              (item.set_feat currtok feature "")
+           )
+          )
+          (set! output (list ".")) ; ens hem quedat sense res, token buit. FIXME: Buit no vol dir punt. no se com es fa un token sense words.
+      )
+  output
+  )
+)
 
 (define (catala_subs name char1 char2)
 "(catala_subs name char1 char2) 
@@ -1075,7 +1126,7 @@ every part. It will also add \"barra\" between each part leading to:
        (while (car tmplist)
           (set! elem (car tmplist))
          (if (eq? (length elem 0)) ; Afegim la paraula o les paraules del token_to_words a tmplist2, separades per la paraula barra.
-                                   ; TODO: Falta afegir una petita pausa amb la barra a upc_ca_generic_phrasing
+                                   ; TODO: Falta afegir una petita pausa
           (set! tmplist2 (append tmplist2 (list elem)  (list separator_name ) ))
           (set! tmplist2 (append tmplist2 elem (list separator_name)))
          )
