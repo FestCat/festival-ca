@@ -57,5 +57,5 @@ Inicialitza les veus catalanes per defecte."
   (eval (list voice_default))
 )
 
-(language.alias.add 'catalan (list 'catala))
+(language.names.add 'catalan (list 'catala))
 
