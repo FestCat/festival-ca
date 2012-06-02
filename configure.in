@@ -1,0 +1,61 @@
+AC_INIT([festival-ca], [1.0.6], [sergioller@gmail.com], [festival-ca], [http://www.talp.cat/festcat/])
+AC_PREREQ([2.59])
+AC_PROG_SED
+AC_PROG_GREP
+
+# Checks for using festival
+AC_ARG_ENABLE(festivalpath,AS_HELP_STRING([--enable-festivalpath],[--enable-festivalpath=/path/to/festival (specify a custom festival path)]),[festivalpath=$enableval])
+
+if test -d "${festivalpath}"; then 
+    echo "using custom festival path: $festivalpath"
+else
+    festivalpath="$PATH"
+fi
+
+# FESTIVALBIN
+AC_PATH_PROG([FESTIVALBIN], [festival], [:], [${festivalpath}])
+
+if test ! -f "${FESTIVALBIN}"; then
+        AC_MSG_ERROR(Can't find festival)
+fi
+
+${FESTIVALBIN} --pipe > /dev/null 2>&1 << EOF
+(set! fp (fopen "datadir.txt" "w"))
+(if (boundp 'datadir)
+(format fp datadir)
+(format fp libdir)
+)
+(fclose fp)
+EOF
+
+FESTDATADIR=`cat "datadir.txt"`
+rm "datadir.txt"
+
+if test ! -d "${FESTDATADIR}"; then
+        AC_MSG_ERROR(Can't find neither datadir or libdir)
+fi
+echo "Festival data directory: ${FESTDATADIR} found."
+
+
+# There are two ways of adding a language to festival:
+# The 2.1 official way: Editing languages.scm
+# The languages/ directory way (since 1:2.1~release-2, see http://bugs.debian.org/606173 )
+#
+# From my perspective the second one is safer.
+# Here we detect the version of languages.scm to determine how we should do the installation:
+LANGUAGESSCMFILE="${FESTDATADIR}/languages.scm"
+
+if test ! -f "${LANGUAGESSCMFILE}"; then
+      AC_MSG_ERROR(Wrong libdir or datadir)
+fi
+
+${GREP} "language.select" "${LANGUAGESSCMFILE}" > /dev/null && LANGUAGESSCMVERSION="directory" || LANGUAGESSCMVERSION="2.1"
+
+
+
+
+AC_SUBST(FESTDATADIR)
+AC_SUBST(LANGUAGESSCMFILE)
+AC_SUBST(LANGUAGESSCMVERSION)
+AC_OUTPUT([Makefile])
+
