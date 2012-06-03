@@ -16,11 +16,14 @@ my($word, $pos, $trn) = m/\("(.*)"\s(.+)\s\((.*)\)\)$/;
 my $wgn = "";
  
 #Already in this format
+#Change if input is in festival format as:
+# Input: ("úniques" n (((u1) 1) ((n i) 0) ((k ax s) 0)))
 #while( my($syl) = $trn =~ /\s*\(\(([^\)]+)\)\s[01]\)/ ) 
 #{
 #    $wgn = $wgn . " " . $syl;
 #    $trn = $'; #' (Emacs highlighting mode does not like it...)
 #}
+# We use this instead of the previous loop:
 $wgn = $trn;
 
 # wgn: O1 k t u p l ax s
