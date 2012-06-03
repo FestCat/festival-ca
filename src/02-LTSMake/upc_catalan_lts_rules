@@ -24,10 +24,7 @@ ALLOWABLES=$1;
 DICT=$2;
 LTS=$3;
 
-# Add path for "wagon"
-PATH=$PATH:$ESTDIR/bin; export $PATH
-
-mkdir -p lts_scratch
+mkdir -p "lts_scratch"
 
 if [ $ALLOWABLES != "allowables.scm" ]; then
 	cp $ALLOWABLES allowables.scm;
@@ -36,8 +33,7 @@ fi
 echo "Prune Festival dictionary prior to Wagon conversion"
 ./purge_fest_dic < "$DICT" > "$DICT.pruned"
 
-echo "Convert dictionary into proper Wagon format"
-#./fest2wagon < "$DICT.pruned" > "lts_scratch/lex_entries.out"
+echo "Create multi phonemes" # See readme for more info
 ./createmultiphonemes < "$DICT.pruned" > "lts_scratch/lex_entries.out"
 
 echo "Build LTS rules"

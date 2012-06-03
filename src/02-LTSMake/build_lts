@@ -105,7 +105,7 @@ then
    $FESTIVAL -b --heap 10000000 allowables.scm lts_scratch/lex-pl-tablesp.scm '(begin
       (aligndata "lts_scratch/lex_entries.out" "lts_scratch/lex.align")
       (build-feat-file "lts_scratch/lex.align" "lts_scratch/lex.feats"))' |
-      tee align.log || exit 1
+      tee lts_scratch/align.log || exit 1
    exit 0
 fi
 
@@ -123,12 +123,12 @@ fi
 if [ "$1" = "build" ]
 then
 
-   echo Build letter to phone CART trees
-   if [ -f lts_scratch/lex.align.train ]
+   echo "Build letter to phone CART trees"
+   if [ -f "lts_scratch/lex.align.train" ]
    then
         echo "With traintest split"
    fi
-   (cd lts_scratch; ../build_lts_rules ) >lts_scratch/lts.build.out
+   (cd lts_scratch; ../build_lts_rules ) > lts_scratch/lts.build.out
 
    exit 0
 fi
@@ -148,10 +148,10 @@ then
   echo Test model
   if [ -f lts_scratch/lex.align.test ]
   then
-     $FESTIVAL -b --heap 10000000 allowables.scm lts_scratch/lex_lts_rules.scm '(lts_testset "lts_scratch/lex.align.test" lex_lts_rules)' | tee lts_test.log
+     $FESTIVAL -b --heap 10000000 allowables.scm lts_scratch/lex_lts_rules.scm '(lts_testset "lts_scratch/lex.align.test" lex_lts_rules)' | tee lts_scratch/lts_test.log
      echo "with TEST set"
   else
-     $FESTIVAL -b --heap 10000000 allowables.scm lts_scratch/lex_lts_rules.scm '(lts_testset "lts_scratch/lex.align" lex_lts_rules)' | tee lts_test.log
+     $FESTIVAL -b --heap 10000000 allowables.scm lts_scratch/lex_lts_rules.scm '(lts_testset "lts_scratch/lex.align" lex_lts_rules)' | tee lts_scratch/lts_test.log
      echo "with ALL data -- no held out test set"
   fi
   exit 0
