@@ -1,0 +1,48 @@
+
+LTS: HOWTO Training LTS rules for Catalan in Festival
+Javier Pérez
+Barcelona, 2007
+
+*The* main script is "upc_catalan_lts_rules", and it should be called like:
+
+./upc_catalan_lts_rules allowables.scm dictionary lts_dir
+
+It needs to input files, and an output directory where the Scheme file "upc_catalan_lts_rulse.scm" is created. 
+
+Input files:
+
+ - allowables.scm : lists each character and its possible phonemes. We have created some "multiphonemes" to account for those cases where one letter corresponds to more than one phoneme. This is a limitation of the LTS training: only one (or zero) phonemes are allowed for each letter. The multiphonemes are marked with a dash "-".
+
+
+ - dictionary: in Festival format.
+
+
+What it does...
+
+The first step is to convert the dictionary into Wagon's format, eliminating those words with only 4 or less letters, abbreviations and some "weird" words (foreign words mainly) that should not be used to train automatic LTS.
+
+The output file is directly pluggable into $FESTDIR/lib/dicts/upc/, so this directory can be passed as the output directory off the script.
+
+
+Run without arguments for help message:
+ 
+
+Script to generate LTS rules for Catalan
+
+ Usage:
+       ./upc_catalan_lts_rules allowables.scm dictionary lts_file
+
+ Input files:
+       allowables.scm  --  list of graphemes and possible phonemes
+       dictionary      --  dictionary to learn LTS (Festival format)
+
+ Output files:
+       lts_dir         --  LTS rules output directory (the Scheme format file
+                       "upc_catalan_lts_rules.scm" will be created there)
+
+
+In order to change the context when training CARTs with wagon, build_lts_rules must be edited. For instance, if we don't want 4-grams, only 3-grams, lines referring to "p.p.p.p.name" and "n.n.n.n.name" need to be changed, adding " ignore":
+
+echo ') (p.p.p.p.name ignore ' >>ltsLTS.desc
+
+
