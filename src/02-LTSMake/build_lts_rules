@@ -35,6 +35,15 @@
 
 LANG=C; export LANG
 
+if [ ! -f "$WAGON" ]; then
+   if [ ! -d "$ESTDIR" ];then
+       WAGON=$(which wagon) || ( echo "Could not find wagon"; exit 1 )
+   else
+       WAGON="$ESTDIR/bin/wagon"
+   fi
+fi
+
+
 echo "((Relation.LTS.down.name" >ltsLTS.desc
 awk '{print $1}' lex.feats | sort -u >> ltsLTS.desc
 echo ') (p.p.p.p.name ' >>ltsLTS.desc
@@ -76,7 +85,7 @@ do
        awk '{if ($6 == "'$i'") print $0}' >ltsdataTRAIN.$i.feats
    fi
 
-   wagon -data ltsdataTRAIN.$i.feats -test ltsdataTRAIN.$i.feats \
+   $WAGON -data ltsdataTRAIN.$i.feats -test ltsdataTRAIN.$i.feats \
           -desc ltsLTS.desc -stop $STOP -output lts.$i.tree
 
 done

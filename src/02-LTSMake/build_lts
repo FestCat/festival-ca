@@ -35,7 +35,9 @@
 
 LANG=C; export LANG
 
-FESTIVAL=$(which festival)
+if [ ! -f $FESTIVAL ]; then
+   FESTIVAL=$(which festival) || ( echo "Could not find festival"; exit 1 )
+fi
 
 if [ $# = 0 ]
 then

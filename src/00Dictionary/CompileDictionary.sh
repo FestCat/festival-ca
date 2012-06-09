@@ -6,7 +6,10 @@ infile=$@
 
 mkdir -p "$outdir"
 
-FESTIVAL=`which festival`
+if [ ! -f $FESTIVAL ]; then
+   FESTIVAL=$(which festival) || ( echo "Could not find festival"; exit 1 )
+fi
+
 
 cat $infile | ./allo2pho.pl | \
     perl -pe 's/^ +//; s/ +$//; s/  +/ /g; s/ *\t */\t/g' |\
