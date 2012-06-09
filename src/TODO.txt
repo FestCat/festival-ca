@@ -1,18 +1,4 @@
-1. Implementa una función que pase del diccionario freeling 
-   a un diccionario con el formato deseado (sílabas y fonemas incluidos).
-   PISTA: Usa make_dictionary/txt2dic.sh y 01LTSData/01-formateador.pl
-          como base.
-Formato deseado:
-abatre	n	ax - B a1 - t r ax
-abdomen	n	ax b - d o1 - m ax n
-abductor	n	ax b - d u k - t o1
-abecedari	n	ax - B ax - s ax - D a1 - r i
-
-2. compile_dic.sh: Probarlo en el diccionario del punto 1.
-
-
-3. Probar lo que hay de LTS. Descomentando el while en createmultiphonemes paso a usar el formato festival y puedo usar lo creado en el punto 2.
-
+3. Probar lo que hay de LTS.
 
 4. dictag.txt sale de corpus-ca. Es una lista palabras con su morfología y el recuento de veces que aparece con una forma y con otra en corpus-ca. "04.-Generacio Poslex" lo usa para crear el poslex.
    Usarlo con un corpus-ca más extenso si es posible y con un diccionario de freeling más actualizado y revisar los scripts para tener en cuenta ambigüedades (Ahora las del diccionario se descartan, creo).
@@ -22,3 +8,5 @@ abecedari	n	ax - B ax - s ax - D a1 - r i
 6. Probar el resultado.
 
 7. Crear un script funciones.in que permita definir dónde está festival y wagon y ngram y todo y hacer un makefile.
+
+8. Eliminar paraules en català no central del diccionari, ja que ara per ara es pronuncien "centralment" (no tenim transcripció fonètica en altres dialectes)

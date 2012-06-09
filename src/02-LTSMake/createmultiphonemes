@@ -1,6 +1,6 @@
 #!/usr/bin/perl -wn
 # Create 4 multiphonemes necessary for the one-to-one LTS rules: k-s, b-b, g-g, g-z
-# Input: ("úniques" n (u1 n i k ax s)) 
+# Output: ("úniques" n (u1 n i k ax s)) 
 #
 
 chomp;
@@ -16,8 +16,6 @@ my($word, $pos, $trn) = m/\("(.*)"\s(.+)\s\((.*)\)\)$/;
 my $wgn = "";
  
 #Already in this format
-#Change if input is in festival format as:
-# Input: ("úniques" n (((u1) 1) ((n i) 0) ((k ax s) 0)))
 #while( my($syl) = $trn =~ /\s*\(\(([^\)]+)\)\s[01]\)/ ) 
 #{
 #    $wgn = $wgn . " " . $syl;

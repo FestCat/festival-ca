@@ -1,0 +1,36 @@
+#!/usr/bin/perl -wn
+# Convert Festival dictionary into Wagon
+# Input: ("úniques" n (((u1) 1) ((n i) 0) ((k ax s) 0)))
+# Output: ("úniques" n (u1 n i k ax s)) 
+#
+# Create 4 multiphonemes necessary for the one-to-one LTS rules: k-s, b-b, g-g, g-z
+
+chomp;
+
+if( ! m/\((".*")\s(.)\s\((.*)\)$/ ){
+    next;
+}
+
+my($word, $pos, $trn) = m/\("(.*)"\s(.)\s\((.*)\)$/;
+
+#trn: ((O1 k) 1) ((t u) 0) ((p l ax s) 0))
+
+
+my $wgn = "";
+ 
+while( my($syl) = $trn =~ /\s*\(\(([^\)]+)\)\s[01]\)/ ) 
+{
+    $wgn = $wgn . " " . $syl;
+    $trn = $'; #' (Emacs highlighting mode does not like it...)
+}
+
+# wgn: O1 k t u p l ax s
+$wgn =~ s/^\s*//;
+
+# Necessary for one-to-one rules
+$wgn =~ s/k s/k-s/g;
+$wgn =~ s/g g/g-g/g;
+$wgn =~ s/b b/b-b/g;
+$wgn =~ s/g z/g-z/g;
+
+print "(\"$word\" $pos ($wgn))\n";

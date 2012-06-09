@@ -34,7 +34,8 @@ echo "Prune Festival dictionary prior to Wagon conversion"
 ./purge_fest_dic < "$DICT" > "$DICT.pruned"
 
 echo "Create multi phonemes" # See readme for more info
-./createmultiphonemes < "$DICT.pruned" > "lts_scratch/lex_entries.out"
+./fest2wagon < "$DICT.pruned" > "lts_scratch/lex_entries.out"
+#./createmultiphonemes < "$DICT.pruned" > "lts_scratch/lex_entries.out"
 
 echo "Build LTS rules"
 ./build_lts
