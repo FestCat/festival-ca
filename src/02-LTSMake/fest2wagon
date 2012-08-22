@@ -1,4 +1,21 @@
 #!/usr/bin/perl -wn
+# Copyright (C) 2009-2011  Antonio Bonafonte
+#            Universitat Politècnica de Catalunya, Barcelona, Spain
+#
+#  This script is free software; you can redistribute it and/or
+#  modify it under the terms of the GNU Lesser General Public
+#  License as published by the Free Software Foundation,
+#  version 2.1 of the License.
+#
+#  This library is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+#  Lesser General Public License for more details.
+#
+#  You should have received a copy of the GNU Lesser General Public
+#  License along with this library; if not, write to the Free Software
+#  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+
 # Convert Festival dictionary into Wagon
 # Input: ("úniques" n (((u1) 1) ((n i) 0) ((k ax s) 0)))
 # Output: ("úniques" n (u1 n i k ax s)) 
@@ -7,11 +24,11 @@
 
 chomp;
 
-if( ! m/\((".*")\s(.)\s\((.*)\)$/ ){
+if( ! m/\((".*")\s(.+?)\s\((.*)\)$/ ){
     next;
 }
 
-my($word, $pos, $trn) = m/\("(.*)"\s(.)\s\((.*)\)$/;
+my($word, $pos, $trn) = m/\("(.*)"\s(.+?)\s\((.*)\)$/;
 
 #trn: ((O1 k) 1) ((t u) 0) ((p l ax s) 0))
 

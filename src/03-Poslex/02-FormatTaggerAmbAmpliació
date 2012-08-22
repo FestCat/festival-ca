@@ -1,0 +1,133 @@
+#!/usr/bin/perl
+# Copyright (C) 2009-2011  Antonio Bonafonte
+#            Universitat Politècnica de Catalunya, Barcelona, Spain
+#
+#  This script is free software; you can redistribute it and/or
+#  modify it under the terms of the GNU Lesser General Public
+#  License as published by the Free Software Foundation,
+#  version 2.1 of the License.
+#
+#  This library is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+#  Lesser General Public License for more details.
+#
+#  You should have received a copy of the GNU Lesser General Public
+#  License along with this library; if not, write to the Free Software
+#  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+
+my $outfile = "$ARGV[0]"; # output file
+my $dictag  = "$ARGV[1]"; # dictag.txt
+my $ortofile = "$ARGV[2]";  # simplifiedpos.orto
+my $logfile = "$ARGV[3]";  # log.txt
+my $vocabularyfile= "$ARGV[4]"; # voca.txt
+my $softening=1; # 1 is a good value, sometimes smaller values are taken.
+                 # 0 disables laplace smoothing
+
+my %wordposcount;
+my %poscount;
+my %wordposcount2;
+my %poscount2;
+
+my %uniqueposcount;
+my $esnumero;
+open (LOG, ">$logfile");
+print LOG "Start reading dictag\n";
+
+open (DICIN, "<$dictag") or die $!;
+while(<DICIN>)
+  { 
+    # Each dictag.txt line is of the form:
+    # homicida AQ-NC AQ 1 NC 0
+    # $word $possible-POS-list $possible-pos1 $possible-pos1-freq $possible-pos2 $possible-pos2-freq ...
+    @fila = split(/\s+/, $_);
+    $word = $fila[0];
+    
+    if ( ($word=~ m/[-0-9.,]+/) and ($word=~ m/.*[0-9].*/) and not($word =~ m/[a-zA-Z]/)) {
+       $esnumero=1;
+    } else {
+       $esnumero=0;
+    }
+    # We read all possible pos and fill the hashes POS:
+    $i = 2;
+    while ( $i < scalar(@fila) )  {
+	$pos = $fila[$i];
+	$count = $fila[$i+1];
+	$wordposcount{$word}{$pos} += $count;
+	$poscount{$pos} += $count;
+        $uniqueposcount{$pos}+=1;
+        $i = $i + 2;
+        if ($esnumero == 1) {
+            $wordposcount{"__number__"}{$pos} += $count;
+        }
+    }
+    # We finish the line by opening and closing proper parenthesis
+
+  }
+close (DICIN);
+print LOG "Fin primera parte\n";
+
+print LOG "COUNT OF ALL POS IN DICTAG\n";
+
+foreach $k (sort keys %poscount ) {
+    print LOG "$k => $poscount{$k}\n";
+}
+print LOG "END COUNT OF ALL POS IN DICTAG\n";
+
+
+# We do something similar with the words not in dictag but in the lexicon:
+open (DICCOM, "$ortofile");
+while(<DICCOM>) {
+  ($word, $lexema, $pos) = split(/\s+/, $_);
+  if (not(exists($wordposcount{$word}{$pos}))) {
+    $uniqueposcount{$pos}+=1;
+    $wordposcount{$word}{$pos}=0;
+  }
+  $wordposcount2{$word}{$pos}+=1;
+  $poscount2{$pos} += 1;
+}
+close (DICCOM);
+print LOG "COUNT OF ALL POS IN LEXICON\n";
+
+foreach $k (sort keys %poscount2 ) {
+    print LOG "$k => $poscount2{$k}\n";
+}
+print LOG "END COUNT OF ALL POS IN LEXICON\n";
+
+# Create vocabulary file:
+open (VOCA, ">$vocabularyfile") or die $!;
+foreach $pos (sort keys(%uniqueposcount)) {
+   print VOCA "$pos ";
+}
+print VOCA "\n";
+close(VOCA);
+# end vocabulary file
+
+
+open (DICOUT, ">$outfile") or die $!;
+foreach $word (sort keys %wordposcount) {
+    # We print the word and the probability for each possible POS.
+    if ($word =~ m/"/) {
+       $word2=$word;
+       $word2=~s:":\\":g;
+    } else {
+       $word2=$word;
+    }
+    print DICOUT '("' . $word2 . '" (';
+    foreach $pos (sort keys $wordposcount{$word}) {
+         # Now we have to compute the probability.
+         # As the dictag is based on a small corpus, many of the entries come from the lexicon.
+         # We will do some laplace smoothing to the data.
+         $count = $wordposcount{$word}{$pos};
+	 # We compute the probability:
+         $proba=($count+$softening)/($poscount{$pos}+$softening*$uniqueposcount{$pos});
+         $proba=sprintf("%.3f", log($proba)/log(10));
+	print DICOUT "(" .$pos. " " .$proba. ")";
+    }
+    print DICOUT " ) () )\n";
+}
+
+
+close (LOG);
+close (DICOUT);
+
