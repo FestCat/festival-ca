@@ -57,8 +57,8 @@ El lèxic ha estat enriquit de la forma següent:
 
 
 ## Condicions d'ús
-Tot el codi i recursos lingüístics es proporcionen sota la llicència
-LGPL (veieu el fitxer COPYRIGHT i LICENSE).
+La informació actualitzada de copyright i llicència es troba als fitxers
+COPYRIGHT i LICENSE-*.txt.
 
 ## Requisits
 És necessari un sistema 'Festival' en funcionament.

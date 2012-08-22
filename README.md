@@ -1,6 +1,6 @@
 # FestCat: Speech Synthesis in Catalan using Festival
 
-    http://www.talp.upc.edu/festcat
+    <http://www.talp.upc.edu/festcat>
     Antonio Bonafonte
     TALP Research Center
     Barcelona, November 2007
@@ -11,7 +11,7 @@
 "Festival parla català"
 
 The FestCat package consists of a library providing
-analysis of Catalan text, and the data to extend  
+analysis of Catalan text, and the data to extend 
 Festival so that it can speak Catalan.
 
 This project has been originally developed by
@@ -25,12 +25,12 @@ Basically, there are two components:
  Dictionaries, tokenizer, lts rules, POStagger data, etc.
 
  This includes two folders:
-   - `dicts/upc` (basically dictionaries)
-   - `upc_catalan` (basically code)
+   1. `dicts/upc` (basically dictionaries)
+   2. `upc_catalan` (basically code)
 
 2. Voices: speaker dependent data. 
-   - There is one folder for each voice: 
-          `voices/catalan/upc_ca_'speaker-name'`
+   1. There is one folder for each voice: 
+         `voices/catalan/upc_ca_'speaker-name'`
 
 Several voices have already been developed.
 Check the web page to get the latest downloads.
@@ -57,8 +57,8 @@ The lexicon has been enriched in the following way:
 
 
 ## Terms and Conditions
-All the code and linguistic resources are provided under the  LGPL 
-license (see the COPYRIGHT and LICENSE files).
+For updated details on the copyright and license terms, please
+see the COPYRIGHT and LICENSE-*.txt files.
 
 
 ## Requirements
@@ -67,7 +67,7 @@ Check in your Linux distribution or in the
 [Festival home page](http://www.cstr.ed.ac.uk/projects/festival/)
 
 We have been working with version "2.1 November 2010"
-(Execute $ festival --version )
+(Execute `$ festival --version` )
 
 ## Installation
 
@@ -176,9 +176,9 @@ The project was promoted by several departments from the Catalan Government
      del Departament de Presidència. 
 
 and from the Universitat Politècnica de Catalunya (UPC)
-    - TALP Research Centre
-    - Càtedra d'Accessibilitat
-    - Càtedra de Programari Lliure
+   - TALP Research Centre
+   - Càtedra d'Accessibilitat
+   - Càtedra de Programari Lliure
 
 Read the AUTHORS and THANKS files to see the list of people that have 
 contributed to this project.
