@@ -207,6 +207,7 @@ $(ltsdataTRAINfeats): $(BUILDLTS)/lts_scratch/lex.feats.train
 
 $(ltsNYTRAINfeats) $(ltsNYTESTfeats):
 	echo "La ny castellana ja se sap quin so té i no cal entrenar-la"
+	$(MKDIR_P) $(@D) && \
 	touch $@
 
 #$(ltstreeNY): $(ltsNYtreesrc)
