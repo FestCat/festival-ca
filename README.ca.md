@@ -53,7 +53,7 @@ El lèxic ha estat enriquit de la forma següent:
    les eines de transcripció fonètica del TALP
 
  - S'ha afegit noves paraules utilitzant per assegurar millor cobertura en 
-   el disseny de les veus.  
+   el disseny de les veus.
 
 
 ## Condicions d'ús
@@ -70,7 +70,7 @@ de Novembre 2010
 (Executeu $ festival --version )
 
 ## Instal·lació
-Hem desenvolupat diverses veus en català.                               
+Hem desenvolupat diverses veus en català.
 Totes comparteixen una llibreria, relacionada amb el processat del llenguatge.
 Per tant, necessiteu el paquet bàsic més les veus específiques
 que us interessin.
@@ -103,8 +103,8 @@ Hi ha diversos programes que poden utilitzar 'Festival', com
 gnopernicus, o emacs-speak ... Aquí farem referència només a la 
 utilització directa de 'Festival'. 
 
-El *'Festival' espera  codificació ISO-8859-15*. Assegureu-vos que utilitzeu                    
-aquesta codificació en el vostre terminal o fitxers. Si el vostre sistema                          
+El *'Festival' espera  codificació ISO-8859-15*. Assegureu-vos que utilitzeu
+aquesta codificació en el vostre terminal o fitxers. Si el vostre sistema
 utilitza UTF-8 (tal i com ho fan moltes distribucions actuals), necessiteu
 convertir el fitxer abans de la lectura. Alguns programes, com gnopernicus, 
 fan la conversió internament.
@@ -154,7 +154,7 @@ Si voleu especificar el locutor:
 Aquest treball ha estat finançat per la [Generalitat de Catalunya](http://www.gencat.cat).
 
 El projecte ha estat promogut per diversos Departaments de la Generalitat 
-de Catalunya:   
+de Catalunya:
   - Departament d'Educació
   - Secretaria de Telecomunicacions i Societat de la Informació 
     del Departament de Presidència. 

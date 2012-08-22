@@ -76,6 +76,19 @@ We have been working with version "2.1 November 2010"
    related. Therefore, you need the 'base' package plus
    the specific voices you are interested in.
 
+### Common package
+
+   Download the file upc_ca_base.tgz and extract the files: `$ tar -zxf upc_ca_base.tgz`.
+   As it takes a while to build the package, it comes already compiled:
+    ./configure && sudo make install
+
+### Voice specific packages
+
+   Download the file of each voice (check the web for updates)
+   and extract the content
+   Ex: 
+      $ tar -zxf upc_ca_ona_hts.tgz
+   
    You just need to copy several folder in the datadir of Festival.
    To find this directory, you can execute
    $ festival -b '(print datadir)'
@@ -83,34 +96,8 @@ We have been working with version "2.1 November 2010"
    directory:
    $ festival -b '(print libdir)'
 
-
-   * COMMON PACKAGE *
-   Download the file upc_ca_base.tgz and extract the files:
-      $ tar -zxf upc_ca_base.tgz
-   Move the extracted files to the festival 'datadir':
-
-   a) Dictionaries: 
-      Copy the folder dicts/upc to 'datadir'/dicts/upc
-
-   b) Catalan tokenizer, tagger, etc. 
-      Copy the folder upc_catalan to 'datadir'/upc_catalan
-
-   c) If you want that Festival understand the --language 
-      option and exports the catalan speakers to other applications, 
-      you need to update the languages.scm file to add Catalan. 
-      We provide this file:
-         languages.scm => 'datadir'/languages.scm
-
-
-   * VOICE SPECIFIC PACKAGES *
-
-   Download the file of each voice (check the web for updates,
-   http://www.talp.upc.edu/festcat ) and extract the content
-   Ex: 
-      $ tar -zxf upc_ca_ona_hts.tgz
-   
-   d) Copy each catalan voice, ex: upc_ca_ona_hts, in the voices
-      directory. Example:
+   Copy each catalan voice, ex: upc_ca_ona_hts, in the voices
+   directory. Example:
       upc_ca_ona_hts => 'datadir'/voices/catalan/upc_ca_ona_hts
 
 ## Using FestCat
