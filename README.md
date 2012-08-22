@@ -1,6 +1,6 @@
 # FestCat: Speech Synthesis in Catalan using Festival
 
-    http://www.talp.upc.edu/festcat
+    http://www.talp.cat/festcat
     Antonio Bonafonte
     TALP Research Center
     Barcelona, November 2007
@@ -25,12 +25,12 @@ Basically, there are two components:
  Dictionaries, tokenizer, lts rules, POStagger data, etc.
 
  This includes two folders:
-   1. `dicts/upc` (basically dictionaries)
-   2. `upc_catalan` (basically code)
+    1. `dicts/upc` (basically dictionaries)
+    2. `upc_catalan` (basically code)
 
 2. Voices: speaker dependent data. 
-   1. There is one folder for each voice: 
-         `voices/catalan/upc_ca_'speaker-name'`
+    1. There is one folder for each voice: 
+            voices/catalan/upc_ca_'speaker-name'
 
 Several voices have already been developed.
 Check the web page to get the latest downloads.
@@ -71,10 +71,10 @@ We have been working with version "2.1 November 2010"
 
 ## Installation
 
-   We have developed several catalan voices.
-   All of them share a common library, which is language
-   related. Therefore, you need the 'base' package plus
-   the specific voices you are interested in.
+We have developed several catalan voices.
+All of them share a common library, which is language
+related. Therefore, you need the 'base' package plus
+the specific voices you are interested in.
 
 ### Common package
 
@@ -111,46 +111,46 @@ Some front-ends, as gnopernicus, do the conversions for you.
 You can use the "save as" options in gedit; or use programs to convert the 
 format, as iconv:
 
-    $ iconv -f utf8 -t ISO-8859-15//TRANSLIT myfile_utf8.text > myfile_latin1.text
+        $ iconv -f utf8 -t ISO-8859-15//TRANSLIT myfile_utf8.text > myfile_latin1.text
 
 
  * A quick test:
-    `$ echo "Bon dia, Catalunya" | festival --tts --language catalan`
+        $ echo "Bon dia, Catalunya" | festival --tts --language catalan
 
  * You can also execute Festival in interactive way:
 
-    $ festival
-    (language_catalan)
-    (intro-catalan)
-    (SayText "Bon dia, Catalunya.")
-    (SayText "Bona nit.")
-    (quit)
+        $ festival
+        (language_catalan)
+        (intro-catalan)
+        (SayText "Bon dia, Catalunya.")
+        (SayText "Bona nit.")
+        (quit)
 
  * If you want to specify the speaker, introduce the command to 
    select the speaker instead of the language selection command; 
    or just use it to change the speaker:
 
-    (voice_upc_ca_ona_hts)
-    (SayText "I tu, qui ets?")
-    (voice_upc_ca_pau_hts)
-    (SayText "Jo sóc, el que tu ets, i si et faig mal, em faig mal a mi mateix.")
-    (voice_upc_ca_ona_hts)
-    (SayText "Que maco. Això és de l'assemblea dels infants, oi?")
-    (quit)
+        (voice_upc_ca_ona_hts)
+        (SayText "I tu, qui ets?")
+        (voice_upc_ca_pau_hts)
+        (SayText "Jo sóc, el que tu ets, i si et faig mal, em faig mal a mi mateix.")
+        (voice_upc_ca_ona_hts)
+        (SayText "Que maco. Això és de l'assemblea dels infants, oi?")
+        (quit)
 
- * O per llegir un fitxer de text, per exemple "bon_dia.txt": 
+ * Or to read a text file, for instance "bon_dia.txt": 
 
-    $ echo "Bon dia, Catalunya." > bon_dia.txt
-    $ festival
-    (language_catalan)
-    (tts_file "bon_dia.txt")
-    (quit)
+        $ echo "Bon dia, Catalunya." > bon_dia.txt
+        $ festival
+        (language_catalan)
+        (tts_file "bon_dia.txt")
+        (quit)
 
   * Or use the text2wave script to create a .wav file:
-    `$ text2wave -o bondia.wav   -eval '(language_catalan)' bon_dia.txt`
+        $ text2wave -o bondia.wav   -eval '(language_catalan)' bon_dia.txt
 
   * If you want to specify the speaker:
-    `$ text2wave -o bondia.wav   -eval '(voice_upc_ca_ona_hts)' bon_dia.txt`
+        $ text2wave -o bondia.wav   -eval '(voice_upc_ca_ona_hts)' bon_dia.txt
 
 
 ## Thanks and funding notice
@@ -158,8 +158,7 @@ This work has been supported by the  [Catalan Government](http://www.gencat.cat)
 
 The project was promoted by several departments from the Catalan Government
    - Departament d'Educació
-   - Secretaria de Telecomunicacions i Societat de la Informació 
-     del Departament de Presidència. 
+   - Secretaria de Telecomunicacions i Societat de la Informació del Departament de Presidència. 
 
 and from the Universitat Politècnica de Catalunya (UPC)
    - TALP Research Center
