@@ -1,0 +1,101 @@
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;                                                                       ;;
+;;;                Centre for Speech Technology Research                  ;;
+;;;                     University of Edinburgh, UK                       ;;
+;;;                         Copyright (c) 1998                            ;;
+;;;                        All Rights Reserved.                           ;;
+;;;                                                                       ;;
+;;;  Permission is hereby granted, free of charge, to use and distribute  ;;
+;;;  this software and its documentation without restriction, including   ;;
+;;;  without limitation the rights to use, copy, modify, merge, publish,  ;;
+;;;  distribute, sublicense, and/or sell copies of this work, and to      ;;
+;;;  permit persons to whom this work is furnished to do so, subject to   ;;
+;;;  the following conditions:                                            ;;
+;;;   1. The code must retain the above copyright notice, this list of    ;;
+;;;      conditions and the following disclaimer.                         ;;
+;;;   2. Any modifications must be clearly marked as such.                ;;
+;;;   3. Original authors' names are not deleted.                         ;;
+;;;   4. The authors' names are not used to endorse or promote products   ;;
+;;;      derived from this software without specific prior written        ;;
+;;;      permission.                                                      ;;
+;;;                                                                       ;;
+;;;  THE UNIVERSITY OF EDINBURGH AND THE CONTRIBUTORS TO THIS WORK        ;;
+;;;  DISCLAIM ALL WARRANTIES WITH REGARD TO THIS SOFTWARE, INCLUDING      ;;
+;;;  ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN NO EVENT   ;;
+;;;  SHALL THE UNIVERSITY OF EDINBURGH NOR THE CONTRIBUTORS BE LIABLE     ;;
+;;;  FOR ANY SPECIAL, INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES    ;;
+;;;  WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN   ;;
+;;;  AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION,          ;;
+;;;  ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF       ;;
+;;;  THIS SOFTWARE.                                                       ;;
+;;;                                                                       ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;
+;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;
+;;; Copyright (C) 2009-2011  Antonio Bonafonte
+;;;            Universitat Politècnica de Catalunya, Barcelona, Spain
+;;;
+;;;  This script is free software; you can redistribute it and/or
+;;;  modify it under the terms of the GNU Lesser General Public
+;;;  License as published by the Free Software Foundation,
+;;;  version 2.1 of the License.
+;;;
+;;;  This library is distributed in the hope that it will be useful,
+;;;  but WITHOUT ANY WARRANTY; without even the implied warranty of
+;;;  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+;;;  Lesser General Public License for more details.
+;;;
+;;;  You should have received a copy of the GNU Lesser General Public
+;;;  License along with this library; if not, write to the Free Software
+;;;  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+
+
+(define (reduce_lexicon2 entryfile exceptionfile lts_function mylogfile)
+  "(reduce_lexicon2 entryfile exceptionfile lts_function)
+Look up each word in entryfile using the current lexicon, if the entry
+doesn't match save it in the exception file.  This is a way of reducing
+the lexicon based on a letter to sound model (and lexical stress 
+model, if appropriate)."
+  (let ((fd (fopen entryfile "r"))
+	(ofd (fopen exceptionfile "w"))
+        (mylog (fopen mylogfile "w")) ; added
+	(entry)
+	(wordcount 0)
+	(correctwords 0))
+   (format ofd "MNCL\n") ; Header
+    (while (not (equal? (set! entry (readfp fd)) (eof-val)))
+	   (if (and (consp entry) 
+		    (> (length entry) 1))
+	       (let ((lts (lts_function (car entry) (car (cdr entry))))
+		     (encount (lex.entrycount (car entry))))
+		 (set! wordcount (+ 1 wordcount))
+		 (if (and (equal? (nth 2 entry) (nth 2 lts))
+			  (< encount 2))
+		     (set! correctwords (+ 1 correctwords))
+		     (begin
+                         (format ofd "%l\n" entry)
+                         (format mylog "Count: %d\n    Entry: %l\nPredicted: %l\n\n" encount entry lts) ; added
+                     ))
+		 )))
+    (fclose fd)
+    (fclose ofd)
+    (format t "words %d correct %d (%2.2f)\n"
+	    wordcount correctwords (/ (* correctwords 100) wordcount))
+    ))
+
+(set! upclexdir (path-append (pwd) "final_dict_reduced/dicttmp/"))
+
+(if (not (member_string upclexdir load-path))
+                      (set! load-path (cons upclexdir load-path)))
+
+(require 'lts_build)
+(require 'upclex_catalan)
+
+(set! entryfile "final_dict_reduced/dicttmp/upcdict_catalan-1.0.out")
+(set! exceptionfile "final_dict_reduced/upcdict_catalan.out")
+(set! mylogfile "final_dict_reduced/upcdict_catalan.log")
+
+(set! lts_function upc_catalan_lts_function)
+(reduce_lexicon2 entryfile exceptionfile lts_function mylogfile)
