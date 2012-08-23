@@ -18,7 +18,11 @@
 
 # Meta Information:
 PACKAGE_NAME = @PACKAGE_NAME@
+PACKAGE_TARNAME = @PACKAGE_TARNAME@
 PACKAGE_VERSION = @PACKAGE_VERSION@
+PACKAGE_STRING = @PACKAGE_STRING@
+PACKAGE_BUGREPORT = @PACKAGE_BUGREPORT@
+PACKAGE_URL = @PACKAGE_URL@
 
 # Programs:
 FESTIVAL = @FESTIVALBIN@
@@ -39,6 +43,10 @@ LANGUAGESSCMFILE = @LANGUAGESSCMFILE@
 LANGUAGESSCMVERSION = @LANGUAGESSCMVERSION@
 
 # File lists:
+LTS_RULES = festival/lib/dicts/upc/upc_catalan_lts_rules.scm
+REDUCED_LEXICON = festival/lib/dicts/upc/upcdict_catalan-1.0.out
+POSLEX = festival/lib/dicts/upc/upc_freeling_catalan.poslex
+
 LIB_UPCCATALAN_FILES = festival/lib/upc_catalan/cat_intro.text \
               festival/lib/upc_catalan/upc_ca_generic_duration.scm \
               festival/lib/upc_catalan/upc_ca_generic_durdata.scm \
@@ -58,16 +66,28 @@ LIB_UPCCATALAN_FILES = festival/lib/upc_catalan/cat_intro.text \
               festival/lib/upc_catalan/upc_catalan_tokenizer.scm \
               festival/lib/upc_catalan/upc_catalan_tokenpos.scm
 
-LIB_DICTS_FILES = festival/lib/dicts/upc/upc_catalan_lts_rules.scm \
-              festival/lib/dicts/upc/upcdict_catalan-1.0.out \
-              festival/lib/dicts/upc/upc_freeling_catalan.poslex \
+LIB_DICTS_FILES = $(LTS_RULES) \
+              $(REDUCED_LEXICON) \
+              $(POSLEX) \
               festival/lib/dicts/upc/upc_freeling_catalan.tri.ngrambin \
               festival/lib/dicts/upc/upclex_catalan.scm
 
 LANGUAGE_FILES =  festival/lib/languages/language_catalan.scm \
               festival/lib/languages.scm
 
-ALL_FILES = $(LIB_UPCCATALAN_FILES) $(LIB_DICTS_FILES) $(LANGUAGE_FILES)
+BUILD_FILES = $(LIB_UPCCATALAN_FILES) $(LIB_DICTS_FILES) $(LANGUAGE_FILES)
+
+
+# Distribution variables:
+DOCUMENTATIONFILES = AUTHORS AUTHORS.ca COPYRIGHT LICENSE-gpl-2.0.txt \
+                     LICENSE-lgpl-2.1.txt README.ca.md README.md \
+                     THANKS.md THANKS.ca.md
+
+DISTBINFILES = Makefile.in Makefilevars.inc configure.in configure \
+               install-sh $(DOCUMENTATIONFILES) $(BUILD_FILES)
+DISTSRCFILES = Makefile.in Makefilevars.inc configure.in configure \
+               install-sh $(DOCUMENTATIONFILES) $(BUILD_FILES)
+
 
 # Source directories
 BUILDDICT = src/00-Dictionary
@@ -78,7 +98,7 @@ BUILDDATA = src/data
 BUILDFUNC = src/functions
 DICTANDTRANSCRIPTIONS = src/data/withtranscriptions/all.orto src/data/withtranscriptions/all.phon
 
-.PHONY: all build install test
+.PHONY: all build install dist-bin dist-src test
 
 ifeq ($(ONLYINSTALL),yes)
   DEFAULTACTION = install
@@ -88,7 +108,7 @@ endif
 
 all: $(DEFAULTACTION)
 
-build: $(ALL_FILES)
+build: $(BUILD_FILES)
 
 # Files to be copied from src/data/festival...:
 $(LANGUAGE_FILES) $(LIB_UPCCATALAN_FILES) festival/lib/dicts/upc/upclex_catalan.scm:
@@ -122,10 +142,8 @@ src/data/withtranscriptions/all.orto src/data/withtranscriptions/all.phon:
 
 
 COMPLETE_LEXICON=$(BUILDDICT)/final/upcdict_catalan.out
-LTS_RULES=festival/lib/dicts/upc/upc_catalan_lts_rules.scm
-REDUCED_LEXICON=festival/lib/dicts/upc/upcdict_catalan-1.0.out
 # Step 1:
-$(COMPLETE_LEXICON): $(DICTANDTRANSCRIPTIONS)
+$(COMPLETE_LEXICON): $(DICTANDTRANSCRIPTIONS) $(BUILDDICT)/CreateInternalFormat.pl $(BUILDDICT)/CompileDictionary.sh $(BUILDDICT)/addfinalentries.sh $(BUILDDICT)/allo2pho.pl $(BUILDDICT)/list2festival.pl
 	echo "Creating dictionary in internal format" && \
 	cd $(BUILDDICT) && \
 	( $(PERL) ./CreateInternalFormat.pl "../data/withtranscriptions/all.orto" "../data/withtranscriptions/all.phon" "merged/freeling.dic" || exit 1 ) && \
@@ -140,7 +158,11 @@ $(COMPLETE_LEXICON): $(DICTANDTRANSCRIPTIONS)
 	rm -f "final/upcdict_catalan.out" && mv "final/upcdict_catalan.out2" "final/upcdict_catalan.out"
 
 CLEAN+= $(BUILDDICT)/merged $(BUILDDICT)/final
-
+DISTSRCFILES+= $(BUILDDICT)/CreateInternalFormat.pl \
+               $(BUILDDICT)/CompileDictionary.sh.in \
+               $(BUILDDICT)/addfinalentries.sh \
+               $(BUILDDICT)/allo2pho.pl \
+               $(BUILDDICT)/list2festival.pl
 # Step 2: 
 
 include Makefilevars.inc
@@ -252,7 +274,17 @@ $(LTS_RULES): $(BUILDLTS)/lex_lts_rules.scm
 TEST += $(BUILDLTS)/lts_scratch/lts_test.log
 
 CLEAN+= $(BUILDLTS)/lex_lts_rules.scm  $(BUILDLTS)/allowables.scm $(BUILDLTS)/lts_scratch/ $(BUILDLTS)/final
-
+DISTSRCFILES+= $(ALLOWABLES) \
+               $(BUILDLTS)/build_lts.in \
+               $(BUILDLTS)/build_lts_rules \
+               $(BUILDLTS)/createmultiphonemes \
+               $(BUILDLTS)/fest2wagon \
+               $(BUILDLTS)/lts.ny.tree \
+               $(BUILDLTS)/purge_fest_dic \
+               $(BUILDLTS)/readme \
+               $(BUILDLTS)/reduce_dict \
+               $(BUILDLTS)/traintest \
+               $(BUILDLTS)/upc_catalan_lts_rules
 # Step 3:
 $(BUILDLTS)/upclex_catalan.scm: $(BUILDDATA)/festival/lib/dicts/upc/upclex_catalan.scm
 	cp $< $@ || exit 1
@@ -316,7 +348,7 @@ CLEAN+= $(BUILDDATAPOSWORK) $(CORPUSCA) $(DICTAG)
 
 #### BEGIN POSLEX TRAINING #####
 ################################
-festival/lib/dicts/upc/upc_freeling_catalan.poslex: $(BUILDPOSLEX)/final/dicTAGGERcomplet.poslexR 
+$(POSLEX): $(BUILDPOSLEX)/final/dicTAGGERcomplet.poslexR 
 	cp "$(BUILDPOSLEX)/final/dicTAGGERcomplet.poslexR" $@
 
 $(BUILDPOSLEX)/final/dicTAGGERcomplet.poslexR: $(BUILDPOSLEX)/final/dicTAGGERcomplet.poslexR_desord
@@ -337,6 +369,9 @@ $(BUILDPOSLEX)/simplifiedpos.orto: $(BUILDDATA)/withtranscriptions/all.orto $(BU
 	LANG=C sort | uniq >  $@ || exit 1
 
 CLEAN+= $(BUILDPOSLEX)/simplifiedpos.orto $(BUILDPOSLEX)/final/ $(BUILDPOSLEX)/log.txt
+
+DISTSRCFILES+= $(BUILDPOSLEX)/01-FormatDiccComplet.pl \
+               $(BUILDPOSLEX)/02-FormatTaggerAmbAmpliació
 
 #### END POSLEX TRAINING ####
 #############################
@@ -370,10 +405,31 @@ festival/lib/dicts/upc/upc_freeling_catalan.tri.ngrambin: $(BUILDNGRAM)/final/up
 
 CLEAN+= $(BUILDNGRAM)/work $(BUILDNGRAM)/final
 
+DISTSRCFILES+= $(BUILDNGRAM)/01-ReducTAGCorpus.pl \
+               $(BUILDNGRAM)/02-FormatCorpus \
+               $(BUILDNGRAM)/03-SplitterCorpus.pl \
+               $(BUILDNGRAM)/04-ngrambuild.sh
+
+
 #### END NGRAM ####
 ###################
 
-
+# Data files for distribution:
+DISTSRCFILES+= $(BUILDFUNC)/functions_perl.pl \
+               $(BUILDDATA)/concatenate.sh \
+               $(BUILDDATA)/transcribe.sh \
+               $(BUILDDATA)/festival/lib/dicts/upc/upclex_catalan.scm \
+               $(BUILDDATA)/festival/lib/languages/language_catalan.scm \
+               $(BUILDDATA)/festival/lib/languages.scm \
+               $(BUILDDATA)/festival/lib/upc_catalan \
+               $(BUILDDATA)/festvox.orig \
+               $(BUILDDATA)/from_freeling \
+               $(BUILDDATA)/otherdic \
+               $(BUILDDATA)/pos/crea_dictag.pl \
+               $(BUILDDATA)/pos/crea_corpusca.pl \
+               $(BUILDDATA)/pos/ancora-ca \
+               $(BUILDDATA)/withtranscriptions/all.orto \
+               $(BUILDDATA)/withtranscriptions/all.phon
 
 # Create directories, copy files and then:
 # if we have a libdir/languages directory, 
@@ -398,8 +454,29 @@ install:
 	     fi; \
 	fi ;
 
+dist-bin: clean
+	rm -rf "$(PACKAGE_TARNAME)-$(PACKAGE_VERSION)"
+	mkdir -p "$(PACKAGE_TARNAME)-$(PACKAGE_VERSION)"
+	for thing in $(DISTBINFILES);do \
+	       thingdir=$$(dirname "$$thing") && \
+	       thingname=$$(basename "$$thing") && \
+	       $(MKDIR_P) "$(PACKAGE_TARNAME)-$(PACKAGE_VERSION)/$$thingdir" && \
+	       cp -r "$$thing" "$(PACKAGE_TARNAME)-$(PACKAGE_VERSION)/$$thingdir" || exit 1; \
+	done
+	tar czf ../$(PACKAGE_TARNAME)-$(PACKAGE_VERSION).tgz $(PACKAGE_TARNAME)-$(PACKAGE_VERSION)
+	rm -rf "$(PACKAGE_TARNAME)-$(PACKAGE_VERSION)"
 
-
+dist-src: clean
+	rm -rf "$(PACKAGE_TARNAME)-$(PACKAGE_VERSION)-src"
+	mkdir -p "$(PACKAGE_TARNAME)-$(PACKAGE_VERSION)-src"
+	for thing in $(DISTSRCFILES);do \
+	       thingdir=$$(dirname "$$thing") && \
+	       thingname=$$(basename "$$thing") && \
+	       $(MKDIR_P) "$(PACKAGE_TARNAME)-$(PACKAGE_VERSION)-src/$$thingdir" && \
+	       cp -r "$$thing" "$(PACKAGE_TARNAME)-$(PACKAGE_VERSION)-src/$$thingdir" || exit 1; \
+	done
+	tar czf ../$(PACKAGE_TARNAME)-$(PACKAGE_VERSION)-src.tgz $(PACKAGE_TARNAME)-$(PACKAGE_VERSION)-src
+	rm -rf "$(PACKAGE_TARNAME)-$(PACKAGE_VERSION)-src"
 
 test: $(TEST)
 
