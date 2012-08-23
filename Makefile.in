@@ -130,7 +130,7 @@ CLEAN+= $(BUILDDICT)/merged $(BUILDDICT)/final
 
 # Step 2: 
 
-include src/02-LTSMake/ltsfeats.inc
+include Makefilevars.inc
 ltsdataTRAINfeats = $(addprefix $(BUILDLTS)/lts_scratch/,$(ltsdataTRAINfeatsfn))
 ltsdataTESTfeats  = $(addprefix $(BUILDLTS)/lts_scratch/,$(subst ltsdataTRAIN,ltsdataTEST,$(ltsdataTRAINfeatsfn)))
 ltsNYtree         = $(addprefix $(BUILDLTS)/lts_scratch/,$(ltsNYtreefn))
