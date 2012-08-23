@@ -43,6 +43,12 @@
   )
 )
 
+(defvar catalan-default-voices (list 'upc_ca_ona_hts 'upc_ca_pau_hts)
+  "catalan-default-voices
+  This variable's value contains the list of catalan voices ordered
+  by a default preference. When choosing Catalan as a language, 
+  the first available voice of this list will be used.")
+
 (define (language_catalan)
 "(language_catalan)
 Inicialitza les veus catalanes per defecte."
@@ -50,9 +56,6 @@ Inicialitza les veus catalanes per defecte."
   (set! male1   (lambda () (voice_upc_ca_pau_hts)))
   (Param.set 'Language 'catalan)
 
-  (if (not (boundp 'catalan-default-voices))
-      (set! catalan-default-voices (list 'upc_ca_ona_hts 'upc_ca_pau_hts))
-  )
   (set_voice_default catalan-default-voices)
   (eval (list voice_default))
 )

@@ -16,6 +16,10 @@
 #  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 
+# Meta Information:
+PACKAGE_NAME = @PACKAGE_NAME@
+PACKAGE_VERSION = @PACKAGE_VERSION@
+
 # Programs:
 FESTIVAL = @FESTIVALBIN@
 WAGON = @WAGON@
@@ -27,6 +31,7 @@ SED = @SED@
 GREP = @GREP@
 AWK = @AWK@
 NGRAM_BUILD = @NGRAMBUILD@
+ONLYINSTALL = @ONLYINSTALL@
 
 # Installation Variables:
 FESTDATADIR = @FESTDATADIR@
@@ -73,9 +78,17 @@ BUILDDATA = src/data
 BUILDFUNC = src/functions
 DICTANDTRANSCRIPTIONS = src/data/withtranscriptions/all.orto src/data/withtranscriptions/all.phon
 
-.PHONY: all install test
+.PHONY: all build install test
 
-all: $(ALL_FILES)
+ifeq ($(ONLYINSTALL),yes)
+  DEFAULTACTION = install
+else
+  DEFAULTACTION = build
+endif
+
+all: $(DEFAULTACTION)
+
+build: $(ALL_FILES)
 
 # Files to be copied from src/data/festival...:
 $(LANGUAGE_FILES) $(LIB_UPCCATALAN_FILES) festival/lib/dicts/upc/upclex_catalan.scm:
