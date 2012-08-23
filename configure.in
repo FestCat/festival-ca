@@ -129,7 +129,7 @@ fi
 ${GREP} "language.select" "${LANGUAGESSCMFILE}" > /dev/null && LANGUAGESSCMVERSION="directory" || LANGUAGESSCMVERSION="2.1"
 
 if test "$LANGUAGESSCMVERSION" = "2.1" ; then
-    ${GREP} "catalan" "${LANGUAGESSCMFILE}" > /dev/null && LANGUAGESSCMVERSION="2.1" || LANGUAGESSCMVERSION="alreadydone"
+    ${GREP} "catalan" "${LANGUAGESSCMFILE}" > /dev/null && LANGUAGESSCMVERSION="alreadydone" || LANGUAGESSCMVERSION="2.1"
 fi
 
 AC_SUBST(PERL)
