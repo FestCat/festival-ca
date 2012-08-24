@@ -87,15 +87,15 @@ manualment. Feu ./configure --help per més detalls.
 
 ### Instal·lació de paquets de veu específics
 1. Descarregueu el fitxer de cada veu i descomprimiu-lo
-2. Copieu el directori que trobeu, p.ex: upc_ca_ona_hts, al directori de 
+2. Copieu el directori que trobeu, p.ex: `upc_ca_ona_hts`, al directori de 
    veus. Per Exemple:
-      upc_ca_ona_hts => 'datadir'/voices/catalan/upc_ca_ona_hts
+      `upc_ca_ona_hts -> 'datadir'/voices/catalan/upc_ca_ona_hts`
    
 El directori 'datadir' es pot determinar amb:
-    $ festival -b '(print datadir)'
+    `$ festival -b '(print datadir)'`
 I si festival retornés un error dient que datadir no es troba
 definit, caldrà utilitzar:
-    $ festival -b '(print libdir)'
+    `$ festival -b '(print libdir)'`
 
 ## Ús de FestCat
 
@@ -111,12 +111,13 @@ fan la conversió internament.
 
 Podeu fer servir la opcions de guardar del editor gedit, o fer servir
 programes conversors de format, com iconv:
-    $ iconv -f utf8 -t ISO-8859-15//TRANSLIT bon_dia_utf8.text > bon_dia_iso.text
+    `$ iconv -f utf8 -t ISO-8859-15//TRANSLIT bon_dia_utf8.text > bon_dia_iso.text`
 
  * Un test ràpid:
-     $ echo "Bon dia, Catalunya" | festival --tts --language catalan
+     `$ echo "Bon dia, Catalunya" | festival --tts --language catalan`
 
  * També podeu executar 'Festival' de manera interactiva:
+
      $ festival
      (language_catalan)
      (intro-catalan)
@@ -155,11 +156,13 @@ Aquest treball ha estat finançat per la [Generalitat de Catalunya](http://www.g
 
 El projecte ha estat promogut per diversos Departaments de la Generalitat 
 de Catalunya:
+
   - Departament d'Educació
   - Secretaria de Telecomunicacions i Societat de la Informació 
     del Departament de Presidència. 
 
 i per la Universitat Politècnica de Catalunya (UPC):
+
   - Centre de Recerca TALP
   - Càtedra d'Accessibilitat
   - Càtedra de Programari Lliure
