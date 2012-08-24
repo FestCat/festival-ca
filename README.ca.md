@@ -125,7 +125,7 @@ programes conversors de format, com iconv:
      (SayText "Bona nit.")
      (exit)
 
-Si voleu especificar el locutor, introduïu la comanda per seleccionar
+ * Si voleu especificar el locutor, introduïu la comanda per seleccionar
 el locutor, en lloc de la comanda de selecció de llenguatge:
 
      (voice_upc_ca_ona_hts)
@@ -136,7 +136,7 @@ el locutor, en lloc de la comanda de selecció de llenguatge:
      (SayText "Que maco. Això és de l'assemblea dels infants, oi?")
      (exit)
 
-O per llegir un fitxer de text, per exemple "bon_dia.txt": 
+ * O per llegir un fitxer de text, per exemple "bon_dia.txt": 
 
      $ echo "Bon dia, Catalunya." > bon_dia.txt
      $ festival
@@ -145,9 +145,11 @@ O per llegir un fitxer de text, per exemple "bon_dia.txt":
      (exit)
 
  * O utilitzeu l'script text2wave per crear un fitxer .wav:
+
      $ text2wave -o bondia.wav   -eval '(language_catalan)' bon_dia.txt 
 
-Si voleu especificar el locutor:
+ * Si voleu especificar el locutor:
+
      $ text2wave -o bondia.wav   -eval '(voice_upc_ca_ona_hts)' bon_dia.txt 
 
 
