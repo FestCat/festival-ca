@@ -1,4 +1,3 @@
- 	
 # FestCat: Agraïments
 
 FestCat ha estat inicialment desenvolupat per gent del 
