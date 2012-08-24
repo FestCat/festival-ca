@@ -75,9 +75,9 @@ Totes comparteixen una llibreria, relacionada amb el processat del llenguatge.
 Per tant, necessiteu el paquet bàsic més les veus específiques
 que us interessin.
 
-### Instal·lació del paquet bàse: festival-ca
+### Instal·lació del paquet bàse: upc_ca_base
 
-1. Descarregueu festival-ca i descomprimiu-lo.
+1. Descarregueu upc_ca_base i descomprimiu-lo.
 2. `./configure`
 3. `make`
 4. `make install`
