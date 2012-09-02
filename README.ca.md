@@ -13,40 +13,34 @@
 El paquet FestCat consisteix en una llibreria que permet l'anàlisi de text
 en català  i dades per estendre Festival per tal que parli català. 
 
-El projecte s'ha desenvolupat al centre TALP, a la Universitat
-Politècnica de Catalunya, Barcelona.
-
-http://www.talp.cat/festcat
-
 Està format per dos components principals:
 
 1. Dades lingüístiques i codi per estendre Festival pel català.
    Diccionaris, transcripció fonètica, etiquetador morfo-sintàctic, etc.
 
   Inclou dues carpetes:
-   -  `dicts/upc` (bàsicament diccionaris)
+   - `dicts/upc` (bàsicament diccionaris)
    - `upc_catalan` (bàsicament codi)
 
 2. Veus: dades dependents del locutor 
-  Hi ha una carpeta per cada veu
-   - `voices/catalan/upc_ca_'nom-locutor'`
+   - Hi ha una carpeta per cada veu: `festival/lib/voices/catalan/upc_ca_'nom-locutor'`
 
 Actualment hi ha diverses veus disponibles.
-Visiteu la pàgina web per obtenir últimes versions. 
+Visiteu la [pàgina web](http://www.talp.cat/festcat) per obtenir últimes versions. 
 
 ## Quant als autors
 
 Aquest projecte ha estat desenvolupat inicialment pel [Centre TALP](http://www.talp.cat),
 de la [Universitat Politècnica de Catalunya](http://www.upc.edu), a Barcelona.
-La major part del codi i de les dades ha estat desenvolupat 
-específicament per [aquest projecte](http://www.talp.cat/festcat).
+Les gravacions, bona part de les dades i la major part del codi ha estat desenvolupat 
+específicament per aquest projecte. Els diccionaris són una excepció.
 
-Una excepció important són els diccionaris.
+### Diccionaris
 
 La font més important per construir els diccionaris és el lèxic català
 proporcionat pel projecte FreeLing, també desenvolupat, entre altres,
-pel Centre de Recerca TALP. Per més informació, visiteu la [pàgina web
-de FreeLing](http://nlp.lsi.upc.edu/freeling/):
+pel Centre de Recerca TALP. Per més informació, visiteu la 
+[pàgina web de FreeLing](http://nlp.lsi.upc.edu/freeling/):
 
 El lèxic ha estat enriquit de la forma següent:
  - Les transcripcions fonètiques s'han generat automàticament utilitzant
@@ -55,104 +49,34 @@ El lèxic ha estat enriquit de la forma següent:
  - S'ha afegit noves paraules utilitzant per assegurar millor cobertura en 
    el disseny de les veus.
 
+Pel que fa el model gramatical, s'ha utilitzat la base de dades lliure
+[Àncora-ca 2.0](http://clic.ub.edu/ancora/), desenvolupada al 
+[CLiC (Centre de Llenguatge i Computació)](http://clic.ub.edu/)
+de la Universitat de Barcelona.
+
+
+## Publicacions rellevants
+
+ * Antonio Bonafonte, Jordi Adell, Ignasi Esquerra, Silvia Gallego, Asunción Moreno, Javier Pérez
+   "Corpus and Voices for Catalan Speech Synthesis", Proceedings of LREC Conference 2008, p.3325-3329
+
+ * Antonio Bonafonte, Lourdes Aguilar, Ignasi Esquerra, Sergio Oller, Asunción Moreno
+   "Recent Work on the FESTCAT Database for Speech Synthesis", SLTECH-2009, 131-132
+
+ * Sílvia Gallego, "Corpus lingüístic pel desenvolupament d'una veu sintètica en català per a Festival",
+   Projecte Final de Carrera, 2010 http://upcommons.upc.edu/pfc/handle/2099.1/9921
+
+ * Francesc Jarque, "Desenvolupament d'una veu en català per Festival", Projecte Final de Carrera 2007, 
+   http://gps-tsc.upc.es/veu/festcat/ext/UPC_Francesc_Jarque.pdf
+
+### Diccionaris
+
+ * Taulé, M., M.A. Martí, M. Recasens (2008) 'Ancora: Multilevel Annotated Corpora for Catalan and Spanish', 
+   Proceedings of 6th International Conference on Language Resources and Evaluation. Marrakesh (Morocco). 
 
 ## Condicions d'ús
 La informació actualitzada de copyright i llicència es troba als fitxers
 COPYRIGHT i LICENSE-*.txt.
-
-## Requisits
-És necessari un sistema 'Festival' en funcionament.
-Comproveu la vostra distribució Linux o la pàgina web de 
-[Festival](http://www.cstr.ed.ac.uk/projects/festival/)
-
-Aquest paquet s'ha desenvolupat i provat amb la versió 2.1 
-de Novembre 2010
-(Executeu $ festival --version )
-
-## Instal·lació
-Hem desenvolupat diverses veus en català.
-Totes comparteixen una llibreria, relacionada amb el processat del llenguatge.
-Per tant, necessiteu el paquet bàsic més les veus específiques
-que us interessin.
-
-### Instal·lació del paquet bàse: `upc_ca_base`
-
-1. Descarregueu `upc_ca_base` i descomprimiu-lo.
-2. `./configure`
-3. `make`
-4. `make install`
-
-Si ./configure no trobés festival o speech-tools, haureu d'especificar-ne la ruta
-manualment. Feu ./configure --help per més detalls.
-
-### Instal·lació de paquets de veu específics
-1. Descarregueu el fitxer de cada veu i descomprimiu-lo
-2. Copieu el directori que trobeu, p.ex: `upc_ca_ona_hts`, al directori de 
-   veus. Per Exemple:
-           `upc_ca_ona_hts -> 'datadir'/voices/catalan/upc_ca_ona_hts`
-   
-El directori 'datadir' es pot determinar amb:
-    `$ festival -b '(print datadir)'`
-I si festival retornés un error dient que datadir no es troba
-definit, caldrà utilitzar:
-    `$ festival -b '(print libdir)'`
-
-## Ús de FestCat
-
-Hi ha diversos programes que poden utilitzar 'Festival', com 
-gnopernicus, o emacs-speak ... Aquí farem referència només a la 
-utilització directa de 'Festival'. 
-
-El *'Festival' espera  codificació ISO-8859-15*. Assegureu-vos que utilitzeu
-aquesta codificació en el vostre terminal o fitxers. Si el vostre sistema
-utilitza UTF-8 (tal i com ho fan moltes distribucions actuals), necessiteu
-convertir el fitxer abans de la lectura. Alguns programes, com gnopernicus, 
-fan la conversió internament.
-
-Podeu fer servir la opcions de guardar del editor gedit, o fer servir
-programes conversors de format, com iconv:
-
-        $ iconv -f utf8 -t ISO-8859-15//TRANSLIT bon_dia_utf8.text > bon_dia_iso.text
-
- * Un test ràpid:
-          $ echo "Bon dia, Catalunya" | festival --tts --language catalan
-
- * També podeu executar 'Festival' de manera interactiva:
-
-        $ festival
-        (language_catalan)
-        (intro-catalan)
-        (SayText "Bon dia, Catalunya.")
-        (SayText "Bona nit.")
-        (exit)
-
- * Si voleu especificar el locutor, introduïu la comanda per seleccionar
-el locutor, en lloc de la comanda de selecció de llenguatge:
-
-        (voice_upc_ca_ona_hts)
-        (SayText "I tu, qui ets?")
-        (voice_upc_ca_pau_hts)
-        (SayText "Jo sóc, el que tu ets, i si et faig mal, em faig mal a mi mateix.")
-        (voice_upc_ca_ona_hts)
-        (SayText "Que maco. Això és de l'assemblea dels infants, oi?")
-        (exit)
-
- * O per llegir un fitxer de text, per exemple "bon_dia.txt": 
-
-        $ echo "Bon dia, Catalunya." > bon_dia.txt
-        $ festival
-        (language_catalan)
-        (tts_file "bon_dia.txt")
-        (exit)
-
- * O utilitzeu l'script text2wave per crear un fitxer .wav:
-
-        $ text2wave -o bondia.wav   -eval '(language_catalan)' bon_dia.txt 
-
- * Si voleu especificar el locutor:
-
-        $ text2wave -o bondia.wav   -eval '(voice_upc_ca_ona_hts)' bon_dia.txt 
-
 
 ## Agraïments
 Aquest treball ha estat finançat per la [Generalitat de Catalunya](http://www.gencat.cat).
@@ -173,4 +97,11 @@ i per la Universitat Politècnica de Catalunya (UPC):
 
 Llegiu el fitxer AUTHORS.ca i THANKS.ca per veure la llista de gent que ha contribuït a 
 aquest projecte.
+
+## Requisits i instal·lació
+Vegeu el fitxer INSTALL.ca.md o llegiu les 
+[instruccions del web](http://www.talp.upc.edu/festcat/install.php).
+
+## Ús de FestCat
+Vegeu el fitxer USAGE.ca.md per a obtenir instruccions d'ús.
 
