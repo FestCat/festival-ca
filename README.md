@@ -5,6 +5,12 @@
     TALP Research Center, UPC
     Barcelona, November 2007
 
+## Requirements and installation
+Read INSTALL.md or checkout our 
+[website instructions](http://www.talp.upc.edu/festcat/install.php).
+
+## FestCat Usage
+See USAGE.md to learn how to use FestCat.
 
 ## About the FestCat project
  
@@ -98,11 +104,4 @@ and from the Universitat Politècnica de Catalunya (UPC)
 
 Read the AUTHORS and THANKS files to see the list of people that have 
 contributed to this project.
-
-## Requirements and installation
-Read INSTALL.md or checkout our 
-[website instructions](http://www.talp.upc.edu/festcat/install.php).
-
-## Ús de FestCat
-See USAGE.md to learn how to use FestCat.
 

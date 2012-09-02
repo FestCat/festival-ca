@@ -5,6 +5,12 @@
     Centre de recerca TALP, UPC
     Barcelona, Novembre 2007
 
+## Requisits i instal·lació
+Vegeu el fitxer INSTALL.ca.md o llegiu les 
+[instruccions del web](http://www.talp.upc.edu/festcat/install.php).
+
+## Ús de FestCat
+Vegeu el fitxer USAGE.ca.md per a obtenir instruccions d'ús.
 
 ## Quant al projecte FestCat
  
@@ -97,11 +103,4 @@ i per la Universitat Politècnica de Catalunya (UPC):
 
 Llegiu el fitxer AUTHORS.ca i THANKS.ca per veure la llista de gent que ha contribuït a 
 aquest projecte.
-
-## Requisits i instal·lació
-Vegeu el fitxer INSTALL.ca.md o llegiu les 
-[instruccions del web](http://www.talp.upc.edu/festcat/install.php).
-
-## Ús de FestCat
-Vegeu el fitxer USAGE.ca.md per a obtenir instruccions d'ús.
 
