@@ -1,13 +1,13 @@
 # FestCat: Speech Synthesis in Catalan using Festival
 
-    http://www.talp.cat/festcat
+    http://festcat.talp.cat
     Antonio Bonafonte
     TALP Research Center, UPC
     Barcelona, November 2007
 
 ## Requirements and installation
 Read INSTALL.md or checkout our 
-[website instructions](http://www.talp.upc.edu/festcat/install.php).
+[website instructions](http://festcat.talp.cat/install.php).
 
 ## FestCat Usage
 See USAGE.md to learn how to use FestCat.
@@ -33,7 +33,7 @@ Basically, there are two components:
    - There is one folder for each voice: `festival/lib/voices/catalan/upc_ca_'speaker-name'`
 
 Several voices have already been developed.
-Check the [web page](http://www.talp.cat/festcat) to get the latest downloads.
+Check the [web page](http://festcat.talp.cat) to get the latest downloads.
 
 ## About the authors
 

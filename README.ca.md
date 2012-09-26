@@ -1,13 +1,13 @@
 # FestCat: Síntesi de la parla en català fent servir Festival
 
-    http://www.talp.cat/festcat
+    http://festcat.talp.cat
     Antonio Bonafonte
     Centre de recerca TALP, UPC
     Barcelona, Novembre 2007
 
 ## Requisits i instal·lació
 Vegeu el fitxer INSTALL.ca.md o llegiu les 
-[instruccions del web](http://www.talp.upc.edu/festcat/install.php).
+[instruccions del web](http://festcat.talp.cat/install.php).
 
 ## Ús de FestCat
 Vegeu el fitxer USAGE.ca.md per a obtenir instruccions d'ús.
@@ -32,7 +32,7 @@ Està format per dos components principals:
    - Hi ha una carpeta per cada veu: `festival/lib/voices/catalan/upc_ca_'nom-locutor'`
 
 Actualment hi ha diverses veus disponibles.
-Visiteu la [pàgina web](http://www.talp.cat/festcat) per obtenir últimes versions. 
+Visiteu la [pàgina web](http://festcat.talp.cat) per obtenir últimes versions. 
 
 ## Quant als autors
 
