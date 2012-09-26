@@ -49,8 +49,9 @@ pel Centre de Recerca TALP. Per més informació, visiteu la
 [pàgina web de FreeLing](http://nlp.lsi.upc.edu/freeling/):
 
 El lèxic ha estat enriquit de la forma següent:
+
  - Les transcripcions fonètiques s'han generat automàticament utilitzant
-   les eines de transcripció fonètica del TALP
+   les eines de transcripció fonètica del TALP.
 
  - S'ha afegit noves paraules utilitzant per assegurar millor cobertura en 
    el disseny de les veus.
