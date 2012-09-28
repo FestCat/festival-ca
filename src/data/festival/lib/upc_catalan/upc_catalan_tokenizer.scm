@@ -60,6 +60,7 @@ of words that expand given token with name."
 ;  (format t "upc_catalan::token_to_words  %s\n" name)
 
   (cond
+   ((string-equal name "") nil)
    ;; Percentatges
    ((or (string-matches name "[0-9]+\,[0-9]+[%]") (string-matches name "[0-9]+[%]"))
     (append (catala_number_decimals (string-before name "%") "0") '("%"))) 
