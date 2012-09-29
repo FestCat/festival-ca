@@ -88,6 +88,9 @@ DISTBINFILES = Makefile.in Makefilevars.inc configure.in configure \
 DISTSRCFILES = Makefile.in Makefilevars.inc configure.in configure \
                install-sh $(DOCUMENTATIONFILES) $(BUILD_FILES)
 
+CLEAN = 
+
+DISTCLEAN = Makefile config.status config.log
 
 # Source directories
 BUILDDICT = src/00-Dictionary
@@ -158,6 +161,8 @@ $(COMPLETE_LEXICON): $(DICTANDTRANSCRIPTIONS) $(BUILDDICT)/CreateInternalFormat.
 	rm -f "final/upcdict_catalan.out" && mv "final/upcdict_catalan.out2" "final/upcdict_catalan.out"
 
 CLEAN+= $(BUILDDICT)/merged $(BUILDDICT)/final
+DISTCLEAN+= $(BUILDDICT)/CompileDictionary.sh
+
 DISTSRCFILES+= $(BUILDDICT)/CreateInternalFormat.pl \
                $(BUILDDICT)/CompileDictionary.sh.in \
                $(BUILDDICT)/addfinalentries.sh \
@@ -274,6 +279,8 @@ $(LTS_RULES): $(BUILDLTS)/lex_lts_rules.scm
 TEST += $(BUILDLTS)/lts_scratch/lts_test.log
 
 CLEAN+= $(BUILDLTS)/lex_lts_rules.scm  $(BUILDLTS)/allowables.scm $(BUILDLTS)/lts_scratch/ $(BUILDLTS)/final
+DISTCLEAN+= $(BUILDLTS)/build_lts
+
 DISTSRCFILES+= $(ALLOWABLES) \
                $(BUILDLTS)/build_lts.in \
                $(BUILDLTS)/build_lts_rules \
@@ -482,4 +489,8 @@ test: $(TEST)
 
 clean:
 	rm -rf $(CLEAN)
+
+distclean: clean
+	rm -rf $(DISTCLEAN)
+
 
