@@ -1,0 +1,485 @@
+#!/usr/bin/make
+# Copyright (C) 2012  Sergio Oller <sergioller@gmail.com>
+#
+#  This script is free software; you can redistribute it and/or
+#  modify it under the terms of the GNU Lesser General Public
+#  License as published by the Free Software Foundation,
+#  version 2.1 of the License.
+#
+#  This library is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+#  Lesser General Public License for more details.
+#
+#  You should have received a copy of the GNU Lesser General Public
+#  License along with this library; if not, write to the Free Software
+#  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+
+
+# Meta Information:
+PACKAGE_NAME = @PACKAGE_NAME@
+PACKAGE_TARNAME = @PACKAGE_TARNAME@
+PACKAGE_VERSION = @PACKAGE_VERSION@
+PACKAGE_STRING = @PACKAGE_STRING@
+PACKAGE_BUGREPORT = @PACKAGE_BUGREPORT@
+PACKAGE_URL = @PACKAGE_URL@
+
+# Programs:
+FESTIVAL = @FESTIVALBIN@
+WAGON = @WAGON@
+PERL = @PERL@
+INSTALL = @INSTALL@
+INSTALL_DATA = @INSTALL_DATA@
+MKDIR_P = @MKDIR_P@
+SED = @SED@
+GREP = @GREP@
+AWK = @AWK@
+NGRAM_BUILD = @NGRAMBUILD@
+ONLYINSTALL = @ONLYINSTALL@
+
+# Installation Variables:
+FESTDATADIR = @FESTDATADIR@
+LANGUAGESSCMFILE = @LANGUAGESSCMFILE@
+LANGUAGESSCMVERSION = @LANGUAGESSCMVERSION@
+
+# File lists:
+LTS_RULES = festival/lib/dicts/upc/upc_catalan_lts_rules.scm
+REDUCED_LEXICON = festival/lib/dicts/upc/upcdict_catalan-1.0.out
+POSLEX = festival/lib/dicts/upc/upc_freeling_catalan.poslex
+
+LIB_UPCCATALAN_FILES = festival/lib/upc_catalan/cat_intro.text \
+              festival/lib/upc_catalan/upc_ca_generic_duration.scm \
+              festival/lib/upc_catalan/upc_ca_generic_durdata.scm \
+              festival/lib/upc_catalan/upc_ca_generic_f0model.scm \
+              festival/lib/upc_catalan/upc_ca_generic_intonation.scm \
+              festival/lib/upc_catalan/upc_ca_generic_lexicon.scm \
+              festival/lib/upc_catalan/upc_ca_generic_phoneset.scm \
+              festival/lib/upc_catalan/upc_ca_generic_phrasing.scm \
+              festival/lib/upc_catalan/upc_ca_generic_tagger.scm \
+              festival/lib/upc_catalan/upc_ca_generic_tokenizer.scm \
+              festival/lib/upc_catalan/upc_catalan_date.scm \
+              festival/lib/upc_catalan/upc_catalan_hour.scm \
+              festival/lib/upc_catalan/upc_catalan_numbers.scm \
+              festival/lib/upc_catalan/upc_catalan_phones.scm \
+              festival/lib/upc_catalan/upc_catalan_pos_tagger.scm \
+              festival/lib/upc_catalan/upc_catalan.scm \
+              festival/lib/upc_catalan/upc_catalan_tokenizer.scm \
+              festival/lib/upc_catalan/upc_catalan_tokenpos.scm
+
+LIB_DICTS_FILES = $(LTS_RULES) \
+              $(REDUCED_LEXICON) \
+              $(POSLEX) \
+              festival/lib/dicts/upc/upc_freeling_catalan.tri.ngrambin \
+              festival/lib/dicts/upc/upclex_catalan.scm
+
+LANGUAGE_FILES =  festival/lib/languages/language_catalan.scm \
+              festival/lib/languages.scm
+
+BUILD_FILES = $(LIB_UPCCATALAN_FILES) $(LIB_DICTS_FILES) $(LANGUAGE_FILES)
+
+
+# Distribution variables:
+DOCUMENTATIONFILES = AUTHORS AUTHORS.ca COPYRIGHT LICENSE-gpl-2.0.txt \
+                     LICENSE-lgpl-2.1.txt README.ca.md README.md \
+                     THANKS.md THANKS.ca.md
+
+DISTBINFILES = Makefile.in Makefilevars.inc configure.in configure \
+               install-sh $(DOCUMENTATIONFILES) $(BUILD_FILES)
+DISTSRCFILES = Makefile.in Makefilevars.inc configure.in configure \
+               install-sh $(DOCUMENTATIONFILES) $(BUILD_FILES)
+
+
+# Source directories
+BUILDDICT = src/00-Dictionary
+BUILDLTS = src/02-LTSMake
+BUILDPOSLEX = src/03-Poslex
+BUILDNGRAM = src/04-ngram
+BUILDDATA = src/data
+BUILDFUNC = src/functions
+DICTANDTRANSCRIPTIONS = src/data/withtranscriptions/all.orto src/data/withtranscriptions/all.phon
+
+.PHONY: all build install dist-bin dist-src test
+
+ifeq ($(ONLYINSTALL),yes)
+  DEFAULTACTION = install
+else
+  DEFAULTACTION = build
+endif
+
+all: $(DEFAULTACTION)
+
+build: $(BUILD_FILES)
+
+# Files to be copied from src/data/festival...:
+$(LANGUAGE_FILES) $(LIB_UPCCATALAN_FILES) festival/lib/dicts/upc/upclex_catalan.scm:
+	$(MKDIR_P) $(@D) && \
+	cp $(BUILDDATA)/$@ "$@" || exit 1
+
+# This rules are to perform the phonetic transcriptions of the Freeling Dictionary
+# using an in-house tool at UPC.
+# Phonetic transcriptions are distributed under a free license and 
+# editing and correcting them is quite easy if you find mistakes or you would
+# like to adapt them to other Catalan dialects.
+src/data/withtranscriptions/all.orto src/data/withtranscriptions/all.phon:
+	if [ -f `which phonetic_trn` ]; then \
+	cd $(BUILDDATA) && \
+	( ./transcribe.sh "withtranscriptions/from_phonetic_trn" from_freeling/*  || exit 1) && \
+	( ./concatenate.sh "withtranscriptions" "withtranscriptions/from_phonetic_trn" || exit 1 ) ; \
+	fi
+
+####################################################################################
+####################################################################################
+## The Catalan Letter to Sound Rules and the Catalan dictionary are built as follows:
+## 1. Using the freeling dictionary and some other complementary dictionaries, a lexicon 
+##    with words and their phonetic transcriptions is built.
+## 2. Using the upc_catalan_lts_rules, Letter to Sound rules are trained from the lexicon 
+##    built in step 1. 
+## 3. The lexicon is reduced removing the words that can already be predicted with LTS rules.
+##    This is done by comparing the phonetic transcription from the Lexicon and the phonetic
+##    transcription predicted by the LTS rules. Iff there is a mismatch between the transcriptions
+##    the word with the correct transcription is kept in the lexicon, otherwise it is removed. 
+
+
+
+COMPLETE_LEXICON=$(BUILDDICT)/final/upcdict_catalan.out
+# Step 1:
+$(COMPLETE_LEXICON): $(DICTANDTRANSCRIPTIONS) $(BUILDDICT)/CreateInternalFormat.pl $(BUILDDICT)/CompileDictionary.sh $(BUILDDICT)/addfinalentries.sh $(BUILDDICT)/allo2pho.pl $(BUILDDICT)/list2festival.pl
+	echo "Creating dictionary in internal format" && \
+	cd $(BUILDDICT) && \
+	( $(PERL) ./CreateInternalFormat.pl "../data/withtranscriptions/all.orto" "../data/withtranscriptions/all.phon" "merged/freeling.dic" || exit 1 ) && \
+	echo "Adding other dictionaries" && \
+	cp ../data/otherdic/*.dic "merged/" && \
+	echo "Compiling dictionary" && \
+	( ./CompileDictionary.sh "final" merged/*.dic || exit 1 ) && \
+	echo "Adding final entries" && \
+	( ./addfinalentries.sh "final/upcdict_catalan.out" || exit 1 ) && \
+	echo "Removing duplicates" && \
+	cat "final/upcdict_catalan.out" | LANG=C uniq > "final/upcdict_catalan.out2" && \
+	rm -f "final/upcdict_catalan.out" && mv "final/upcdict_catalan.out2" "final/upcdict_catalan.out"
+
+CLEAN+= $(BUILDDICT)/merged $(BUILDDICT)/final
+DISTSRCFILES+= $(BUILDDICT)/CreateInternalFormat.pl \
+               $(BUILDDICT)/CompileDictionary.sh.in \
+               $(BUILDDICT)/addfinalentries.sh \
+               $(BUILDDICT)/allo2pho.pl \
+               $(BUILDDICT)/list2festival.pl
+# Step 2: 
+
+include Makefilevars.inc
+ltsdataTRAINfeats = $(addprefix $(BUILDLTS)/lts_scratch/,$(ltsdataTRAINfeatsfn))
+ltsdataTESTfeats  = $(addprefix $(BUILDLTS)/lts_scratch/,$(subst ltsdataTRAIN,ltsdataTEST,$(ltsdataTRAINfeatsfn)))
+ltsNYtree         = $(addprefix $(BUILDLTS)/lts_scratch/,$(ltsNYtreefn))
+ltsNYtreesrc      = $(BUILDLTS)/lts.ny.tree
+ltsNYTRAINfeats        = $(addprefix $(BUILDLTS)/lts_scratch/,$(subst lts,ltsdataTRAIN,$(ltsNYtreefn:.tree=.feats)))
+ltsNYTESTfeats        = $(addprefix $(BUILDLTS)/lts_scratch/,$(subst lts,ltsdataTEST,$(ltsNYtreefn:.tree=.feats)))
+ltsdataTRAINtree  = $(subst ltsdataTRAIN,lts,$(ltsdataTRAINfeats:.feats=.tree))  $(ltsNYtree)
+laNY              = $(subst lts.,,$(ltsNYtreefn:.tree=))
+
+# Building the LTS rules requires some intermediate files.
+
+ALLOWABLES:=$(BUILDLTS)/allowables-1.1.scm
+$(BUILDLTS)/allowables.scm:
+	cp $(ALLOWABLES) $@ || exit 1
+
+$(BUILDLTS)/lts_scratch/lex_entries.out: $(COMPLETE_LEXICON)
+	$(MKDIR_P) $(BUILDLTS)/lts_scratch && \
+	$(BUILDLTS)/purge_fest_dic < $(COMPLETE_LEXICON) | $(BUILDLTS)/fest2wagon > $(BUILDLTS)/lts_scratch/lex_entries.out
+
+$(BUILDLTS)/lts_scratch/lex-pl-tablesp.scm: $(BUILDLTS)/lts_scratch/lex_entries.out $(BUILDLTS)/allowables.scm
+	cd $(BUILDLTS) && ./build_lts cummulate || exit 1
+
+$(BUILDLTS)/lts_scratch/lex.feats: $(BUILDLTS)/lts_scratch/lex-pl-tablesp.scm $(BUILDLTS)/lts_scratch/lex_entries.out $(BUILDLTS)/allowables.scm
+	cd $(BUILDLTS) && ./build_lts align || exit 1
+
+$(BUILDLTS)/lts_scratch/lex.feats.train $(BUILDLTS)/lts_scratch/lex.feats.test \
+$(BUILDLTS)/lts_scratch/lex.align.train $(BUILDLTS)/lts_scratch/lex.align.test: $(BUILDLTS)/lts_scratch/lex.feats
+	cd $(BUILDLTS) && ./build_lts traintest || exit 1
+
+
+$(BUILDLTS)/lts_scratch/ltsLTS.desc: $(BUILDLTS)/lts_scratch/lex.feats $(BUILDLTS)/lts_scratch/lex.feats.train
+	echo "Creating ltsLTS.desc"
+	export LANG=C; \
+	echo "((Relation.LTS.down.name" > $@ ; \
+	$(AWK) '{print $$1}' $< | sort -u >> $@ ; \
+	echo ') (p.p.p.p.name ' >> $@ ; \
+	$(AWK) '{print $$2}' $< | sort -u >> $@ ; \
+	echo ') (p.p.p.name ' >> $@ ; \
+	$(AWK) '{print $$3}' $< | sort -u >> $@ ; \
+	echo ') (p.p.name ' >> $@ ; \
+	$(AWK) '{print $$4}' $< | sort -u >> $@ ; \
+	echo ') (p.name ' >> $@ ; \
+	$(AWK) '{print $$5}' $< | sort -u >> $@ ; \
+	echo ') (name ' >> $@ ; \
+	$(AWK) '{print $$6}' $< | sort -u >> $@ ; \
+	echo ') (n.name ' >> $@ ; \
+	$(AWK) '{print $$7}' $< | sort -u >> $@ ; \
+	echo ') (n.n.name ' >> $@ ; \
+	$(AWK) '{print $$8}' $< | sort -u >> $@ ; \
+	echo ') (n.n.n.name ' >> $@ ; \
+	$(AWK) '{print $$9}' $< | sort -u >> $@ ; \
+	echo ') (n.n.n.n.name ' >> $@ ; \
+	$(AWK) '{print $$10}' $< | sort -u >> $@ ; \
+	echo ') (pos ignore' >> $@ ; \
+	$(AWK) 'BEGIN {print "n"} {print $$11}' $< | sort -u >> $@ ; \
+	echo '))' >> $@
+	echo "ltsLTS.desc created"
+
+$(ltsdataTESTfeats): $(BUILDLTS)/lts_scratch/lex.feats.test
+	echo "Building $@"
+	$(eval LETRA := $(subst .,,$(suffix $(basename $@))))
+	echo "Letra: $(LETRA)"
+	export LANG=C; \
+	cat $< | \
+	$(AWK) '{if ($$6 == "$(LETRA)") print $$0}' > $@; 
+
+$(ltsdataTRAINfeats): $(BUILDLTS)/lts_scratch/lex.feats.train
+	echo "Building $@"
+	$(eval LETRA := $(subst .,,$(suffix $(basename $@))))
+	echo "Letra: $(LETRA)"
+	export LANG=C; \
+	cat $< | \
+	$(AWK) '{if ($$6 == "$(LETRA)") print $$0}' > $@; 
+
+$(ltsNYTRAINfeats) $(ltsNYTESTfeats):
+	echo "La ny castellana ja se sap quin so té i no cal entrenar-la"
+	$(MKDIR_P) $(@D) && \
+	touch $@
+
+#$(ltstreeNY): $(ltsNYtreesrc)
+#	echo "This is copied"
+#	cp $< $@ || exit 1
+	
+$(BUILDLTS)/lts_scratch/lts.%.tree: $(BUILDLTS)/lts_scratch/ltsdataTRAIN.%.feats $(BUILDLTS)/lts_scratch/ltsdataTEST.%.feats
+	echo "Wagon with $*"
+	if [ $(laNY) = "$*" ]; then \
+		cp $(ltsNYtreesrc) $@ || exit 1; \
+	else \
+	$(WAGON) -data $(BUILDLTS)/lts_scratch/ltsdataTRAIN.$*.feats -test $(BUILDLTS)/lts_scratch/ltsdataTEST.$*.feats \
+          -desc $(BUILDLTS)/lts_scratch/ltsLTS.desc -stop 3 -output $(BUILDLTS)/lts_scratch/lts.$*.tree || exit 1; \
+	fi \
+
+$(BUILDLTS)/lex_lts_rules.scm: $(BUILDLTS)/lts_scratch/ltsLTS.desc  $(ltsdataTRAINtree)
+	cd $(BUILDLTS) && ./build_lts merge || exit 1
+
+$(BUILDLTS)/lts_scratch/lts_test.log: $(BUILDLTS)/lex_lts_rules.scm $(BUILDLTS)/lts_scratch/lex.align $(BUILDLTS)/lts_scratch/lex.align.test $(BUILDLTS)/allowables.scm
+	cd $(BUILDLTS) && ./build_lts test
+
+
+$(LTS_RULES): $(BUILDLTS)/lex_lts_rules.scm
+	$(MKDIR_P) "$(BUILDLTS)/final" && \
+	$(SED) -e 's/·/"·"/g' -e 's/lex_lts_rules/upc_catalan_lts_rules/g' "$(BUILDLTS)/lex_lts_rules.scm" > "$(BUILDLTS)/final/upc_catalan_lts_rules.scm" && \
+	$(MKDIR_P) $(@D) && \
+	cp $(BUILDLTS)/final/upc_catalan_lts_rules.scm $@ || exit 1
+
+TEST += $(BUILDLTS)/lts_scratch/lts_test.log
+
+CLEAN+= $(BUILDLTS)/lex_lts_rules.scm  $(BUILDLTS)/allowables.scm $(BUILDLTS)/lts_scratch/ $(BUILDLTS)/final
+DISTSRCFILES+= $(ALLOWABLES) \
+               $(BUILDLTS)/build_lts.in \
+               $(BUILDLTS)/build_lts_rules \
+               $(BUILDLTS)/createmultiphonemes \
+               $(BUILDLTS)/fest2wagon \
+               $(BUILDLTS)/lts.ny.tree \
+               $(BUILDLTS)/purge_fest_dic \
+               $(BUILDLTS)/readme \
+               $(BUILDLTS)/reduce_dict \
+               $(BUILDLTS)/traintest \
+               $(BUILDLTS)/upc_catalan_lts_rules
+# Step 3:
+$(BUILDLTS)/upclex_catalan.scm: $(BUILDDATA)/festival/lib/dicts/upc/upclex_catalan.scm
+	cp $< $@ || exit 1
+
+$(REDUCED_LEXICON): $(LTS_RULES) $(BUILDLTS)/upclex_catalan.scm
+	echo "Reducing dictionary" && \
+	cd $(BUILDLTS) && \
+	$(MKDIR_P) "final_dict_reduced/dicttmp" && \
+	cp "upclex_catalan.scm" "final_dict_reduced/dicttmp" && \
+	cp "final/upc_catalan_lts_rules.scm" "final_dict_reduced/dicttmp/" && \
+	cp ../../$(BUILDDICT)/final/upcdict_catalan.out "final_dict_reduced/dicttmp/upcdict_catalan-1.0.out" && \
+	$(FESTIVAL) -b "reduce_dict"
+	$(MKDIR_P) $(@D)
+	cp $(BUILDLTS)/final_dict_reduced/upcdict_catalan.out  $@
+
+CLEAN+= $(BUILDLTS)/upclex_catalan.scm $(BUILDLTS)/final_dict_reduced
+
+#### END OF LEXICON AND LTS RULES #####
+#######################################
+
+############################
+#### CREATE POS DATA #######
+BUILDDATAPOS=$(BUILDDATA)/pos
+CORPUSCA=$(BUILDDATAPOS)/corpus-ca
+DICTAG=$(BUILDDATAPOS)/dictag.txt
+VOCABULARY=$(BUILDDATAPOS)/voca.txt
+CORPUSCASOURCES3LB = $(wildcard $(BUILDDATAPOS)/ancora-ca/3LB-CAT/*.xml)
+CORPUSCASOURCESCATA = $(wildcard $(BUILDDATAPOS)/ancora-ca/CESS-CAT-A/*.xml)
+CORPUSCASOURCESCATAAP =  $(wildcard $(BUILDDATAPOS)/ancora-ca/CESS-CAT-AAP/*.xml)
+CORPUSCASOURCES = $(CORPUSCASOURCES3LB) $(CORPUSCASOURCESCATA) $(CORPUSCASOURCESCATAAP)
+CORPUSCATXT = $(subst .xml,.txt,$(subst ancora-ca,work,$(CORPUSCASOURCES)))
+BUILDDATAPOSWORK = $(BUILDDATAPOS)/work
+
+
+$(BUILDDATAPOSWORK)/3LB-CAT/%.tbf.txt: $(BUILDDATAPOS)/ancora-ca/3LB-CAT/%.tbf.xml $(BUILDDATAPOS)/crea_corpusca.pl
+	$(MKDIR_P) $(@D) || exit 1
+	cat $< | $(PERL) $(BUILDDATAPOS)/crea_corpusca.pl > $@ || exit 1
+
+$(BUILDDATAPOSWORK)/CESS-CAT-A/%.tbf.txt: $(BUILDDATAPOS)/ancora-ca/CESS-CAT-A/%.tbf.xml $(BUILDDATAPOS)/crea_corpusca.pl
+	$(MKDIR_P) $(@D) || exit 1
+	cat $< | $(PERL) $(BUILDDATAPOS)/crea_corpusca.pl > $@ || exit 1
+
+$(BUILDDATAPOSWORK)/CESS-CAT-AAP/%.tbf.txt: $(BUILDDATAPOS)/ancora-ca/CESS-CAT-AAP/%.tbf.xml $(BUILDDATAPOS)/crea_corpusca.pl
+	$(MKDIR_P) $(@D) || exit 1
+	cat $< | $(PERL) $(BUILDDATAPOS)/crea_corpusca.pl > $@ || exit 1
+
+
+
+$(CORPUSCA):  $(CORPUSCATXT)
+	cat $(CORPUSCATXT) > $@
+
+$(DICTAG): $(CORPUSCA) $(BUILDDATAPOS)/crea_dictag.pl
+	$(PERL) $(BUILDDATAPOS)/crea_dictag.pl < $< > $@ || exit 1
+
+CLEAN+= $(BUILDDATAPOSWORK) $(CORPUSCA) $(DICTAG)
+
+#### END CREATE POS DATA ###
+############################
+
+
+
+#### BEGIN POSLEX TRAINING #####
+################################
+$(POSLEX): $(BUILDPOSLEX)/final/dicTAGGERcomplet.poslexR 
+	cp "$(BUILDPOSLEX)/final/dicTAGGERcomplet.poslexR" $@
+
+$(BUILDPOSLEX)/final/dicTAGGERcomplet.poslexR: $(BUILDPOSLEX)/final/dicTAGGERcomplet.poslexR_desord
+	echo "MNCL" > $@ || exit 1
+	export LANG=C; cat $< | sort | uniq >> $@ || exit 1
+
+$(BUILDPOSLEX)/final/dicTAGGERcomplet.poslexR_desord $(VOCABULARY): $(BUILDPOSLEX)/simplifiedpos.orto $(DICTAG) $(BUILDPOSLEX)/02-FormatTaggerAmbAmpliació
+	$(MKDIR_P) "$(BUILDPOSLEX)/final" || exit 1
+	$(BUILDPOSLEX)/02-FormatTaggerAmbAmpliació "$@" "$(DICTAG)" "$(BUILDPOSLEX)/simplifiedpos.orto" "$(BUILDPOSLEX)/log.txt" $(VOCABULARY) || exit 1
+
+$(BUILDPOSLEX)/01-FormatDiccComplet.pl: $(BUILDFUNC)/functions_perl.pl
+	touch $@
+
+$(BUILDPOSLEX)/simplifiedpos.orto: $(BUILDDATA)/withtranscriptions/all.orto $(BUILDPOSLEX)/01-FormatDiccComplet.pl
+	$(MKDIR_P) $(@D)
+	cat $(BUILDDATA)/withtranscriptions/all.orto | \
+	$(BUILDPOSLEX)/01-FormatDiccComplet.pl | \
+	LANG=C sort | uniq >  $@ || exit 1
+
+CLEAN+= $(BUILDPOSLEX)/simplifiedpos.orto $(BUILDPOSLEX)/final/ $(BUILDPOSLEX)/log.txt
+
+DISTSRCFILES+= $(BUILDPOSLEX)/01-FormatDiccComplet.pl \
+               $(BUILDPOSLEX)/02-FormatTaggerAmbAmpliació
+
+#### END POSLEX TRAINING ####
+#############################
+
+#### BEGIN NGRAM ####
+#####################
+
+$(BUILDNGRAM)/01-ReducTAGCorpus.pl: $(BUILDFUNC)/functions_perl.pl
+	touch $@
+
+$(BUILDNGRAM)/work/corpus-ca-reduitsTAGS.out: $(CORPUSCA) $(BUILDNGRAM)/01-ReducTAGCorpus.pl
+	$(MKDIR_P) $(BUILDNGRAM)/work && \
+	$(PERL) $(BUILDNGRAM)/01-ReducTAGCorpus.pl < $< > $@ || exit 1
+
+$(BUILDNGRAM)/work/corpus-ca.out $(BUILDNGRAM)/work/corpus-ca-frase.out: $(BUILDNGRAM)/work/corpus-ca-reduitsTAGS.out $(VOCABULARY) $(BUILDNGRAM)/02-FormatCorpus
+	cd $(BUILDNGRAM) && \
+	./02-FormatCorpus || exit 1
+
+$(BUILDNGRAM)/work/corpus.train  $(BUILDNGRAM)/work/corpus.test $(BUILDNGRAM)/work/corpus_frases.train $(BUILDNGRAM)/work/corpus_frases.test:  $(BUILDNGRAM)/work/corpus-ca-frase.out $(BUILDNGRAM)/work/corpus-ca.out $(VOCABULARY) $(BUILDNGRAM)/03-SplitterCorpus.pl
+	cd $(BUILDNGRAM) && \
+	$(PERL) ./03-SplitterCorpus.pl || exit 1
+
+$(BUILDNGRAM)/final/upc_freeling_catalan.tri.ngrambin: $(BUILDNGRAM)/work/corpus.train $(VOCABULARY) $(BUILDNGRAM)/04-ngrambuild.sh
+	$(MKDIR_P) $(@D)
+	export NGRAM_BUILD="$(NGRAM_BUILD)" ; \
+	$(BUILDNGRAM)/04-ngrambuild.sh $(BUILDNGRAM)/work/corpus.train $(VOCABULARY) $@ || exit 1	
+
+festival/lib/dicts/upc/upc_freeling_catalan.tri.ngrambin: $(BUILDNGRAM)/final/upc_freeling_catalan.tri.ngrambin
+	$(MKDIR_P) $(@D) && \
+	cp $< $@ || exit 1
+
+CLEAN+= $(BUILDNGRAM)/work $(BUILDNGRAM)/final
+
+DISTSRCFILES+= $(BUILDNGRAM)/01-ReducTAGCorpus.pl \
+               $(BUILDNGRAM)/02-FormatCorpus \
+               $(BUILDNGRAM)/03-SplitterCorpus.pl \
+               $(BUILDNGRAM)/04-ngrambuild.sh
+
+
+#### END NGRAM ####
+###################
+
+# Data files for distribution:
+DISTSRCFILES+= $(BUILDFUNC)/functions_perl.pl \
+               $(BUILDDATA)/concatenate.sh \
+               $(BUILDDATA)/transcribe.sh \
+               $(BUILDDATA)/festival/lib/dicts/upc/upclex_catalan.scm \
+               $(BUILDDATA)/festival/lib/languages/language_catalan.scm \
+               $(BUILDDATA)/festival/lib/languages.scm \
+               $(BUILDDATA)/festival/lib/upc_catalan \
+               $(BUILDDATA)/festvox.orig \
+               $(BUILDDATA)/from_freeling \
+               $(BUILDDATA)/otherdic \
+               $(BUILDDATA)/pos/crea_dictag.pl \
+               $(BUILDDATA)/pos/crea_corpusca.pl \
+               $(BUILDDATA)/pos/ancora-ca \
+               $(BUILDDATA)/withtranscriptions/all.orto \
+               $(BUILDDATA)/withtranscriptions/all.phon
+
+# Create directories, copy files and then:
+# if we have a libdir/languages directory, 
+# copy the language_catalan.scm inside
+# if we have a standard 2.1 installation
+# edit languages.scm using sed
+install:
+	$(MKDIR_P) "$(FESTDATADIR)/dicts/upc" && \
+	$(MKDIR_P) "$(FESTDATADIR)/upc_catalan" && \
+	$(INSTALL_DATA) festival/lib/dicts/upc/* "$(FESTDATADIR)/dicts/upc" && \
+	$(INSTALL_DATA) festival/lib/upc_catalan/* "$(FESTDATADIR)/upc_catalan" && \
+	if test "$(LANGUAGESSCMVERSION)" = "directory" ; then \
+	    $(MKDIR_P) "$(FESTDATADIR)/languages" && \
+	    $(INSTALL_DATA) festival/lib/languages/language_catalan.scm "$(FESTDATADIR)/languages" ; \
+	fi ; \
+	if test "$(LANGUAGESSCMVERSION)" = "2.1" ; then \
+	     $(GREP) "catalan" "$(LANGUAGESSCMFILE)" > /dev/null && ALREADYINSTALLED="true" ||  ALREADYINSTALLED="false"; \
+	     if [ $$ALREADYINSTALLED = "false" ]; then \
+	         mv $(LANGUAGESSCMFILE) $(LANGUAGESSCMFILE).orig && \
+	         $(SED) "s/(define (select_language language)/\n\n;; Modification: Added language_catalan\n(define (language_catalan)\n\"(language_catalan)\nSet up language parameters for Catalan.\"\n\n (set! female1 (lambda () (voice_upc_ca_ona_hts)))\n (set! male1 ( lambda () (voice_upc_ca_pau_hts)))\n (female1)\n (Param.set 'Language 'catalan)\n)\n\n(define (select_language language)/g" $(LANGUAGESSCMFILE).orig | \
+	         $(SED) "s/   ((equal? language 'klingon)/   ((equal? language 'catalan)\n    (language_catalan))\n   ((equal? language 'klingon)/g"  > $(LANGUAGESSCMFILE) ; \
+	     fi; \
+	fi ;
+
+dist-bin: clean
+	rm -rf "$(PACKAGE_TARNAME)-$(PACKAGE_VERSION)"
+	mkdir -p "$(PACKAGE_TARNAME)-$(PACKAGE_VERSION)"
+	for thing in $(DISTBINFILES);do \
+	       thingdir=$$(dirname "$$thing") && \
+	       thingname=$$(basename "$$thing") && \
+	       $(MKDIR_P) "$(PACKAGE_TARNAME)-$(PACKAGE_VERSION)/$$thingdir" && \
+	       cp -r "$$thing" "$(PACKAGE_TARNAME)-$(PACKAGE_VERSION)/$$thingdir" || exit 1; \
+	done
+	tar czf ../$(PACKAGE_TARNAME)-$(PACKAGE_VERSION).tgz $(PACKAGE_TARNAME)-$(PACKAGE_VERSION)
+	rm -rf "$(PACKAGE_TARNAME)-$(PACKAGE_VERSION)"
+
+dist-src: clean
+	rm -rf "$(PACKAGE_TARNAME)-$(PACKAGE_VERSION)-src"
+	mkdir -p "$(PACKAGE_TARNAME)-$(PACKAGE_VERSION)-src"
+	for thing in $(DISTSRCFILES);do \
+	       thingdir=$$(dirname "$$thing") && \
+	       thingname=$$(basename "$$thing") && \
+	       $(MKDIR_P) "$(PACKAGE_TARNAME)-$(PACKAGE_VERSION)-src/$$thingdir" && \
+	       cp -r "$$thing" "$(PACKAGE_TARNAME)-$(PACKAGE_VERSION)-src/$$thingdir" || exit 1; \
+	done
+	tar czf ../$(PACKAGE_TARNAME)-$(PACKAGE_VERSION)-src.tgz $(PACKAGE_TARNAME)-$(PACKAGE_VERSION)-src
+	rm -rf "$(PACKAGE_TARNAME)-$(PACKAGE_VERSION)-src"
+
+test: $(TEST)
+
+clean:
+	rm -rf $(CLEAN)
+

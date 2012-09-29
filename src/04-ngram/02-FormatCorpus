@@ -1,0 +1,52 @@
+#!/usr/bin/perl
+# Copyright (C) 2009-2011  Antonio Bonafonte
+#            Universitat Politècnica de Catalunya, Barcelona, Spain
+#
+#  This script is free software; you can redistribute it and/or
+#  modify it under the terms of the GNU Lesser General Public
+#  License as published by the Free Software Foundation,
+#  version 2.1 of the License.
+#
+#  This library is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+#  Lesser General Public License for more details.
+#
+#  You should have received a copy of the GNU Lesser General Public
+#  License along with this library; if not, write to the Free Software
+#  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+
+open (DICIN, "work/corpus-ca-reduitsTAGS.out");
+open (DICOUT, ">work/corpus-ca.out");
+open (DICOUT2, ">work/corpus-ca-frase.out");
+$inici=1;
+
+
+while(<DICIN>)
+  { 
+    @fila = split(/\s+/, $_);
+    if ((@fila[2] eq Fp)||(@fila[2] eq Fat)||(@fila[2] eq Fp)||(@fila[2] eq Fit)){
+       print DICOUT " @fila[2]\n";
+       print DICOUT2 " @fila[0]\n";
+  	$inici=1;
+    }
+    else {
+       
+	if ($inici eq 1)
+	{
+	  print DICOUT "@fila[2]";
+          print DICOUT2 "@fila[0]";
+	  $inici=0;   
+	}
+	else
+	{
+	  print DICOUT " @fila[2]";
+          print DICOUT2 " @fila[0]";
+	}
+
+       
+    }
+  }
+close (DICOUT);
+close (DICIN);
+close (DICOUT);

@@ -1,0 +1,68 @@
+#!/bin/bash
+# Copyright (C) 2009-2011  Antonio Bonafonte
+#            Universitat Politècnica de Catalunya, Barcelona, Spain
+#
+#  This script is free software; you can redistribute it and/or
+#  modify it under the terms of the GNU Lesser General Public
+#  License as published by the Free Software Foundation,
+#  version 2.1 of the License.
+#
+#  This library is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+#  Lesser General Public License for more details.
+#
+#  You should have received a copy of the GNU Lesser General Public
+#  License along with this library; if not, write to the Free Software
+#  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+
+# NOTICE: This file has been integrated in the makefile and it is not used
+# anymore. It is kept because it gives a nice view of the required steps to build
+# LTS rules.
+
+if [ $# -ne 3 ]; then
+
+echo "
+ Script to generate LTS rules for Catalan
+
+ Usage:
+	$0 allowables.scm dictionary lts_dir
+
+ Input files:
+	allowables.scm  --  list of graphemes and possible phonemes
+	dictionary	--  dictionary to learn LTS (Festival format)
+
+ Output files:
+	lts_dir		--  LTS rules output directory (the Scheme format file
+			\"upc_catalan_lts_rules.scm\" will be created there)
+";
+
+exit 1;
+fi
+
+ALLOWABLES="$1";
+DICT="$2";
+LTS="$3";
+
+mkdir -p "lts_scratch"
+
+if [ "$ALLOWABLES" != "allowables.scm" ]; then
+	cp "$ALLOWABLES" "allowables.scm"
+fi
+
+echo "Prune Festival dictionary prior to Wagon conversion"
+./purge_fest_dic < "$DICT" > "$DICT.pruned"
+
+echo "Create multi phonemes" # See readme for more info
+./fest2wagon < "$DICT.pruned" > "lts_scratch/lex_entries.out"
+#./createmultiphonemes < "$DICT.pruned" > "lts_scratch/lex_entries.out"
+
+echo "Build LTS rules"
+./build_lts
+
+mkdir -p "$LTS"
+sed -e 's/·/"·"/g' -e 's/lex_lts_rules/upc_catalan_lts_rules/g' "lts_scratch/lex_lts_rules.scm" > "${LTS}/upc_catalan_lts_rules.scm"
+
+echo "Done. File $LTS has been created"
+
+

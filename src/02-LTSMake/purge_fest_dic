@@ -1,0 +1,124 @@
+#!/usr/bin/perl -wn
+# Copyright (C) 2009-2011  Antonio Bonafonte
+#            Universitat Politècnica de Catalunya, Barcelona, Spain
+#
+#  This script is free software; you can redistribute it and/or
+#  modify it under the terms of the GNU Lesser General Public
+#  License as published by the Free Software Foundation,
+#  version 2.1 of the License.
+#
+#  This library is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+#  Lesser General Public License for more details.
+#
+#  You should have received a copy of the GNU Lesser General Public
+#  License along with this library; if not, write to the Free Software
+#  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+
+
+# Purge short words (less or equal to 3 characters), contractions using "'" and
+# abbreviations using "."
+
+chomp;
+
+if( ! m/\((".*")\s(.*)\s\((.*)\)$/ ){
+    next;
+}
+
+my($word, $pos, $trn) = m/\("(.*)"\s(.+)\s\((.*)\)$/;
+
+if( $word =~ /\./ || # skip abbreviatures
+    $word =~ /\'/ || # skip contracted articles + pronoms febles
+    $word eq "status" || # some weird words appearing in the dictionary
+    $word eq "bayern" ||
+$word eq "ciència-ficció" ||
+$word eq "diürna" ||
+$word eq "düsseldorf" ||
+$word eq "españa" ||
+$word eq "genèticament" ||
+$word eq "iñaki" ||
+$word eq "muñoz" ||
+$word eq "müller" ||
+$word eq "núñez" ||
+$word eq "prèviament" ||
+$word eq "puigcerdà" ||
+$word eq "reüll" ||
+$word eq "sueño" ||
+$word eq "sèriament" ||
+$word eq "taüll" ||
+$word eq "taüts" ||
+$word eq "tècnicament" ||
+$word eq "zürich" ||
+$word eq "Àfrica" ||
+$word eq "Àrtic" ||
+$word eq "Àustria" ||
+$word eq "Àvila" ||
+$word eq "Álvarez" ||
+$word eq "Índia" ||
+$word eq "Òbviament" ||
+$word eq "ciència-ficció" ||
+$word eq "croissant" ||
+$word eq "cruyff" ||
+$word eq "disney" ||
+$word eq "diürna" ||
+$word eq "düsseldorf" ||
+$word eq "edward" ||
+$word eq "españa" ||
+$word eq "finley" ||
+$word eq "genèticament" ||
+$word eq "haixix" ||
+$word eq "iñaki" ||
+$word eq "kelly" ||
+$word eq "leyla" ||
+$word eq "loyola" ||
+$word eq "mayor" ||
+$word eq "megabytes" ||
+$word eq "muñoz" ||
+$word eq "myller" ||
+$word eq "müller" ||
+$word eq "netscape" ||
+$word eq "núñez" ||
+$word eq "prèviament" ||
+$word eq "puigcerdà" ||
+$word eq "rajoy" ||
+$word eq "reyes" ||
+$word eq "reykiavik" ||
+$word eq "reüll" ||
+$word eq "rugby" ||
+$word eq "sueño" ||
+$word eq "sydney" ||
+$word eq "sèriament" ||
+$word eq "taüll" ||
+$word eq "taüts" ||
+$word eq "thyssen" ||
+$word eq "tsars" ||
+$word eq "tècnicament" ||
+$word eq "walter" ||
+$word eq "washington" ||
+$word eq "weissmann" ||
+$word eq "wellington" ||
+$word eq "whisky" ||
+$word eq "whiskys" ||
+$word eq "wilson" ||
+$word eq "windows" ||
+$word eq "yakarta" ||
+$word eq "zürich" ||
+$word eq "Àfrica" ||
+$word eq "Àrtic" ||
+$word eq "Àustria" ||
+$word eq "Àvila" ||
+$word eq "Álvarez" ||
+$word eq "Índia" ||
+$word eq "Òbviament" ||
+$word eq "dawai" ) {
+    print STDERR "Skipping $word, too weird!\n";
+    next;
+}
+
+if( length($word) <= 4 ){
+    print STDERR "Skipping $word, too short!\n";
+    next;
+}
+
+print "$_\n";
