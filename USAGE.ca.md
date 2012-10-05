@@ -11,7 +11,7 @@ aquesta codificació en el vostre terminal o fitxers. Si el vostre sistema
 utilitza UTF-8 (tal i com ho fan moltes distribucions actuals), necessiteu
 convertir el fitxer abans de la lectura.
 
-Podeu fer servir la opcions de guardar del editor gedit, o fer servir
+Podeu fer servir l'opci&oacute; «Desa» del editor de text `gedit`, o fer servir
 programes conversors de format, com `iconv`:
 
         $ iconv -f utf8 -t ISO-8859-15//TRANSLIT bon_dia_utf8.text > bon_dia_iso.text
