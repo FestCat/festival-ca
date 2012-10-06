@@ -287,7 +287,7 @@ t if this is a syl break, nil otherwise."
   ( [ ó ] = ó )
   ( [ ò ] = ò )
   ( [ ú ] = ú )
-  ( [ ù ] = ù )
+  ( [ ù ] = ú )
 
   ;; Vocals no accentuades 
   ( [ a ] = a )
