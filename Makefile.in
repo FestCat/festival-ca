@@ -465,7 +465,7 @@ install:
 		 fi ; \
 	     fi ; \
 	     if [ "$$DOINSTALL" = "yes" ]; then \
-	         $(SED) "s/(define (select_language language)/\n\n;; Modification: Added language_catalan\n(define (language_catalan)\n\"(language_catalan)\nSet up language parameters for Catalan.\"\n\n   (defvar catalan-path (path-append (if (boundp 'datadir) datadir libdir) \"upc_catalan/\"))\n   (if (not (member_string catalan-path load-path))\n                      (set! load-path (cons catalan-path load-path)))(set! female1 (lambda () (voice_upc_ca_ona_hts)))\n (set! male1 ( lambda () (voice_upc_ca_pau_hts)))\n (female1)\n (Param.set 'Language 'catalan)\n)\n\n(define (select_language language)/g" $(LANGUAGESSCMFILE).orig | \
+	         $(SED) "s|(define (select_language language)|\n\n;; Modification: Added language_catalan\n(define (language_catalan)\n\"(language_catalan)\nSet up language parameters for Catalan.\"\n\n   (defvar catalan-path (path-append (if (boundp 'datadir) datadir libdir) \"upc_catalan/\"))\n   (if (not (member_string catalan-path load-path))\n                      (set! load-path (cons catalan-path load-path)))(set! female1 (lambda () (voice_upc_ca_ona_hts)))\n (set! male1 ( lambda () (voice_upc_ca_pau_hts)))\n (female1)\n (Param.set 'Language 'catalan)\n)\n\n(define (select_language language)|g" $(LANGUAGESSCMFILE).orig | \
 	         $(SED) "s/   ((equal? language 'klingon)/   ((equal? language 'catalan)\n    (language_catalan))\n   ((equal? language 'klingon)/g"  > $(LANGUAGESSCMFILE) ; \
 	     fi; \
 	fi ;
