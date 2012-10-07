@@ -51,7 +51,7 @@
   "(upc_catalan_lts_function word features)
 Return pronunciation of word not in lexicon."
   (require 'lts)
-;  (format t "Word not found in lexicon: \"%s\"\n" word)
+; (format t "Word not found in lexicon: \"%s\"\n" word)
 
   (if (not (boundp 'upc_catalan_lts_rules))
       (load (path-append upclexdir "upc_catalan_lts_rules.scm")))
@@ -88,6 +88,7 @@ Basic lexicon should (must ?) have basic letters, symbols and punctuation."
   (lex.add.entry '("hotmail" n ( ((o1 t) 1 ) ( ( m E1 i1 l ) 0 ) ) ) )
   (lex.add.entry '("gmail" n ( ((Z E1) 1 ) ( ( m E1 i1 l ) 0 ) ) ) )
   (lex.add.entry '("facebook" n ( ((f E1 i1 s) 1 ) ( ( b u k ) 0 ) ) ) )
+  (lex.add.entry '("copyright" n ( ((k O1) 1 ) ((p i) 0 ) ((rr a i t) 0) ) ))
 
 ; ;;; Symbols ...
   (lex.add.entry '("*" n (((ax s) 0) ((t e1) 0) ((r i1 s k) 1))))
@@ -159,11 +160,11 @@ this can't use the builtin downcase function."
    )
 )
 
-; (define (catala_downcase_letters word)
-;   "(catala_downcase WORD)
-; Downs case word by letter to sound rules because or accented form
-; this can't use the builtin downcase function."
-;   (lts.apply word 'catala_downcase_letters))
+ (define (catala_simplify_vowels word)
+   "(catala_simplify_vowels WORD)
+ Simplifies forbidden vowels such as î."
+   (lts.apply word 'catala_simplify_vowels))
+
 
 (define (catala_trans word)
   " (catala_trans WORD)
@@ -283,11 +284,11 @@ t if this is a syl break, nil otherwise."
   ( [ é ] = é )
   ( [ è ] = è )
   ( [ í ] = í )
-  ( [ ì ] = í )
+  ( [ ì ] = ì )
   ( [ ó ] = ó )
   ( [ ò ] = ò )
   ( [ ú ] = ú )
-  ( [ ù ] = ú )
+  ( [ ù ] = ù )
 
   ;; Vocals no accentuades 
   ( [ a ] = a )
@@ -297,18 +298,19 @@ t if this is a syl break, nil otherwise."
   ( [ u ] = u )
   
   ;; Vocals amb diéresi
+  ( [ ä ] = ä ) ;some foreign word
+  ( [ ë ] = ë ) ;some foreign word
   ( [ ï ] = ï )
+  ( [ ö ] = ö ) ;some foreign word
   ( [ ü ] = ü )
-  ( [ ö ] = o ) ;some foreign word
-  ( [ ä ] = à ) ;some foreign word
-  ( [ ë ] = é ) ;some foreign word
+
 
   ;; Vocals amb circumflex
-  ( [ â ] = à ) ;some foreign word
-  ( [ ê ] = é ) ;some foreign word
-  ( [ î ] = i ) ;some foreign word
-  ( [ ô ] = ó ) ;some foreign word
-  ( [ û ] = ú ) ;some foreign word
+  ( [ â ] = â ) ;some foreign word
+  ( [ ê ] = ê ) ;some foreign word
+  ( [ î ] = î ) ;some foreign word
+  ( [ ô ] = ô ) ;some foreign word
+  ( [ û ] = û ) ;some foreign word
 
 
   ;; Consonants
@@ -391,20 +393,21 @@ t if this is a syl break, nil otherwise."
   ( [ Ò ] = ò )
   ( [ Ú ] = ú )
   ( [ Ù ] = ù )
-  ( [ Ï ] = ï )
-  ( [ Ü ] = ü )
-  ( [ Ö ] = o )
+
 
   ;; Vocals amb diéresi
   ( [ Ä ] = à ) ;some foreign word
   ( [ Ë ] = é ) ;some foreign word
+  ( [ Ï ] = ï )
+  ( [ Ü ] = ü )
+  ( [ Ö ] = ö ) ;some foreign word
 
   ;; Vocals amb circumflex
-  ( [ Â ] = à ) ;some foreign word
-  ( [ Ê ] = é ) ;some foreign word
-  ( [ Î ] = i ) ;some foreign word
-  ( [ Ô ] = ó ) ;some foreign word
-  ( [ Û ] = ú ) ;some foreign word
+  ( [ Â ] = â ) ;some foreign word
+  ( [ Ê ] = ê ) ;some foreign word
+  ( [ Î ] = î ) ;some foreign word
+  ( [ Ô ] = ô ) ;some foreign word
+  ( [ Û ] = û ) ;some foreign word
 
   ;; Vocals no accentuades
   
@@ -452,120 +455,44 @@ t if this is a syl break, nil otherwise."
   ( [ 9 ] = 9 )
   ))
 
-
-; I think this is used only from the tokenizer to now if there is some character which is not a letter
-; Toni, July 2007
-
 (lts.ruleset
- catala_downcase_letters
+ catala_simplify_vowels
  ( )
 
- ;; Transforma els caràcters en el seu format en minúscula. Versió només per a lletres.
+ ;; Transforma vocals lletges.
 
  (
   ;; MINÚSCULES
   ;; Vocals accentuades codificació occidental
-  ( [ á ] = á )
-  ( [ à ] = à )
-  ( [ é ] = é )
-  ( [ è ] = è )
-  ( [ í ] = í )
-  ( [ ì ] = ì )
-  ( [ ó ] = ó )
-  ( [ ò ] = ò )
-  ( [ ú ] = ú )
-  ( [ ù ] = ù )
-
-  ;; Vocals no accentuades 
   ( [ a ] = a )
+  ( [ à ] = a )
+  ( [ á ] = a )
+  ( [ ä ] = a )
+  ( [ â ] = a )
+
   ( [ e ] = e )
+  ( [ é ] = e )
+  ( [ è ] = e )
+  ( [ ë ] = e )
+  ( [ ê ] = e )
+
   ( [ i ] = i )
+  ( [ ì ] = i )
+  ( [ í ] = i )
+  ( [ ï ] = i )
+  ( [ î ] = i )
+
   ( [ o ] = o )
+  ( [ ó ] = o )
+  ( [ ò ] = o )
+  ( [ ö ] = o )
+  ( [ ô ] = o )
+
   ( [ u ] = u )
-  
-  ;; Vocals amb diéresi
-  ( [ "ï" ] = ï )
-  ( [ "ü" ] = ü )
-  ;; Consonants
-  ( [ b ] = b )
-  ( [ c ] = c )
-  ( [ "ç" ] = "ç" )
-  ( [ d ] = d )
-  ( [ f ] = f )
-  ( [ g ] = g )
-  ( [ h ] = h )
-  ( [ j ] = j )
-  ( [ k ] = k )
-  ( [ l ] = l )
-  ( [ m ] = m )
-  ( [ n ] = n )
-  ( [ "ñ" ] = ñ )
-  ( [ p ] = p )
-  ( [ q ] = q )
-  ( [ r ] = r )
-  ( [ s ] = s )
-  ( [ t ] = t )
-  ( [ v ] = v )
-  ( [ w ] = w )
-  ( [ x ] = x )
-  ( [ y ] = y )
-  ( [ z ] = z )
-
-  ;; Aprostrofs, guions, l·l
-  ( ["\-" ] ="\-" )
-  ( ["'" ] = "'" )
-  ( ["·" ] = "·" )
-
-  
-  ;; MAJÚSCULES
-
-  
-  ;; Vocals accentuades amb codificació occidental
-
-  ( [ Á ] = á )
-  ( [ À ] = à )
-  ( [ É ] = é )
-  ( [ È ] = è )
-  ( [ Í ] = í )
-  ( [ Ì ] = ì )
-  ( [ Ó ] = ó )
-  ( [ Ò ] = ò )
-  ( [ Ú ] = ú )
-  ( [ Ù ] = ù )
-  ( [ "Ï" ] = "ï" )
-  ( [ "Ü" ] = "ü" )
-
-  ;; Vocals no accentuades
-  
-  ( [ A ] = a )
-  ( [ E ] = e )
-  ( [ I ] = i )
-  ( [ O ] = o )
-  ( [ U ] = u )
-  ;; Consonants 
-  ( [ B ] = b )
-  ( [ C ] = c )
-  ( [ "Ç" ] = ç )
-  ( [ D ] = d )
-  ( [ F ] = f )
-  ( [ G ] = g )
-  ( [ H ] = h )
-  ( [ J ] = j )
-  ( [ K ] = k )
-  ( [ L ] = l )
-  ( [ M ] = m )
-  ( [ N ] = n )
-  ( [ Ñ ] = ñ )
-  ( [ P ] = p )
-  ( [ Q ] = q )
-  ( [ R ] = r )
-  ( [ S ] = s )
-  ( [ T ] = t )
-  ( [ V ] = v )
-  ( [ W ] = w )
-  ( [ X ] = x )
-  ( [ Y ] = y )
-  ( [ Z ] = z )
+  ( [ ú ] = u )
+  ( [ ù ] = u )
+  ( [ ü ] = u )
+  ( [ û ] = u )
 
   ))
 

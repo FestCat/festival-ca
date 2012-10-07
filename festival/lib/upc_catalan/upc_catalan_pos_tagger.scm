@@ -174,7 +174,7 @@
 	      (lex.add.entry '("»" ((Frc 0)) () ))
 	      (lex.add.entry '("%" ((Ft  0)) () ))
 	      (lex.add.entry '(";" ((Fx  0)) () ))
-	      (lex.add.entry '("`" ((Fe  -0.47712)) () ))
+	      (lex.add.entry '("`" ((Fz  -0.47712)) () ))
 	      (lex.add.entry '("'" ((Fz  -0.47712)) () ))
 	      (lex.add.entry '("\"" ((Fe -0.47712)) () ));"
 ;	      (lex.add.entry '("+" ((Fz -1.1104)) () ))

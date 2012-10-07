@@ -50,6 +50,7 @@
 (set! upc_catalan::token.prepunctuation "¿¡\"'`({[")
 (set! upc_catalan::token.whitespace " \t\n\r")
 (set! upc_catalan::token.singlecharsymbols "")
+
 ;(set! token.unknown_word_name "")
 
 ;;; "Voice/ca token_to_word rules 
@@ -61,6 +62,9 @@ of words that expand given token with name."
 
   (cond
    ((string-equal name "") nil)
+   ((string-matches name "[aáàäâeéèëêiíìïîoóòöôuúùüûAÁÀÄÂEÉÈËÊIÍÌÏÎOÓÒÖÔUÚÙÜÛ]")
+  ;      (format t "name: %s\n" name)
+       (list (string-append "#" (car (catala_simplify_vowels (car (catala_downcase name)))))))
    ;; Percentatges
    ((or (string-matches name "[0-9]+\,[0-9]+[%]") (string-matches name "[0-9]+[%]"))
     (append (catala_number_decimals (string-before name "%") "0") '("%"))) 
@@ -70,12 +74,14 @@ of words that expand given token with name."
 	(append (catala_number_decimals (string-before number "%") "0") '("%"))          ))
 
    ;; Ordinals
-   ((string-matches name "[0-9]+[rntèa]")
+   ((string-matches name "[0-9]+[rntèaºª]")
        (cond
            ((string-matches name ".*[è]") (catala_number_ordinals (string-before name "è") "0"))
 	   ((string-matches name ".*[r]") (catala_number_ordinals (string-before name "r") "0"))
 	   ((string-matches name ".*[n]") (catala_number_ordinals (string-before name "n") "0"))
 	   ((string-matches name ".*[t]") (catala_number_ordinals (string-before name "t") "0"))
+	   ((string-matches name ".*[º]") (catala_number_ordinals (string-before name "º") "0"))
+	   ((string-matches name ".*[ª]") (catala_number_ordinals (string-before name "ª") "1"))
 	   ((string-matches name ".*[a]") (catala_number_ordinals (string-before name "a") "1"))))
 
    ((string-matches name "4rt") (catala_number_ordinals (string-before name "rt") "0"))
@@ -190,6 +196,9 @@ of words that expand given token with name."
                    (upc_catalan::token_to_words token (string-after name "WWW"))
            )
   )
+  ((string-equal name "/")
+      (catala_speller name)
+  )
   ((string-matches name ".*/.*")
     ( catala_divide_by_separator token name "/" "barra")
   )
@@ -212,7 +221,7 @@ of words that expand given token with name."
        (append (upc_catalan::token_to_words token nick) (list "@") (upc_catalan::token_to_words token server))))
    ((string-matches name ".*@.*")  ;; e-mail
     (let ((nick (string-before name "@")) (server (string-after name "@")))
-       (append (upc_catalan::token_to_words token nick) (list "@") (upc_catalan::token_to_words token server))))
+       (append (upc_catalan::token_to_words token nick) (list "arrova") (upc_catalan::token_to_words token server))))
 
 
    ;; Números
@@ -807,7 +816,7 @@ of words that expand given token with name."
  
 
   ;; Paraules sense vocals
-  ((and (string-matches name "[A-ZÇÑa-zçñ]+") (not (string-matches name ".*[AEIOUÁÉÍÓÚÜÏÀÈÒaeiouàèéíòóúïü]+.*")))
+  ((and (string-matches name "[A-ZÇÑa-zçñ·-]+") (not (string-matches name ".*[AEIOUÁÉÍÓÚÜÏÀÈÒaeiouàèéíòóúïü]+.*")))
    (catala_speller name))
 
   ;; Signes puntuacio aïllats : bug: no es tracten bé, com puntuació ...
@@ -852,34 +861,10 @@ of words that expand given token with name."
   )
 
   ;; Codis
-   ((not (lts.in.alphabet name 'catala_downcase_letters))
-;   (print "codis: " name)
-   (let ((subwords))
-      (mapcar
-       (lambda (letter)
-	 ;; might be symbols or digits
-	 (set! subwords
-	       (append
-		subwords
-		(cond
-		 ((string-matches letter "[0-9]") 
-		  (catala_number letter "0"))
-		 ((string-matches letter "[a-záéíóúüïñçàèòA-ZÁÉÍÓÚÜÏÑÇÀÈÒ]")
-		    (list (string-append "#" (car (catala_downcase letter)))))
-                 ((string-matches letter "[\.]") (list "punt"))
-         ;        ((string-matches letter ",") (list "coma"))
-	         ((string-matches letter ":") (list "dos" "punts"))
-	         ((string-matches letter "-") (list "guió" ))
-	         ((string-matches letter "_") (list "guió" "baix" ))
-	         ((string-matches letter "/") (list "barra" ))
-	         ((string-matches letter "#") (list "coixinet" ))
-	         ((string-matches letter "\\+") (list "més" ))
-;		 (t (list letter))
-		 ))))
-       (symbolexplode name))
-      subwords))
+   ((not (string-matches name "[A-Za-zÁÀÄÂÉÈËÊÍÌÏÎÓÒÖÔÚÙÜÛàáäâèéëêíìïîòóöôúùüûçÇñÑ'·]+"))
+    (catala_speller name))
    (t ;; when no specific rules apply do the general ones
-;    (format t "General Rule: %s\n" name)
+ ;   (format t "General Rule: %s\n" name)
     (list name)))
 )
 
@@ -899,11 +884,42 @@ Split a string into letters, numbers or symbol chars."
 		(cond
 		 ((string-matches letter "[0-9]") 
 		  (catala_number letter "0"))
-		 ((string-matches letter "[A-ZÁÉÍÏÓÚÜÑÇÀÈÒa-záéíïóúüñçàèò]")
+		 ((string-matches letter "[äâëêìîöôùûÄÂËÊÌÎÖÔÙÛ]")
+		    (list (string-append "#" (car (catala_simplify_vowels (car (catala_downcase letter)))))))
+		 ((string-matches letter "[A-ZÁÉÍÏÓÚÜÑÇÀÈÒa-záàäâéèëêíìïîóòöôúùüûüñç]")
 		  (list (string-append "#" (car (catala_downcase letter)))))
-                 ((string-matches letter "[\.]") (list "punt"))
-	         ((string-matches letter ":") (list "dos" "punts"))
-		 ((string-matches letter "_") (list "guió" "baix"))
+		 ((string-equal letter "$") (list "dòlar"))
+		 ((string-equal letter "%") (list "tant" "per" "cent"))
+                 ((string-equal letter ".") (list "punt"))
+	         ((string-equal letter ":") (list "dos" "punts"))
+		 ((string-equal letter "_") (list "guió" "baix"))
+		 ((string-equal letter "·") (list "punt" "volat"))
+                 ((string-equal letter ".") (list "punt"))
+                 ((string-equal letter ",") (list "coma"))
+	         ((string-equal letter "-") (list "guió" ))
+	         ((string-equal letter "=") (list "igual" ))
+	         ((string-equal letter "/") (list "barra" ))
+	         ((string-equal letter "º") (list "indicador" "ordinal" "masculí" ))
+	         ((string-equal letter "ª") (list "indicador" "ordinal" "femení" ))
+	         ((string-equal letter "\\") (list "contrabarra" ))
+	         ((string-equal letter "'") (list "apòstrof" ))
+	         ((string-equal letter "@") (list "arrova" ))
+	         ((string-equal letter "*") (list "asterisc" ))
+	         ((string-equal letter "#") (list "coixinet" ))
+                 ((string-equal letter "!") (list "exclamació"))
+                 ((string-equal letter "&") (list "ampersand"))
+                 ((string-equal letter "×") (list "signe" "de" "multiplicació"))
+                 ((string-equal letter "÷") (list "signe" "de" "divisió"))
+                 ((string-equal letter "|") (list "barra" "vertical"))
+                 ((string-equal letter "\"") (list "cometes" "dobles"))
+	         ((string-equal letter "+") (list "més" ))
+                 ((string-equal letter "}") (list "clau" "corba" "tancada"))
+                 ((string-equal letter "{") (list "clau" "corba" "oberta"))
+                 ((string-equal letter "[") (list "claudàtor" "obert"))
+                 ((string-equal letter "]") (list "claudàtor" "tancat" ))
+                 ((string-equal letter ";") (list "punt" "i" "coma" ))
+                 ((string-equal letter "©") (list "copyright"))
+
 		 (t
 		  (list letter))))))
        (symbolexplode name))
@@ -953,7 +969,7 @@ Split a string into letters, numbers or symbol chars."
               (item.set_feat currtok feature "")
            )
           )
-          (set! output (list ".")) ; ens hem quedat sense res, token buit. FIXME: Buit no vol dir punt. no se com es fa un token sense words.
+          (set! output (list "")) ; ens hem quedat sense res, token buit. FIXME: Buit no vol dir punt. no se com es fa un token sense words.
       )
   output
   )

@@ -1,0 +1,71 @@
+#!/usr/bin/festival --script
+;;; Because this is a --script type file it has to explicitly
+;;; load the initfiles: init.scm and user's .festivalrc
+
+(set! upclexdir (path-append (pwd) "../festival/lib/dicts/upc"))
+(set! catalan-path (path-append (pwd) "../festival/lib/upc_catalan"))
+
+(if (symbol-bound? 'datadir)
+   (load (path-append datadir "init.scm"))
+   (load (path-append libdir  "init.scm"))
+)
+(if (not (member_string catalan-path load-path))
+                      (set! load-path (cons catalan-path load-path)))
+(require 'upc_catalan)
+
+(load-catalan-support)
+
+(define (procesa utt)
+
+(Initialize utt)
+(Text utt)
+(Token_POS utt)
+(Token utt)
+(POS utt)
+(Phrasify utt)
+(Word utt)
+(Pauses utt)
+;(Intonation utt)
+(PostLex utt)
+;(Duration utt)
+;(Int_Targets utt)
+)
+
+
+(define (llegeixfitxer fn)
+  (let ( (fd (fopen fn "r"))
+         (content "")
+         (entry "")
+         (filepos )
+       )
+       (fseek fd 0 2)
+       (set! filepos (ftell fd))
+       (fseek fd 0 0)
+       (set! content (fread filepos fd))
+  (fclose fd)
+  content
+  )
+)
+
+(set! fitxentrada (car argv))
+(if (probe_file fitxentrada)
+    (format stderr (string-append "Loading " fitxentrada "\n"))
+    (begin
+       (format t (string-append "Could not open" fitxentrada "\n"))
+       (quit)
+    )
+)
+
+(set! texto (llegeixfitxer fitxentrada ))
+(set! utt1 (eval (list (quote Utterance) (quote Text) texto)))
+(procesa utt1)
+
+(set! relations (utt.relationnames utt1))
+(while relations
+  (set! relation (car relations))
+  (set! relations (cdr relations))
+  (format t (string-append relation ": \n"))
+  (utt.relation.print utt1 relation)
+)
+
+

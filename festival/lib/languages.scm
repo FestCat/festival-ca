@@ -142,10 +142,13 @@ Set up language parameters for Castillian Spanish."
 "(language_catalan)
 Set up language parameters for Catalan."
 
-  (set! female1 voice_upc_ca_ona_hts)
-  (set! male1   voice_upc_ca_pau_hts)
+   (defvar catalan-path (path-append (if (boundp 'datadir) datadir libdir) "upc_catalan/"))
+   (if (not (member_string catalan-path load-path))
+                      (set! load-path (cons catalan-path load-path)))
+  (set! female1 ( lambda () (voice_upc_ca_ona_hts)))
+  (set! male1   ( lambda () (voice_upc_ca_pau_hts)))
   (female1)
-  (Parameter.set 'Language 'catalan)
+  (Param.set 'Language 'catalan)
 )
 
 
