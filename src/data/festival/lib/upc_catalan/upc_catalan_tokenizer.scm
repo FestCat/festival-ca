@@ -67,11 +67,11 @@ of words that expand given token with name."
        (list (string-append "#" (car (catala_simplify_vowels (car (catala_downcase name)))))))
    ;; Percentatges
    ((or (string-matches name "[0-9]+\,[0-9]+[%]") (string-matches name "[0-9]+[%]"))
-    (append (catala_number_decimals (string-before name "%") "0") '("%"))) 
+    (append (catala_number_decimals (string-before name "%") "0") (list "per" "cent"))) 
    
    ((or (string-matches name "[0-9]+\.[0-9]%") (string-matches name "[0-9]+\.[0-9][0-9]%"))
   	(let ((number (string-append (string-before name "\.") "," (string-after name "\."))))
-	(append (catala_number_decimals (string-before number "%") "0") '("%"))          ))
+	(append (catala_number_decimals (string-before number "%") "0") (list "per" "cent")) ))
 
    ;; Ordinals
    ((string-matches name "[0-9]+[rntèaºª]")
