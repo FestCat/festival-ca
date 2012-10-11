@@ -364,7 +364,7 @@ $(BUILDPOSLEX)/final/dicTAGGERcomplet.poslexR: $(BUILDPOSLEX)/final/dicTAGGERcom
 
 $(BUILDPOSLEX)/final/dicTAGGERcomplet.poslexR_desord $(VOCABULARY): $(BUILDPOSLEX)/simplifiedpos.orto $(DICTAG) $(BUILDPOSLEX)/02-FormatTaggerAmbAmpliació
 	$(MKDIR_P) "$(BUILDPOSLEX)/final" || exit 1
-	$(BUILDPOSLEX)/02-FormatTaggerAmbAmpliació "$@" "$(DICTAG)" "$(BUILDPOSLEX)/simplifiedpos.orto" "$(BUILDPOSLEX)/log.txt" $(VOCABULARY) || exit 1
+	$(BUILDPOSLEX)/02-FormatTaggerAmbAmpliació "$(BUILDPOSLEX)/final/dicTAGGERcomplet.poslexR_desord" "$(DICTAG)" "$(BUILDPOSLEX)/simplifiedpos.orto" "$(BUILDPOSLEX)/log.txt" "$(VOCABULARY)" || exit 1
 
 $(BUILDPOSLEX)/01-FormatDiccComplet.pl: $(BUILDFUNC)/functions_perl.pl
 	touch $@
