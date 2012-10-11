@@ -67,11 +67,11 @@ of words that expand given token with name."
        (list (string-append "#" (car (catala_simplify_vowels (car (catala_downcase name)))))))
    ;; Percentatges
    ((or (string-matches name "[0-9]+\,[0-9]+[%]") (string-matches name "[0-9]+[%]"))
-    (append (catala_number_decimals (string-before name "%") "0") (list "per" "cent"))) 
+    (append (catala_number_decimals (string-before name "%") "0"  "," "coma" ) (list "per" "cent"))) 
    
    ((or (string-matches name "[0-9]+\.[0-9]%") (string-matches name "[0-9]+\.[0-9][0-9]%"))
   	(let ((number (string-append (string-before name "\.") "," (string-after name "\."))))
-	(append (catala_number_decimals (string-before number "%") "0") (list "per" "cent")) ))
+	(append (catala_number_decimals (string-before number "%") "0" "," "coma") (list "per" "cent")) ))
 
    ;; Ordinals
    ((string-matches name "[0-9]+[rntèaºª]")
@@ -143,7 +143,6 @@ of words that expand given token with name."
         (not (or (string-matches name "[0-9]+-1[3-9]-[0-9]+") (string-matches name "3[2-9]-[0-9]+-[0-9]+"))))
   	 (catala_date (catala_subs name "-" "/")))
 
-  
    ;; Números de teléfon
    ((and (string-equal "1" (catala_telph token)) (or 
 	;; Format 925725623
@@ -223,27 +222,29 @@ of words that expand given token with name."
     (let ((nick (string-before name "@")) (server (string-after name "@")))
        (append (upc_catalan::token_to_words token nick) (list "arrova") (upc_catalan::token_to_words token server))))
 
-
    ;; Números
    ((string-matches name "0[0-9]+") 
     (catala_speller name)) 
 
    ((string-matches name "[0-9]+") (catala_number name "0"))
-   
+
    ;; Números en format xxx.xxx xxx.xxx.xxx xxx.xxx.xxx.xxx
    ((or (string-matches name "[0-9]+[\.][0-9][0-9][0-9]") 
 	(string-matches name "[0-9]+[\.][0-9][0-9][0-9][0-9][\.][0-9][0-9][0-9]") 
 	(string-matches name "[0-9]+[\.][0-9][0-9][0-9][\.][0-9][0-9][0-9][\.][0-9][0-9][0-9]")) 
 		(catala_number_point name "0"))
-   
+
    ;; Números amb decimals
    ((and (string-matches name "[0-9]+,[0-9]+") (not (string-matches name "[A-Za-z].*")))
-		(catala_number_decimals name "0"))
-   ((or (string-matches name "[0-9]+[\.][0-9][0-9][0-9],[0-9]+") (string-matches name "[0-9]+[\.][0-9][0-9][0-9][\.][0-9][0-9][0-9],[0-9]+")
-	(string-matches name "[0-9]+[\.][0-9][0-9][0-9][\.][0-9][0-9][0-9][\.][0-9][0-9][0-9],[0-9]+")) 			
-        (catala_number_decimals name "0"))
-   ((or (string-matches name "[0-9]+[\.][0-9]") (string-matches name "[0-9]+[\.][0-9][0-9]")) 
-		(catala_number_decimals (string-append (string-before name "\.") "," (string-after name "\.")) "0")) 
+		(catala_number_decimals name "0" "," "coma"))
+   ((or (string-matches name "[0-9]+[\.][0-9][0-9][0-9],[0-9]+")
+        (string-matches name "[0-9]+[\.][0-9][0-9][0-9][\.][0-9][0-9][0-9],[0-9]+")
+	(string-matches name "[0-9]+[\.][0-9][0-9][0-9][\.][0-9][0-9][0-9][\.][0-9][0-9][0-9],[0-9]+")) 
+            (catala_number_decimals name "0" "," "coma"))
+   ((or (string-matches name "[0-9]+[\.][0-9]")
+        (string-matches name "[0-9]+[\.][0-9][0-9]"))
+            (catala_number_decimals name "0" "." "punt" )) 
+
    ;; Comparacions amb "més gran que", "més petit que": Primera versio, per provar, nomes funciona amb nombres.
    ((string-matches name "[0-9]+<[0-9]+")
        (append 
@@ -765,7 +766,7 @@ of words that expand given token with name."
         )
   )
  
-
+  
   ((string-matches name ".*_____+.*")
      (remove_empty
         (append (upc_catalan::token_to_words token (string-before name "_"))
@@ -919,9 +920,8 @@ Split a string into letters, numbers or symbol chars."
                  ((string-equal letter "]") (list "claudàtor" "tancat" ))
                  ((string-equal letter ";") (list "punt" "i" "coma" ))
                  ((string-equal letter "©") (list "copyright"))
-
-		 (t
-		  (list letter))))))
+		 ;(t(list letter))
+               ))))
        (symbolexplode name))
       subwords))
 
