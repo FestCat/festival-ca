@@ -51,7 +51,7 @@
   "(upc_catalan_lts_function word features)
 Return pronunciation of word not in lexicon."
   (require 'lts)
-  (format t "Word not found in lexicon: \"%s\"\n" word)
+; (format t "Word not found in lexicon: \"%s\"\n" word)
 
   (if (not (boundp 'upc_catalan_lts_rules))
       (load (path-append upclexdir "upc_catalan_lts_rules.scm")))
@@ -88,6 +88,7 @@ Basic lexicon should (must ?) have basic letters, symbols and punctuation."
   (lex.add.entry '("hotmail" n ( ((o1 t) 1 ) ( ( m E1 i1 l ) 0 ) ) ) )
   (lex.add.entry '("gmail" n ( ((Z E1) 1 ) ( ( m E1 i1 l ) 0 ) ) ) )
   (lex.add.entry '("facebook" n ( ((f E1 i1 s) 1 ) ( ( b u k ) 0 ) ) ) )
+  (lex.add.entry '("copyright" n ( ((k O1) 1 ) ((p i) 0 ) ((rr a i t) 0) ) ))
 
 ; ;;; Symbols ...
   (lex.add.entry '("*" n (((ax s) 0) ((t e1) 0) ((r i1 s k) 1))))
@@ -453,10 +454,6 @@ t if this is a syl break, nil otherwise."
   ( [ 8 ] = 8 )
   ( [ 9 ] = 9 )
   ))
-
-
-; I think this is used only from the tokenizer to know if there is some character which is not a letter
-; Toni, July 2007
 
 (lts.ruleset
  catala_simplify_vowels
