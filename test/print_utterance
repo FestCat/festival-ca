@@ -15,23 +15,6 @@
 
 (load-catalan-support)
 
-(define (procesa utt)
-
-(Initialize utt)
-(Text utt)
-(Token_POS utt)
-(Token utt)
-(POS utt)
-(Phrasify utt)
-(Word utt)
-(Pauses utt)
-;(Intonation utt)
-(PostLex utt)
-;(Duration utt)
-;(Int_Targets utt)
-)
-
-
 (define (llegeixfitxer fn)
   (let ( (fd (fopen fn "r"))
          (content "")
@@ -47,6 +30,46 @@
   )
 )
 
+(define (procesa utt)
+(Initialize utt)
+(Text utt)
+(Token_POS utt)
+(Token utt)
+(POS utt)
+(Phrasify utt)
+(Word utt)
+(Pauses utt)
+;(Intonation utt)
+(PostLex utt)
+;(Duration utt)
+;(Int_Targets utt)
+)
+
+
+(define (imprimeixutt utt1)
+(let ( (relations "") (relation ""))
+(begin
+(set! relations (utt.relationnames utt1))
+(while relations
+  (set! relation (car relations))
+  (set! relations (cdr relations))
+  (format t (string-append relation ": \n"))
+  (utt.relation.print utt1 relation)
+)
+))
+)
+
+(define (imprimeixutttext texto)
+(let (utt1 "")
+(begin
+(set! utt1 (eval (list (quote Utterance) (quote Text) texto)))
+(procesa utt1)
+(imprimeixutt utt1)
+)
+)
+)
+
+
 (set! fitxentrada (car argv))
 (if (probe_file fitxentrada)
     (format stderr (string-append "Loading " fitxentrada "\n"))
@@ -59,13 +82,8 @@
 (set! texto (llegeixfitxer fitxentrada ))
 (set! utt1 (eval (list (quote Utterance) (quote Text) texto)))
 (procesa utt1)
+(imprimeixutt utt1)
 
-(set! relations (utt.relationnames utt1))
-(while relations
-  (set! relation (car relations))
-  (set! relations (cdr relations))
-  (format t (string-append relation ": \n"))
-  (utt.relation.print utt1 relation)
-)
+
 
 
