@@ -83,12 +83,17 @@ Basic lexicon should (must ?) have basic letters, symbols and punctuation."
    ; Currently prediction is bad for these words:
    ; <Empty (for now)>
 
-;;; Pronunciation of letters in the alphabet
+;;; Common words on the internet
   ; gmail, hotmail, facebook
   (lex.add.entry '("hotmail" n ( ((o1 t) 1 ) ( ( m E1 i1 l ) 0 ) ) ) )
   (lex.add.entry '("gmail" n ( ((Z E1) 1 ) ( ( m E1 i1 l ) 0 ) ) ) )
   (lex.add.entry '("facebook" n ( ((f E1 i1 s) 1 ) ( ( b u k ) 0 ) ) ) )
   (lex.add.entry '("copyright" n ( ((k O1) 1 ) ((p i) 0 ) ((rr a i t) 0) ) ))
+  (lex.add.entry '("wikipedia" n ( ( (g w i) 0  ) ((k i) 0  ) ( (p E1) 1 ) ( (d i) 0 ) ( (ax) 0) ) ))
+  (lex.add.entry '("twitter" n   ( ( (t w i1) 1 ) ( (t e r) 0 ) ) ) )
+  (lex.add.entry '("debian" n    ( ( (d e1) 1   ) ( (b i ) 0  ) ( ( ax n) 0) )))
+  (lex.add.entry '("linux"  n    ( ( (l i1) 1   ) ( (n u k s) 0 ) )))
+  (lex.add.entry '("google" n    ( ( (g u) 1   ) ( (g ax l ) 0 ) )))
 
 ; ;;; Symbols ...
   (lex.add.entry '("*" n (((ax s) 0) ((t e1) 0) ((r i1 s k) 1))))
