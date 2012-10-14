@@ -11,12 +11,13 @@ aquesta codificació en el vostre terminal o fitxers. Si el vostre sistema
 utilitza UTF-8 (tal i com ho fan moltes distribucions actuals), necessiteu
 convertir el fitxer abans de la lectura.
 
-Podeu fer servir la opcions de guardar del editor gedit, o fer servir
-programes conversors de format, com iconv:
+Podeu fer servir l'opci&oacute; «Desa» del editor de text `gedit`, o fer servir
+programes conversors de format, com `iconv`:
 
         $ iconv -f utf8 -t ISO-8859-15//TRANSLIT bon_dia_utf8.text > bon_dia_iso.text
 
  * Un test ràpid:
+
           $ echo "Bon dia, Catalunya" | festival --tts --language catalan
 
  * També podeu executar 'Festival' de manera interactiva:
@@ -39,7 +40,7 @@ el locutor, en lloc de la comanda de selecció de llenguatge:
         (SayText "Que maco. Això és de l'assemblea dels infants, oi?")
         (exit)
 
- * O per llegir un fitxer de text, per exemple "bon_dia.txt": 
+ * O per llegir un fitxer de text, per exemple `bon_dia.txt`: 
 
         $ echo "Bon dia, Catalunya." > bon_dia.txt
         $ festival
@@ -47,7 +48,7 @@ el locutor, en lloc de la comanda de selecció de llenguatge:
         (tts_file "bon_dia.txt")
         (exit)
 
- * O utilitzeu l'script text2wave per crear un fitxer .wav:
+ * O utilitzeu l'script `text2wave` per crear un fitxer `.wav`:
 
         $ text2wave -o bondia.wav   -eval '(language_catalan)' bon_dia.txt 
 

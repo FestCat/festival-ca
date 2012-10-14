@@ -188,16 +188,16 @@ KIND = gènere&nombre = 0     masculí singular
 ;;    )))   
        
 
-(define (catala_number_decimals name kind)
+(define (catala_number_decimals name kind separator separatorname)
 "(catala_number_decimals name) 
 Tractament de nombres decimals
 NAME = dígit
 KIND = gènere (1 = femení / altres = masculí)"
-(if (string-matches name ".*[,].*")
+(if (string-matches name (string-append ".*[" separator "].*") )
     (cond
-       ((string-matches (string-after name ",") "0.*") 
-	(append (catala_number_point (string-before name ",") kind ) '("coma") (catala_speller (string-after name ","))))
-        (t (append (catala_number_point (string-before name ",") kind ) '("coma") (catala_number_point (string-after name ",") kind))))
+       ((string-matches (string-after name separator) "0.*") 
+	(append (catala_number_point (string-before name separator) kind ) (list separatorname) (catala_speller (string-after name separator))))
+        (t (append (catala_number_point (string-before name separator) kind ) (list separatorname) (catala_number_point (string-after name separator) kind))))
 (catala_number_point name kind)))
 
 (define (catala_number_point name control)

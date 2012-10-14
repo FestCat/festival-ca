@@ -52,6 +52,10 @@
 (define (language_catalan)
 "(language_catalan)
 Inicialitza les veus catalanes per defecte."
+  ;;;  Add the directory that contains catalan stuff (normalization, tagger, etc.) to load-path
+   (defvar catalan-path (path-append (if (boundp 'datadir) datadir libdir) "upc_catalan/"))
+   (if (not (member_string catalan-path load-path))
+                      (set! load-path (cons catalan-path load-path)))
   (set! female1 (lambda () (voice_upc_ca_ona_hts)))
   (set! male1   (lambda () (voice_upc_ca_pau_hts)))
   (Param.set 'Language 'catalan)

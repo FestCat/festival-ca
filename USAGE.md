@@ -11,13 +11,13 @@ this encoding in your terminal or files. If your system uses UTF-8 (as
 do many distributions today) you need to convert the file before reading.
 Some front-ends, as gnopernicus, do the conversions for you.
 
-You can use the "save as" options in gedit; or use programs to convert the 
-format, as iconv:
+You can use the "save as" options in `gedit`; or use programs to convert the 
+format, as `iconv`:
 
         $ iconv -f utf8 -t ISO-8859-15//TRANSLIT myfile_utf8.text > myfile_latin1.text
 
-
  * A quick test:
+
         $ echo "Bon dia, Catalunya" | festival --tts --language catalan
 
  * You can also execute Festival in interactive way:
@@ -41,7 +41,7 @@ format, as iconv:
         (SayText "Que maco. Això és de l'assemblea dels infants, oi?")
         (quit)
 
- * Or to read a text file, for instance "bon_dia.txt": 
+ * Or to read a text file, for instance `bon_dia.txt`: 
 
         $ echo "Bon dia, Catalunya." > bon_dia.txt
         $ festival
@@ -49,9 +49,11 @@ format, as iconv:
         (tts_file "bon_dia.txt")
         (quit)
 
-  * Or use the text2wave script to create a .wav file:
+  * Or use the `text2wave` script to create a `.wav` file:
+
         $ text2wave -o bondia.wav   -eval '(language_catalan)' bon_dia.txt
 
   * If you want to specify the speaker:
+
         $ text2wave -o bondia.wav   -eval '(voice_upc_ca_ona_hts)' bon_dia.txt
 
