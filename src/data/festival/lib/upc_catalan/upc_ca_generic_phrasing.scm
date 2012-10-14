@@ -36,17 +36,16 @@
 
 ;;; Load any necessary files here
 
+;
 (set! upc_ca_phrase_cart_tree
-'
-(
-(lisp_token_end_punc in ("'" "\"" "?" "." "," ":" ";"))
-  ((B))
-  ((n.name is 0)
-     ((B))
-     ((NB))
-  )
-)
-)
+' ; Borrowed from JuntaDeAndalucia_es_phrase_cart_tree
+((lisp_token_end_punc in ("?" "!" "." ":" ";" "?." "?:" "?;" "?\"" "!." "!:" "!;" "!\"" ")." "):" ");" "]." "}." "\"." "\":" "\";" "'." "':" "';"))
+  ((BB))
+  ((lisp_token_end_punc in ("," ")" "]" "}" "\"," "'," ")," ")\"" "]," "},"))
+   ((B))
+   ((n.name is 0)
+   ((BB))
+   ((NB))))))
 
 (define (upc_ca_generic::select_phrasing)
   "(upc_ca_generic::select_phrasing)

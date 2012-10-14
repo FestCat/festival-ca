@@ -116,7 +116,7 @@ build: $(BUILD_FILES)
 # Files to be copied from src/data/festival...:
 $(LANGUAGE_FILES) $(LIB_UPCCATALAN_FILES) festival/lib/dicts/upc/upclex_catalan.scm:
 	$(MKDIR_P) $(@D) && \
-	cp $(BUILDDATA)/$@ "$@" || exit 1
+	cp "$(BUILDDATA)/$@" "$@" || exit 1
 
 # This rules are to perform the phonetic transcriptions of the Freeling Dictionary
 # using an in-house tool at UPC.
@@ -364,7 +364,7 @@ $(BUILDPOSLEX)/final/dicTAGGERcomplet.poslexR: $(BUILDPOSLEX)/final/dicTAGGERcom
 
 $(BUILDPOSLEX)/final/dicTAGGERcomplet.poslexR_desord $(VOCABULARY): $(BUILDPOSLEX)/simplifiedpos.orto $(DICTAG) $(BUILDPOSLEX)/02-FormatTaggerAmbAmpliació
 	$(MKDIR_P) "$(BUILDPOSLEX)/final" || exit 1
-	$(BUILDPOSLEX)/02-FormatTaggerAmbAmpliació "$@" "$(DICTAG)" "$(BUILDPOSLEX)/simplifiedpos.orto" "$(BUILDPOSLEX)/log.txt" $(VOCABULARY) || exit 1
+	$(BUILDPOSLEX)/02-FormatTaggerAmbAmpliació "$(BUILDPOSLEX)/final/dicTAGGERcomplet.poslexR_desord" "$(DICTAG)" "$(BUILDPOSLEX)/simplifiedpos.orto" "$(BUILDPOSLEX)/log.txt" "$(VOCABULARY)" || exit 1
 
 $(BUILDPOSLEX)/01-FormatDiccComplet.pl: $(BUILDFUNC)/functions_perl.pl
 	touch $@
@@ -439,9 +439,9 @@ DISTSRCFILES+= $(BUILDFUNC)/functions_perl.pl \
                $(BUILDDATA)/withtranscriptions/all.phon
 
 # Create directories, copy files and then:
-# if we have a libdir/languages directory, 
-# copy the language_catalan.scm inside
-# if we have a standard 2.1 installation
+# If we have a libdir/languages directory, 
+# copy the language_catalan.scm inside.
+# If we have a standard 2.1 installation
 # edit languages.scm using sed
 install:
 	$(MKDIR_P) "$(FESTDATADIR)/dicts/upc" && \
@@ -452,11 +452,20 @@ install:
 	    $(MKDIR_P) "$(FESTDATADIR)/languages" && \
 	    $(INSTALL_DATA) festival/lib/languages/language_catalan.scm "$(FESTDATADIR)/languages" ; \
 	fi ; \
-	if test "$(LANGUAGESSCMVERSION)" = "2.1" ; then \
-	     $(GREP) "catalan" "$(LANGUAGESSCMFILE)" > /dev/null && ALREADYINSTALLED="true" ||  ALREADYINSTALLED="false"; \
-	     if [ $$ALREADYINSTALLED = "false" ]; then \
-	         mv $(LANGUAGESSCMFILE) $(LANGUAGESSCMFILE).orig && \
-	         $(SED) "s/(define (select_language language)/\n\n;; Modification: Added language_catalan\n(define (language_catalan)\n\"(language_catalan)\nSet up language parameters for Catalan.\"\n\n (set! female1 (lambda () (voice_upc_ca_ona_hts)))\n (set! male1 ( lambda () (voice_upc_ca_pau_hts)))\n (female1)\n (Param.set 'Language 'catalan)\n)\n\n(define (select_language language)/g" $(LANGUAGESSCMFILE).orig | \
+	if [ "$(LANGUAGESSCMVERSION)" = "2.1" ] ; then \
+	     $(GREP) "catalan" "$(LANGUAGESSCMFILE)" > /dev/null && DOINSTALL="no" ||  DOINSTALL="yes"; \
+	     if [ "$$DOINSTALL" = "yes" ]; then \
+	        mv $(LANGUAGESSCMFILE) $(LANGUAGESSCMFILE).orig || exit 1; \
+	     else \
+	         if [ -f "$(LANGUAGESSCMFILE).orig" ]; then \
+	             rm -f "$(LANGUAGESSCMFILE)"; \
+		     DOINSTALL="yes"; \
+		 else \
+		     DOINSTALL="no"; \
+		 fi ; \
+	     fi ; \
+	     if [ "$$DOINSTALL" = "yes" ]; then \
+	         $(SED) "s|(define (select_language language)|\n\n;; Modification: Added language_catalan\n(define (language_catalan)\n\"(language_catalan)\nSet up language parameters for Catalan.\"\n\n   (defvar catalan-path (path-append (if (boundp 'datadir) datadir libdir) \"upc_catalan/\"))\n   (if (not (member_string catalan-path load-path))\n                      (set! load-path (cons catalan-path load-path)))(set! female1 (lambda () (voice_upc_ca_ona_hts)))\n (set! male1 ( lambda () (voice_upc_ca_pau_hts)))\n (female1)\n (Param.set 'Language 'catalan)\n)\n\n(define (select_language language)|g" $(LANGUAGESSCMFILE).orig | \
 	         $(SED) "s/   ((equal? language 'klingon)/   ((equal? language 'catalan)\n    (language_catalan))\n   ((equal? language 'klingon)/g"  > $(LANGUAGESSCMFILE) ; \
 	     fi; \
 	fi ;
@@ -484,6 +493,14 @@ dist-src: clean
 	done
 	tar czf ../$(PACKAGE_TARNAME)-$(PACKAGE_VERSION)-src.tgz $(PACKAGE_TARNAME)-$(PACKAGE_VERSION)-src
 	rm -rf "$(PACKAGE_TARNAME)-$(PACKAGE_VERSION)-src"
+
+TESTTOKENIZER = test/characters.txt.out test/llista.txt.ref
+
+test/%.txt.out test/%.txt.diff: test/%.txt test/%.txt.ref 
+	$(FESTIVAL) --script test/print_utterance "test" "$<" > "$@" || exit 1
+	diff "$<".ref "$@" > "$<".diff
+
+TEST += $(TESTTOKENIZER)
 
 test: $(TEST)
 

@@ -174,7 +174,7 @@
 	      (lex.add.entry '("»" ((Frc 0)) () ))
 	      (lex.add.entry '("%" ((Ft  0)) () ))
 	      (lex.add.entry '(";" ((Fx  0)) () ))
-	      (lex.add.entry '("`" ((Fe  -0.47712)) () ))
+	      (lex.add.entry '("`" ((Fz  -0.47712)) () ))
 	      (lex.add.entry '("'" ((Fz  -0.47712)) () ))
 	      (lex.add.entry '("\"" ((Fe -0.47712)) () ));"
 ;	      (lex.add.entry '("+" ((Fz -1.1104)) () ))
@@ -200,9 +200,8 @@
    (set! pos_p_start_tag "Fp")
    (set! pos_pp_start_tag "NC")
 	      (set! pos_ngram_name 'catalan_pos_ngram)
-  (set! pos_map '((( Fat Faa Fc Fca Fct Fg Fd Fh Fia Fit Flt Fla Fp Fpa Fpt Fx Fe) punc)))
+  (set! pos_map '((( Fat Faa Fc Fca Fct Fg Fd Fh Fia Fit Flt Fla Fp Fpa Fpt Fra Frc Ft Fx Fe) punc)))
    (set! pos_supported t)
-
 )
 
 
