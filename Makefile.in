@@ -81,7 +81,7 @@ BUILD_FILES = $(LIB_UPCCATALAN_FILES) $(LIB_DICTS_FILES) $(LANGUAGE_FILES)
 TESTTOKENIZERTXT = test/characters.txt test/llista.txt
 TESTTOKENIZEROUT = $(addsuffix .out,$(TESTTOKENIZERTXT))
 TESTTOKENIZERREF = $(addsuffix .ref,$(TESTTOKENIZERTXT))
-TESTSRCFILES = $(TESTTOKENIZERTXT) $(TESTTOKENIZERREF)
+TESTSRCFILES = $(TESTTOKENIZERTXT) $(TESTTOKENIZERREF) test/print_utterance
 
 # Distribution variables:
 DOCUMENTATIONFILES = AUTHORS AUTHORS.ca COPYRIGHT LICENSE-gpl-2.0.txt \
@@ -416,7 +416,7 @@ festival/lib/dicts/upc/upc_freeling_catalan.tri.ngrambin: $(BUILDNGRAM)/final/up
 	$(MKDIR_P) $(@D) && \
 	cp $< $@ || exit 1
 
-CLEAN+= $(BUILDNGRAM)/work $(BUILDNGRAM)/final
+CLEAN+= $(BUILDNGRAM)/work $(BUILDNGRAM)/final $(VOCABULARY)
 
 DISTSRCFILES+= $(BUILDNGRAM)/01-ReducTAGCorpus.pl \
                $(BUILDNGRAM)/02-FormatCorpus \
