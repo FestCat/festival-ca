@@ -77,16 +77,22 @@ LANGUAGE_FILES =  festival/lib/languages/language_catalan.scm \
 
 BUILD_FILES = $(LIB_UPCCATALAN_FILES) $(LIB_DICTS_FILES) $(LANGUAGE_FILES)
 
+# Test files:
+TESTTOKENIZERTXT = test/characters.txt test/llista.txt
+TESTTOKENIZEROUT = $(addsuffix .out,$(TESTTOKENIZERTXT)
+TESTTOKENIZERREF = $(addsuffix .ref,$(TESTTOKENIZERTXT)
+TESTSRCFILES = $(TESTTOKENIZERTXT) $(TESTTOKENIZERREF)
 
 # Distribution variables:
 DOCUMENTATIONFILES = AUTHORS AUTHORS.ca COPYRIGHT LICENSE-gpl-2.0.txt \
                      LICENSE-lgpl-2.1.txt README.ca.md README.md \
-                     THANKS.md THANKS.ca.md
+                     THANKS.md THANKS.ca.md USAGE.ca.md USAGE.md \
+                     INSTALL.md INSTALL.ca.md
 
 DISTBINFILES = Makefile.in Makefilevars.inc configure.in configure \
                install-sh $(DOCUMENTATIONFILES) $(BUILD_FILES)
 DISTSRCFILES = Makefile.in Makefilevars.inc configure.in configure \
-               install-sh $(DOCUMENTATIONFILES) $(BUILD_FILES)
+               install-sh $(DOCUMENTATIONFILES) $(BUILD_FILES) $(TESTSRCFILES)
 
 CLEAN = 
 
@@ -494,13 +500,11 @@ dist-src: clean
 	tar czf ../$(PACKAGE_TARNAME)-$(PACKAGE_VERSION)-src.tgz $(PACKAGE_TARNAME)-$(PACKAGE_VERSION)-src
 	rm -rf "$(PACKAGE_TARNAME)-$(PACKAGE_VERSION)-src"
 
-TESTTOKENIZER = test/characters.txt.out test/llista.txt.ref
-
 test/%.txt.out test/%.txt.diff: test/%.txt test/%.txt.ref 
 	$(FESTIVAL) --script test/print_utterance "test" "$<" > "$@" || exit 1
 	diff "$<".ref "$@" > "$<".diff
 
-TEST += $(TESTTOKENIZER)
+TEST += $(TESTTOKENIZEROUT)
 
 test: $(TEST)
 
