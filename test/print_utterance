@@ -2,8 +2,8 @@
 ;;; Because this is a --script type file it has to explicitly
 ;;; load the initfiles: init.scm and user's .festivalrc
 
-(set! upclexdir (path-append (pwd) "../festival/lib/dicts/upc"))
-(set! catalan-path (path-append (pwd) "../festival/lib/upc_catalan"))
+(set! upclexdir (path-append (car argv) "../festival/lib/dicts/upc"))
+(set! catalan-path (path-append (car argv) "../festival/lib/upc_catalan"))
 
 (if (symbol-bound? 'datadir)
    (load (path-append datadir "init.scm"))
@@ -70,7 +70,7 @@
 )
 
 
-(set! fitxentrada (car argv))
+(set! fitxentrada (car (cdr argv)) )
 (if (probe_file fitxentrada)
     (format stderr (string-append "Loading " fitxentrada "\n"))
     (begin

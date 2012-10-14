@@ -818,8 +818,9 @@ of words that expand given token with name."
      )
   )
 
-  ( (and (string-matches name "^\s*-.*") 
-         (string-matches (item.feat token "whitespace") "\n+"))
+  ( (and (string-matches name "^\s*[*-].*")
+         (string-matches (item.feat token "whitespace") "\n+")
+    )
          (let ( (paraula nil ) (output nil) )
              (set! paraula (string-after name "-"))
 ;             (format t "Name: %s\n" name)
@@ -828,7 +829,7 @@ of words that expand given token with name."
                  (set! output (upc_catalan::token_to_words token paraula))
                  (set! output nil)
              )
-          ; TODO: Add a pause, as this is an element of a list.
+
          (if (item.prev token)
              (item.set_feat (item.prev token) "punc" ",")
          )
@@ -913,9 +914,9 @@ Split a string into letters, numbers or symbol chars."
 		(cond
 		 ((string-matches letter "[0-9]") 
 		  (catala_number letter "0"))
-		 ((string-matches letter "[äâëêìîöôùûÄÂËÊÌÎÖÔÙÛ]")
+		 ((string-matches letter "[äâáàëêéèìîïíöôóòùûúüÄÂÁÀÉÈËÊÍÏÌÎÖÔÓÒÚÜÙÛ]")
 		    (list (string-append "#" (car (catala_simplify_vowels (car (catala_downcase letter)))))))
-		 ((string-matches letter "[A-ZÁÉÍÏÓÚÜÑÇÀÈÒa-záàäâéèëêíìïîóòöôúùüûüñç]")
+		 ((string-matches letter "[A-ZÑÇa-zñç]")
 		  (list (string-append "#" (car (catala_downcase letter)))))
 		 ((string-equal letter "$") (list "dòlar"))
 		 ((string-equal letter "%") (list "tant" "per" "cent"))

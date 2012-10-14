@@ -116,7 +116,7 @@ build: $(BUILD_FILES)
 # Files to be copied from src/data/festival...:
 $(LANGUAGE_FILES) $(LIB_UPCCATALAN_FILES) festival/lib/dicts/upc/upclex_catalan.scm:
 	$(MKDIR_P) $(@D) && \
-	cp $(BUILDDATA)/$@ "$@" || exit 1
+	cp "$(BUILDDATA)/$@" "$@" || exit 1
 
 # This rules are to perform the phonetic transcriptions of the Freeling Dictionary
 # using an in-house tool at UPC.
@@ -493,6 +493,14 @@ dist-src: clean
 	done
 	tar czf ../$(PACKAGE_TARNAME)-$(PACKAGE_VERSION)-src.tgz $(PACKAGE_TARNAME)-$(PACKAGE_VERSION)-src
 	rm -rf "$(PACKAGE_TARNAME)-$(PACKAGE_VERSION)-src"
+
+TESTTOKENIZER = test/characters.txt.out test/llista.txt.ref
+
+test/%.txt.out test/%.txt.diff: test/%.txt test/%.txt.ref 
+	$(FESTIVAL) --script test/print_utterance "test" "$<" > "$@" || exit 1
+	diff "$<".ref "$@" > "$<".diff
+
+TEST += $(TESTTOKENIZER)
 
 test: $(TEST)
 
