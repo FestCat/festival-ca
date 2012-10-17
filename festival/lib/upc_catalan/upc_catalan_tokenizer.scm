@@ -207,7 +207,9 @@ of words that expand given token with name."
   ((string-matches name ".*/.*")
     ( catala_divide_by_separator token name "/" "barra")
   )
-   ;; This interferes with bad punctuation
+   ;; Take care of websites without "www"  .festcat.talp.cat.
+   ;  Sentences like "era gran.molt gran" will be read as "era gran punt molt gran"
+   ; Sentences like "era gran.Molt gran" will be fixed later with reparapuntuacio.
    ((string-matches name "[\.][a-z\.]+") 
         (append (list "punt") 
                 (upc_catalan::token_to_words token (string-after name "\."))
@@ -215,9 +217,9 @@ of words that expand given token with name."
    )
    ((string-matches name "[a-z]+[\.][a-z\.]+") 
         (append (upc_catalan::token_to_words token (string-before name "\.")) 
-                (list "punt")
-                (upc_catalan::token_to_words token (string-after name "\."))
-        )
+               (list "punt")
+               (upc_catalan::token_to_words token (string-after name "\."))
+       )
    )
 
    ;; e-m@il
@@ -842,15 +844,16 @@ of words that expand given token with name."
    (list "quilograms")
   )
   ;; Lletres: acceptem #a (per dir a1, i no la neutra ax)
-  ((string-matches name "#[A-Za-z·ÀÈÉÍÏÒÓÚÜÇàèéíïòóúüçñ]") (list name))
- 
+  ((string-matches name "#[a-zçñ]") (list name))
 
   ;; Paraules sense vocals
-  ((and (string-matches name "[A-ZÇÑa-zçñ·-]+") (not (string-matches name ".*[AEIOUÁÉÍÓÚÜÏÀÈÒaeiouàèéíòóúïü]+.*")))
-   (catala_speller name))
+  ((and      (string-matches name "[A-ZÇÑa-zçñ·-]+") 
+        (not (string-matches name ".*[AEIOUÁÉÍÓÚÜÏÀÈÒaeiouàèéíòóúïü]+.*"))
+   )
+      (catala_speller name))
 
   ;; Signes puntuacio aïllats : bug: no es tracten bé, com puntuació ...
-  ((string-matches name "([.,?¿!¡:;])")(list name))
+  ((string-matches name "([.,?¿!¡:;])") (list name))
 
 ;; Paraules diferents, enganxades per algun caràcter com_això_que_també-es-pot#pronunciar
   ((or(string-matches name ".+_.*")
@@ -882,10 +885,12 @@ of words that expand given token with name."
    )
    (catala_reparapuntuacio token name ";" "punc")
   )
-
-  ((and (or (string-matches name "^\..+")
+  
+  ((and (or (string-matches name ".*\\.[A-ZÁÀÄÂÉÈËÊÍÌÏÎÓÒÖÔÚÙÜÛÇÑ].+")
+            (string-matches name ".+\\.+")
+            (string-matches name "\\..+\\.")
         )
-        (not (string-matches name ".+")) ; fix iff there is more than just "."
+        (not (string-matches name "\\.+")) ; fix iff there is more than just "."
    )
    (catala_reparapuntuacio token name "." "punc")
   )
@@ -894,7 +899,7 @@ of words that expand given token with name."
    ((not (string-matches name "[A-Za-zÁÀÄÂÉÈËÊÍÌÏÎÓÒÖÔÚÙÜÛàáäâèéëêíìïîòóöôúùüûçÇñÑ'·]+"))
     (catala_speller name))
    (t ;; when no specific rules apply do the general ones
- ;   (format t "General Rule: %s\n" name)
+   ; (format stderr "General Rule: %s\n" name)
     (list name)))
 )
 
