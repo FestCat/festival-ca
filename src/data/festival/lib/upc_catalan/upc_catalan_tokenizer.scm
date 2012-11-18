@@ -43,6 +43,7 @@
 (require 'upc_catalan_hour)
 (require 'upc_catalan_date)
 (require 'upc_catalan_tokenpos)
+(require 'upc_catalan)
 ;; Punctuation for the particular language
 
 
@@ -53,25 +54,42 @@
 
 ;(set! token.unknown_word_name "")
 
+(define (upc_catalan::token_to_words_debug token name rulename)
+  "(upc_catalan::token_to_words_debug token name rulename)
+A function to print to stderr some information about the rule applied
+from the token to words function"
+ (if upc_catalan::debug_token_to_words
+  (begin
+   (format stderr "===========\n")
+   (format stderr "  NAME: %s\n" name)
+   (format stderr "  RULE: %s\n" rulename)
+  )
+ )
+)
+
+(set! upc_catalan::token_to_words_context nil)
 ;;; "Voice/ca token_to_word rules 
 (define (upc_catalan::token_to_words token name)
   "(upc_catalan::token_to_words token name)
 Specific token to word rules for the voice upc_catalan.  Returns a list
 of words that expand given token with name."
-;  (format t "upc_catalan::token_to_words  %s\n" name)
-
+  ;(format stderr "upc_catalan::token_to_words  %s\n" name)
+  
   (cond
    ; Si el Token no té nom, tampoc té paraules:
-   ((string-equal name "") nil)
+   ((string-equal name "") 
+     (upc_catalan::token_to_words_debug token name "Sense nom")
+   nil)
    ; Si el Token conté una sola vocal que no és cap paraula per sí mateixa, la lletregem.
    ((string-matches name "[áàäâeéèëêíìïîóòöôuúùüûÁÀÄÂÉÈËÊÍÌÏÎÓÒÖÔUÚÙÜÛ]")
-  ;      (format t "name: %s\n" name)
+     (upc_catalan::token_to_words_debug token name "Nomes es una vocal sola")
        (list (string-append "#" (car (catala_simplify_vowels (car (catala_downcase name)))))))
 
    ;; Com a separador decimal hem d'assumir que es fa servir la "," perquè el "." es pot fer servir
    ;; per separar milers de centenes.
    ;; Percentatges: 12,32% 2,54% 3% 123%
    ((or (string-matches name "[0-9\.]+\,[0-9]+[%]") (string-matches name "[0-9\.]+[%]"))
+    (upc_catalan::token_to_words_debug token name "Percentatges")
     (append (catala_number_decimals (string-before name "%") "0"  "," "coma" ) (list "per" "cent"))) 
    ;; Percentatges: 12.32% 2.54% 3% 123%   
    ;((or (string-matches name "[0-9]+\.[0-9]%") (string-matches name "[0-9]+\.[0-9][0-9]%"))
@@ -80,6 +98,7 @@ of words that expand given token with name."
 
    ;; Ordinals
    ((string-matches name "[0-9]+[rntèaºª]")
+     (upc_catalan::token_to_words_debug token name "Ordinals generic")
        (cond
            ((string-matches name ".*[è]") (catala_number_ordinals (string-before name "è") "0"))
 	   ((string-matches name ".*[r]") (catala_number_ordinals (string-before name "r") "0"))
@@ -89,13 +108,23 @@ of words that expand given token with name."
 	   ((string-matches name ".*[ª]") (catala_number_ordinals (string-before name "ª") "1"))
 	   ((string-matches name ".*[a]") (catala_number_ordinals (string-before name "a") "1"))))
 
-   ((string-matches name "4rt") (catala_number_ordinals (string-before name "rt") "0"))
+   ((string-matches name "4rt") 
+    (upc_catalan::token_to_words_debug token name "Ordinals 4rt")
+      (catala_number_ordinals (string-before name "rt") "0"))
    
 	
-   ((string-matches name "[13]+rs") (catala_number_ordinals (string-before name "rs") "2"))
-   ((string-matches name "[0-9]+ns") (catala_number_ordinals (string-before name "ns") "2"))
-   ((string-matches name "4ts") (catala_number_ordinals (string-before name "ts") "2"))
-   ((string-matches name "[0-9]+es") (catala_number_ordinals (string-before name "es") "3"))
+   ((string-matches name "[13]+rs") 
+      (upc_catalan::token_to_words_debug token name "Ordinals 1rs i 3rs")
+      (catala_number_ordinals (string-before name "rs") "2"))
+   ((string-matches name "[0-9]+ns") 
+      (upc_catalan::token_to_words_debug token name "Ordinals XXns")
+      (catala_number_ordinals (string-before name "ns") "2"))
+   ((string-matches name "4ts") 
+      (upc_catalan::token_to_words_debug token name "Ordinals 4ts")
+      (catala_number_ordinals (string-before name "ts") "2"))
+   ((string-matches name "[0-9]+es") 
+      (upc_catalan::token_to_words_debug token name "Ordinals XXes")
+      (catala_number_ordinals (string-before name "es") "3"))
      		
 
 
@@ -105,6 +134,8 @@ of words that expand given token with name."
         (string-matches name "[0-9]+[\.][0-9][0-9][0-9][\.][0-9][0-9][0-9][\.][0-9][0-9][0-9][\$¤\£]")
         (string-matches name "[0-9]+[\.][0-9][0-9][0-9][\.][0-9][0-9][0-9][\.][0-9][0-9][0-9][\$¤\£]")  	  	  	
         (string-matches name "[0-9]+[\.][0-9]+[\$¤\£]"))
+          (upc_catalan::token_to_words_debug token name "Monedes")
+
 	(cond 
           ((or (string-matches name "[0-9]+[\.][0-9][\$¤\£]") (string-matches name "[0-9]+[\.][0-9][0-9][\$¤\£]"))
              (catala_money (string-append (string-before name "\.") "," (string-after name "\."))))
@@ -113,11 +144,13 @@ of words that expand given token with name."
    ((or (string-matches name "[\$][0-9]+")  		(string-matches name "[\$][0-9]+[\,][0-9]+") 
 	(string-matches name "[\$][0-9]+[\.][0-9]+")    (string-matches name "[\$][0-9]+[\.][0-9]+[\.][0-9]+") 
 	(string-matches name "[\$][0-9]+[\.][0-9]+[\.][0-9]+[\.][0-9]+") 
-	(and (string-matches name "[\$][0-9]+.*[\,][0-9]+") (not (string-matches name ".*[A-Za-z].*"))))  
+	(and (string-matches name "[\$][0-9]+.*[\,][0-9]+") (not (string-matches name ".*[A-Za-z].*"))))
+          (upc_catalan::token_to_words_debug token name "Monedes (dolar a davant)")
 		(catala_money (string-append (string-after name "\$") "\$")))
   
    ;; Hores
    ((or (string-matches name "[0-2][0-9]:[0-5][0-9]") (string-matches name "[0-9]:[0-5][0-9]"))
+          (upc_catalan::token_to_words_debug token name "Hores")
     (cond 
         ((or (string-equal "pm" (item.feat token "n.name"))  (string-equal "p.m" (item.feat token "n.name"))
              (string-equal "PM" (item.feat token "n.name")) (string-equal "P.M" (item.feat token "n.name")))
@@ -130,10 +163,12 @@ of words that expand given token with name."
    ((and (or (string-matches (item.feat token "p.name") "[0-2][0-9]:[0-5][0-9]")
              (string-matches (item.feat token "p.name") "[0-9]:[0-5][0-9]")
          )
+         (upc_catalan::token_to_words_debug token name "Ometre AM/PM (ja esta dit)")
          (string-matches name "[aApP]\\.?[mM]") ) nil)
    
    ;; Hora exacta (cronòmetre)
    ((string-matches name "[0-9]+:[0-5][0-9]:[0-5][0-9]")
+          (upc_catalan::token_to_words_debug token name "Hora exacta cronometre")
      (append (catala_number (string-before name ":") "1") '("hores") 
              (catala_number (string-before (string-after name ":") ":") "0") '("minuts")
              (list "i")
@@ -143,6 +178,7 @@ of words that expand given token with name."
    (( and (or (string-matches name "[0-3][0-9]/[0-1][0-9]/[0-9][0-9]+") (string-matches name "[1-9]/[0-1][0-9]/[0-9][0-9]+") 
         (string-matches name "[0-3][0-9]/[1-9]/[0-9][0-9]+")      (string-matches name "[1-9]/[1-9]/[0-9][0-9]+"))
         (not (or (string-matches name "[0-9]+/1[3-9]/[0-9]+") (string-matches name "3[2-9]/[0-9]+/[0-9]+"))))
+          (upc_catalan::token_to_words_debug token name "Dates")
   	 (catala_date name))
    
     (( and (or (string-matches name "[1-3][0-9]-1[0-9]-[0-9][0-9]+") 
@@ -150,6 +186,7 @@ of words that expand given token with name."
 	(string-matches name "[1-3][0-9]-[1-9]-[0-9][0-9]+") 
 	(string-matches name "[1-9]-[1-9]-[0-9][0-9]+"))
         (not (or (string-matches name "[0-9]+-1[3-9]-[0-9]+") (string-matches name "3[2-9]-[0-9]+-[0-9]+"))))
+          (upc_catalan::token_to_words_debug token name "Dates, amb guio")
   	 (catala_date (catala_subs name "-" "/")))
 
    ;; Números de teléfon
@@ -160,7 +197,7 @@ of words that expand given token with name."
 	(string-matches name "[0-9][0-9]-[0-9][0-9][0-9][0-9][0-9][0-9][0-9]")
 	;; Format 934-385-232
 	(string-matches name "[0-9][0-9][0-9]-[0-9][0-9][0-9]-[0-9][0-9][0-9]")))
-;;     (print "telefon mode")
+       (upc_catalan::token_to_words_debug token name "Num. de telefon")
      (catala_speller name))
    
    ;; Llista de números (són lletrejades les xifres)
@@ -171,90 +208,148 @@ of words that expand given token with name."
              )
          )
     )
+      (upc_catalan::token_to_words_debug token name "LLista de numeros")
       (catala_speller name)
    )
     
    ;; Resultats esportius
-   ((string-matches name "[0-9]+-[0-9]+") (catala_score name))
+   ((string-matches name "[0-9]+-[0-9]+") 
+     (upc_catalan::token_to_words_debug token name "Resultat esportiu")
+     (catala_score name))
     
    ;; WWW
-    ; Només www:
-   ((string-equal name "www") (append (list "tres" "#ws") ))
-   ((string-equal name "WWW") (append (list "tres" "#ws") ))
-     ; www seguit del que sigui:
-   ((string-matches name "www.*") 
-            (append (list "tres" "#ws") 
-                    (upc_catalan::token_to_words token (string-after name "www"))
+   ;; Pàgines web:
+   ((and 
+      (not (equal? upc_catalan::token_to_words_context "webpage"))
+      (or 
+        (and (string-matches name "\\([a-zA-Z]+://\\)?\\([wW][wW][wW]\\.\\)?\\([a-z0-9]+\\.\\)+[a-z0-9]+\\([a-z&=?_/0-9\\.]\\)*") 
+        ; http opcional, www opcional i despres web
+             (not (string-matches name "[0-9\\.]+")) ; but not 1.234
+        )
+        (string-matches name "[a-z]://")
+        (and (string-matches name "[a-z0-9]+[\.][a-z0-9\.]+/?") ; festcat.talp.cat
+             (not (string-matches name "[0-9\\.]+")) ; but not 1.234
+        )
+        (string-matches name "\\([a-zA-Z]+://\\)\\([wW][wW][wW]\\.\\)?")
+        (string-matches name "www")
+        (string-matches name "WWW")
+      )
+    )
+    (upc_catalan::token_to_words_debug token name "Pagina web")
+      (let ( (laweb name) (output))
+        (set! upc_catalan::token_to_words_context "webpage")
+        (if (string-matches laweb "[a-zA-Z]+://.*")
+              (begin 
+                (set! output (append output 
+                                      (upc_catalan::token_to_words token (string-before laweb "://")) 
+                                      (list "dos" "punts" "barra" "barra"))
+                 )
+                 (set! laweb (string-after laweb "://"))
+              )
+        )
+        (if (string-matches laweb "[wW][wW][wW].*")
+             (begin
+                (set! output (append output
+                                     (list "tres" "#ws"))
+                )
+                (set! laweb (cadr (cut_string laweb (length "www."))))
+             )
+        )
+        (if (string-matches laweb "\\..*")
+            (begin
+               (set! output (append output (list "punt")))
+               (set! laweb (cadr (cut_string laweb 1)))
             )
+        )
+        (set! output (append output (upc_catalan::token_to_words token laweb)))
+        (set! upc_catalan::token_to_words_context nil)
+      output
+      )
    )
-   ((string-matches name ".*www.*")
-           (append (upc_catalan::token_to_words token (string-before name "www")) 
-                   (list "tres" "#ws") 
-                   (upc_catalan::token_to_words token (string-after name "www"))
-           )
-   )
-  ((string-matches name "WWW.*") 
-           (append (list "tres" "#ws") 
-                   (upc_catalan::token_to_words token (string-after name "WWW"))
-           )
-  )
-  ((string-matches name ".*WWW.*")
-           (append (upc_catalan::token_to_words token (string-before name "WWW"))
-                   (list "tres" "#ws")
-                   (upc_catalan::token_to_words token (string-after name "WWW"))
-           )
-  )
+  
+  ; Separar les paraules per barres llegint "barra"
   ((string-matches name ".*/.*")
-    ( catala_divide_by_separator token name "/" "barra")
+   (upc_catalan::token_to_words_debug token name "Token amb barra")
+    (catala_divide_by_separator token name "/" "barra")
   )
    ;; Take care of websites without "www"  .festcat.talp.cat.
    ;  Sentences like "era gran.molt gran" will be read as "era gran punt molt gran"
    ; Sentences like "era gran.Molt gran" will be fixed later with reparapuntuacio.
-   ((string-matches name "[\.][a-z\.]+") 
-        (append (list "punt") 
-                (upc_catalan::token_to_words token (string-after name "\."))
-        )
-   )
-   ((string-matches name "[a-z]+[\.][a-z\.]+") 
+   ((and (equal? upc_catalan::token_to_words_context "webpage") 
+         (string-matches name "[a-z0-9]+[\.][a-z0-9\.]+")
+    )
+      (upc_catalan::token_to_words_debug token name "Domini web")
         (append (upc_catalan::token_to_words token (string-before name "\.")) 
                (list "punt")
                (upc_catalan::token_to_words token (string-after name "\."))
        )
    )
+   ; Si estem tractant una web, els interrogants han de ser llegits
+   ((and (equal? upc_catalan::token_to_words_context "webpage")
+         (string-matches name ".*\\?.*")
+    )
+       (upc_catalan::token_to_words_debug token name "Separa interrogant")
+       (catala_divide_by_separator token name "?" "interrogant")
+   )
+   ; Si estem tractant una web, els ampersands han de ser llegits
+   ((and (equal? upc_catalan::token_to_words_context "webpage")
+         (string-matches name ".*&.*")
+    )
+       (upc_catalan::token_to_words_debug token name "Separa ampersand")
+       (catala_divide_by_separator token name "&" "ampersand")
+   )
+   ; Si estem tractant una web, els signes = han de ser llegits
+   ((and (equal? upc_catalan::token_to_words_context "webpage")
+         (string-matches name ".*=.*")
+    )
+       (upc_catalan::token_to_words_debug token name "Separa iguals")
+       (catala_divide_by_separator token name "=" "igual")
+   )
 
    ;; e-m@il
    ((string-matches name "<.*@.*>")  ;; quoted e-mail
+      (upc_catalan::token_to_words_debug token name "email amb format <test@example.com>")
     (let ((nick (string-after (string-before name "@") "<")) (server (string-before (string-after name "@") ">")))
        (append (upc_catalan::token_to_words token nick) (list "@") (upc_catalan::token_to_words token server))))
    ((string-matches name ".*@.*")  ;; e-mail
+      (upc_catalan::token_to_words_debug token name "arrova")
     (let ((nick (string-before name "@")) (server (string-after name "@")))
        (append (upc_catalan::token_to_words token nick) (list "arrova") (upc_catalan::token_to_words token server))))
 
    ;; Números
    ((string-matches name "0[0-9]+") 
+      (upc_catalan::token_to_words_debug token name "Numero que comenca per zero")
     (catala_speller name)) 
 
-   ((string-matches name "[0-9]+") (catala_number name "0"))
+   ((string-matches name "[0-9]+") 
+      (upc_catalan::token_to_words_debug token name "Numeros")
+    (catala_number name "0"))
 
    ;; Números en format xxx.xxx xxx.xxx.xxx xxx.xxx.xxx.xxx
    ((or (string-matches name "[0-9]+[\.][0-9][0-9][0-9]") 
 	(string-matches name "[0-9]+[\.][0-9][0-9][0-9][0-9][\.][0-9][0-9][0-9]") 
 	(string-matches name "[0-9]+[\.][0-9][0-9][0-9][\.][0-9][0-9][0-9][\.][0-9][0-9][0-9]")) 
+      (upc_catalan::token_to_words_debug token name "Numeros amb punts xxx.xxx xxx.xxx.xxx...")
 		(catala_number_point name "0"))
 
    ;; Números amb decimals
-   ((and (string-matches name "[0-9]+,[0-9]+") (not (string-matches name "[A-Za-z].*")))
+   ((and      (string-matches name "[0-9]+,[0-9]+") 
+         (not (string-matches name "[A-Za-z].*")))
+                (upc_catalan::token_to_words_debug token name "Numeros amb decimals")
 		(catala_number_decimals name "0" "," "coma"))
    ((or (string-matches name "[0-9]+[\.][0-9][0-9][0-9],[0-9]+")
         (string-matches name "[0-9]+[\.][0-9][0-9][0-9][\.][0-9][0-9][0-9],[0-9]+")
-	(string-matches name "[0-9]+[\.][0-9][0-9][0-9][\.][0-9][0-9][0-9][\.][0-9][0-9][0-9],[0-9]+")) 
+	(string-matches name "[0-9]+[\.][0-9][0-9][0-9][\.][0-9][0-9][0-9][\.][0-9][0-9][0-9],[0-9]+"))
+            (upc_catalan::token_to_words_debug token name "Numeros amb decimals (2)")
             (catala_number_decimals name "0" "," "coma"))
    ((or (string-matches name "[0-9]+[\.][0-9]")
         (string-matches name "[0-9]+[\.][0-9][0-9]"))
+            (upc_catalan::token_to_words_debug token name "Numeros amb decimals amb punt")
             (catala_number_decimals name "0" "." "punt" )) 
 
    ;; Comparacions amb "més gran que", "més petit que": Primera versió, per provar, només funciona amb nombres.
    ((string-matches name "[0-9]+<[0-9]+")
+       (upc_catalan::token_to_words_debug token name "Comparem numeros: menor que")
        (append 
            (upc_catalan::token_to_words token (string-before name "<" ) )
            (list "menor" "que")
@@ -262,6 +357,7 @@ of words that expand given token with name."
        )
    )
    ((string-matches name "[0-9]+>[0-9]+")
+       (upc_catalan::token_to_words_debug token name "Comparem numeros: mes gran que")
        (append 
            (upc_catalan::token_to_words token (string-before name ">" ) )
            (list "més" "gran" "que")
@@ -269,6 +365,7 @@ of words that expand given token with name."
        )
    )
    ((string-matches name "[0-9a-zA-Z]+<<+[0-9a-zA-Z]+.*")
+       (upc_catalan::token_to_words_debug token name "Comparem numeros: molt menor que")
        (append 
            (upc_catalan::token_to_words token (string-before name "<<" ) )
            (list "molt" "menor" "que")
@@ -276,6 +373,7 @@ of words that expand given token with name."
        )
    )
    ((string-matches name "[0-9a-zA-Z]+>>+[0-9a-zA-Z]+.*")
+       (upc_catalan::token_to_words_debug token name "Comparem numeros: molt mes gran que")
        (append 
            (upc_catalan::token_to_words token (string-before name ">>" ) )
            (list "molt" "més" "gran" "que")
@@ -285,6 +383,7 @@ of words that expand given token with name."
 
 ;; "<" ">" com cometes:
    ((string-matches name (string-append "<+" catalan-regex-all-letters "+>+"))
+       (upc_catalan::token_to_words_debug token name "Cometes baixes ascii <<Hola>>")
        (upc_catalan::token_to_words token (string-after+ (string-before name ">") "<" ) )
    )
 
@@ -662,7 +761,7 @@ of words that expand given token with name."
 
    ;; Números romans
   ((string-matches name "\\(II?I?\\|IV\\|VI?I?I?\\|IX\\|X[VIX]*\\)")
- 
+     (upc_catalan::token_to_words_debug token name "Numeros romans")
      (cond
          ((and (string-equal name "I") 	(string-equal "1" (catala_start_caps (item.feat token "p.name"))) 
 					(string-equal "0" (catala_start_caps (item.feat token "n.name"))))
@@ -713,22 +812,27 @@ of words that expand given token with name."
        (t (catala_number (tok_roman_to_numstring name) "0"))))
 
   ((string-matches name "s[\.]\\(II?I?\\|IV\\|VI?I?I?\\|IX\\|X[VIX]*\\)")
+    (upc_catalan::token_to_words_debug token name "Segles")
     ( append (list "segle") (catala_number (tok_roman_to_numstring (string-after name "\.")) "0")))
    
    ;; Abreviatures comunes
-   ((and (string-matches name "s") (string-matches (item.feat token "n.name") "\\(II?I?\\|IV\\|VI?I?I?\\|IX\\|X[VIX]*\\)")) (list "segle"))
+   ((and (string-matches name "s") (string-matches (item.feat token "n.name") "\\(II?I?\\|IV\\|VI?I?I?\\|IX\\|X[VIX]*\\)"))
+     (upc_catalan::token_to_words_debug token name "Abrev. Segle")
+     (list "segle"))
    
    ((and (string-matches name "dC") (or (string-matches (item.feat token "pp.name") "segle") 
 					(string-matches (item.feat token "pp.name") "s.") 
 					(string-matches (item.feat token "pp.name") "s") 
 					(string-matches (item.feat token "p.name") "[0-9]+"))) 
-						(list "després" "de" "Crist"))
+     (upc_catalan::token_to_words_debug token name "Abrev. Despres de Crist")
+     (list "després" "de" "Crist"))
 
    ((and (string-matches name "aC") (or (string-matches (item.feat token "pp.name") "segle") 
 					(string-matches (item.feat token "pp.name") "s.") 
 					(string-matches (item.feat token "pp.name") "s") 
-					(string-matches (item.feat token "p.name") "[0-9]+"))) 
-						(list "abans" "de" "Crist"))
+					(string-matches (item.feat token "p.name") "[0-9]+")))
+     (upc_catalan::token_to_words_debug token name "Abrev. Despres de Crist")
+     (list "abans" "de" "Crist"))
 
 
    ((or (string-matches name "telf\.") 
@@ -737,24 +841,52 @@ of words that expand given token with name."
              (string-matches (item.feat token "n.name") "[-0-9]+" ) 
         )
     )
+     (upc_catalan::token_to_words_debug token name "Abrev. telefon")
      (list "telèfon")
    )
 
-   ((string-matches name "[Ss][tT]\.?") (list "sant"))
-   ((string-equal name "i/o") (list "i" "o") )
+   ((string-matches name "[Ss][tT]\.?") 
+     (upc_catalan::token_to_words_debug token name "Abrev. Sant")
+     (list "sant")
+   )
+   ((string-equal name "i/o") 
+     (upc_catalan::token_to_words_debug token name "conjuncio i/o")
+     (list "i" "o")
+   )
 
    ;; Abreviatures d'adreces
-   ((string-matches name "[Cc][/\.]+") 	(list "carrer"))
-   ((string-matches name "[Aa]v[/\.]+") 	(list "avinguda"))
-   ((string-matches name "[Pp]g[/\.]+")	(list "passeig"))
-   ((string-matches name "[Pp]l[/\.]+") 	(list "plaça"))
-   ((string-matches name "entr") (list "entresol"))
-   ((string-matches name "pr")   (list "principal"))
-   ((string-matches name "esc") (list "escala"))
-   
+   ((string-matches name "[Cc][/\.]+")
+     (upc_catalan::token_to_words_debug token name "Abrev. carrer")
+     (list "carrer"))
+   ((string-matches name "[Aa]v[/\.]+")
+     (upc_catalan::token_to_words_debug token name "Abrev. avinguda")
+     (list "avinguda"))
+   ((string-matches name "[Pp]g[/\.]+")
+     (upc_catalan::token_to_words_debug token name "Abrev. passeig")
+     (list "passeig"))
+   ((string-matches name "[Pp]l[/\.]+")
+     (upc_catalan::token_to_words_debug token name "Abrev. placa")
+     (list "plaça"))
+   ((string-matches name "entr")
+     (upc_catalan::token_to_words_debug token name "Abrev. entresol")
+     (list "entresol"))
+   ((string-matches name "pr")
+     (upc_catalan::token_to_words_debug token name "Abrev. principal")
+     (list "principal"))
+   ((string-matches name "esc")
+     (upc_catalan::token_to_words_debug token name "Abrev. escala")
+     (list "escala"))
+
+  ;; Abreviatures d'unitats
+  ((string-matches name "kg")
+     (upc_catalan::token_to_words_debug token name "Abrev. kg")
+   (item.set_feat token "punc" "")
+   (list "quilograms")
+  )
   
   ;; Separació de Paraules tipus WindowsXP
    ((string-equal "1" (catala_two_caps name))
+        (upc_catalan::token_to_words_debug token name "Paraula dues majuscules")
           (append (upc_catalan::token_to_words token (car (catala_splitter name))) 
                   (upc_catalan::token_to_words token (car (cdr (catala_splitter name))))
           )
@@ -762,6 +894,7 @@ of words that expand given token with name."
 
   ;; Paraules compostes amb text y número separades per apòstrofs: Ex. Sidney'02
   ((string-matches name (string-append catalan-regex-all-letters "+\'[0-9]+")) 
+     (upc_catalan::token_to_words_debug token name "Barcelona'92")
         (append (upc_catalan::token_to_words token (string-before name "\'")) 
                 (upc_catalan::token_to_words token (string-after name "\'"))
         )
@@ -769,22 +902,25 @@ of words that expand given token with name."
 
   ;; Paraules compostes amb text y número separades per apòstrofs: Ex. Barcelona-92
   ((string-matches name (string-append catalan-regex-all-letters "+\-[0-9]+" ) )
+     (upc_catalan::token_to_words_debug token name "Barcelona-92")
         (append (upc_catalan::token_to_words token (string-before name "\-"))
                 (upc_catalan::token_to_words token (string-after name "\-"))
         )
   )
  
-  
+  ; Ratlles que delimiten parts de documents
   ((string-matches name ".*_____+.*")
+     (upc_catalan::token_to_words_debug token name "ratlla de guio baix")
      (remove_empty
         (append (upc_catalan::token_to_words token (string-before name "_"))
-           (list "ratlla" "de" "subratllats")
+           (list "ratlla" "de" "guió" "baix")
            (upc_catalan::token_to_words token (string-after+ name "_"))
         )
      )
   )
 
   ((string-matches name ".*=====+.*")
+     (upc_catalan::token_to_words_debug token name "ratlla d'iguals")
      (remove_empty
         (append (upc_catalan::token_to_words token (string-before name "="))
            (list "ratlla" "d'" "iguals")
@@ -794,15 +930,17 @@ of words that expand given token with name."
   )
 
   ((string-matches name ".*-----+.*")
+     (upc_catalan::token_to_words_debug token name "ratlla de guions")
      (remove_empty
         (append (upc_catalan::token_to_words token (string-before name "-"))
-           (list "ratlla" "de" "guionets")
+           (list "ratlla" "de" "guions")
            (upc_catalan::token_to_words token (string-after+ name "-"))
         )
      )
   )
 
   ((string-matches name ".*\\*\\*\\*\\*\\*+.*")
+     (upc_catalan::token_to_words_debug token name "ratlla d'asteriscs")
      (remove_empty
         (append (upc_catalan::token_to_words token (string-before name "*"))
            (list "ratlla" "d'" "asteriscs")
@@ -812,6 +950,7 @@ of words that expand given token with name."
   )
 
   ((string-matches name ".#####+.*")
+     (upc_catalan::token_to_words_debug token name "ratlla de coixinets")
      (remove_empty
         (append (upc_catalan::token_to_words token (string-before name "#"))
            (list "ratlla" "de" "coixinets")
@@ -819,12 +958,13 @@ of words that expand given token with name."
         )
      )
   )
-
+  ; If we detect a list with "*" or "-" at the beginning of the line, we process it properly.
   ( (and (string-matches name "^\s*[*-].*")
          (string-matches (item.feat token "whitespace") "\n+")
     )
+     (upc_catalan::token_to_words_debug token name "Element de llista")
          (let ( (paraula nil ) (output nil) )
-             (set! paraula (string-after name "-"))
+             (set! paraula (string-after-regex+ name "[*-]"))
 ;             (format t "Name: %s\n" name)
 ;             (format t "Paraula: %s\n" paraula)
              (if (> (length paraula) 0 )
@@ -835,36 +975,68 @@ of words that expand given token with name."
          (if (item.prev token)
              (item.set_feat (item.prev token) "punc" ",")
          )
-;         (format t "Output: %l\n" output) 
          output
          ) 
   )
-  ((string-matches name "kg")
-   (item.set_feat token "punc" "")
-   (list "quilograms")
+
+  ;; Paraules amb numeros al final com "camisa20"
+  ((string-matches name "[a-zA-ZÁÀÄÂÉÈËÊÍÌÏÎÓÒÖÔÚÙÜÛàáäâèéëêíìïîòóöôúùüûçÇñÑ'·]+[0-9]+")
+     (upc_catalan::token_to_words_debug token name "Paraula amb num enganxat")
+    (append (upc_catalan::token_to_words token (string-before-regex name "[0-9]"))
+            (upc_catalan::token_to_words token (string-after-regex+ name "[a-zA-ZÁÀÄÂÉÈËÊÍÌÏÎÓÒÖÔÚÙÜÛàáäâèéëêíìïîòóöôúùüûçÇñÑ'·]"))
+    )
+  )
+  ;; Paraules amb numeros al principi com "20camisa"
+  ((string-matches name "[0-9]+[a-zA-ZÁÀÄÂÉÈËÊÍÌÏÎÓÒÖÔÚÙÜÛàáäâèéëêíìïîòóöôúùüûçÇñÑ'·]+")
+     (upc_catalan::token_to_words_debug token name "Num amb paraula enganxada")
+    (append (upc_catalan::token_to_words token (string-before-regex name "[a-zA-ZÁÀÄÂÉÈËÊÍÌÏÎÓÒÖÔÚÙÜÛàáäâèéëêíìïîòóöôúùüûçÇñÑ'·]"))
+            (upc_catalan::token_to_words token (string-after-regex+ name "[0-9]"))
+    )
+  )
+  ;; Paraules que tenen numeros al mig com "camisa10samarreta"
+  ((string-matches name "[a-zA-ZÁÀÄÂÉÈËÊÍÌÏÎÓÒÖÔÚÙÜÛàáäâèéëêíìïîòóöôúùüûçÇñÑ'·]+[0-9]+[a-zA-ZÁÀÄÂÉÈËÊÍÌÏÎÓÒÖÔÚÙÜÛàáäâèéëêíìïîòóöôúùüûçÇñÑ'·]+")
+     (upc_catalan::token_to_words_debug token name "Paraula1234paraula")
+    (append (upc_catalan::token_to_words token (string-before-regex name "[0-9]"))
+            (upc_catalan::token_to_words token (string-after-regex+ name "[a-zA-ZÁÀÄÂÉÈËÊÍÌÏÎÓÒÖÔÚÙÜÛàáäâèéëêíìïîòóöôúùüûçÇñÑ'·]"))
+    )
+  )
+  ;; Numeros que tenen paraules al mig com "10camisa30"
+  ((string-matches name "[0-9]+[a-zA-ZÁÀÄÂÉÈËÊÍÌÏÎÓÒÖÔÚÙÜÛàáäâèéëêíìïîòóöôúùüûçÇñÑ'·]+[0-9]+")
+     (upc_catalan::token_to_words_debug token name "1234paraula4321")
+    (append (upc_catalan::token_to_words token (string-before-regex name "[a-zA-ZÁÀÄÂÉÈËÊÍÌÏÎÓÒÖÔÚÙÜÛàáäâèéëêíìïîòóöôúùüûçÇñÑ'·]"))
+            (upc_catalan::token_to_words token (string-after-regex+ name "[0-9]"))
+    )
   )
   ;; Lletres: acceptem #a (per dir a1, i no la neutra ax)
-  ((string-matches name "#[a-zçñ]") (list name))
+  ((string-matches name "#[a-zçñ]") 
+    (upc_catalan::token_to_words_debug token name "Lletreja lletra sola explícitament #e")
+    (list name))
 
   ;; Paraules sense vocals
   ((and      (string-matches name "[A-ZÇÑa-zçñ·-]+") 
         (not (string-matches name ".*[AEIOUÁÉÍÓÚÜÏÀÈÒaeiouàèéíòóúïü]+.*"))
    )
+     (upc_catalan::token_to_words_debug token name "Paraules sense vocals")
       (catala_speller name))
 
-  ;; Signes puntuacio aïllats : bug: no es tracten bé, com puntuació ...
-  ((string-matches name "([.,?¿!¡:;])") (list name))
+  ;; Signes puntuacio aïllats:
+  ((string-matches name "[.,?¿!¡:;]")
+     (upc_catalan::token_to_words_debug token name "signes de puntuacio aillats")
+      (catala_speller name)
+  )
 
 ;; Paraules diferents, enganxades per algun caràcter com_això_que_també-es-pot#pronunciar
   ((or(string-matches name ".+_.*")
       (string-matches name ".*_.+")
    )
+     (upc_catalan::token_to_words_debug token name "aquesta_regla")
     ( catala_divide_by_separator token name "_" "")
   )
 
   ((or(string-matches name ".+#.*")
       (string-matches name ".*#.+")
    )
+     (upc_catalan::token_to_words_debug token name "aquesta#regla")
     ( catala_divide_by_separator token name "#" "")
   )
 
@@ -874,6 +1046,7 @@ of words that expand given token with name."
         )
         (not (string-matches name ",+")) ; fix iff there is more than just ","
    )
+   (upc_catalan::token_to_words_debug token name "Arregla puntuacio amb coma")
    (catala_reparapuntuacio token name "," "punc")
   )
 
@@ -883,23 +1056,36 @@ of words that expand given token with name."
         )
         (not (string-matches name ";+")) ; fix iff there is more than just ";"
    )
+   (upc_catalan::token_to_words_debug token name "Arregla puntuacio amb punt i coma")
    (catala_reparapuntuacio token name ";" "punc")
   )
-  
+
+  ((and (or (string-matches name ".*\\.\\.\\..+")
+            (string-matches name ".+\\.\\.\\..*")
+            (string-matches name "\\.\\.\\..+\\.\\.\\.")
+        )
+       (not (string-matches name "(\\.\\.\\.)+")) ; fix iff there is more than just "..."
+   )
+   (upc_catalan::token_to_words_debug token name "Arregla puntuacio amb punts suspensius")
+   (catala_reparapuntuacio token name "..." "punc")
+  )
   ((and (or (string-matches name ".*\\.[A-ZÁÀÄÂÉÈËÊÍÌÏÎÓÒÖÔÚÙÜÛÇÑ].+")
             (string-matches name ".+\\.+")
             (string-matches name "\\..+\\.")
         )
         (not (string-matches name "\\.+")) ; fix iff there is more than just "."
    )
+   (upc_catalan::token_to_words_debug token name "Arregla puntuacio amb punt")
    (catala_reparapuntuacio token name "." "punc")
   )
 
   ;; Codis
    ((not (string-matches name "[A-Za-zÁÀÄÂÉÈËÊÍÌÏÎÓÒÖÔÚÙÜÛàáäâèéëêíìïîòóöôúùüûçÇñÑ'·]+"))
+   (upc_catalan::token_to_words_debug token name "Algo raro -> lletregem")
     (catala_speller name))
    (t ;; when no specific rules apply do the general ones
    ; (format stderr "General Rule: %s\n" name)
+   (upc_catalan::token_to_words_debug token name "Paraula normal")
     (list name)))
 )
 
@@ -961,13 +1147,13 @@ Split a string into letters, numbers or symbol chars."
 
 (define (catala_reparapuntuacio token name punctchar feature)
 "Separa \"paraules,que\" en dos tokens."
-  (let ( (llista)p (elem) (currtok token) (output) (posa_punc_al_final nil) )
+  (let ( (llista) (elem) (currtok token) (output) (posa_punc_al_final nil) )
       (set! llista (split name punctchar))
       ; Mirem si l'últim token ha de tenir puntuació:
       (if (string-equal (car (reverse llista)) "")
           (set! posa_punc_al_final punctchar)
       )
-      (if (not (eq? 0 (item.feat token feature)) )
+      (if (not (equal? 0 (item.feat token feature)) )
           (set! posa_punc_al_final (item.feat token feature))
       )
  
@@ -1038,6 +1224,36 @@ second part will be empty."
   )
 )
 
+(define (comparelongsplit wordexpl charexpl)
+  (let ( (explosion wordexpl)
+         (singlechar )
+         (i 0)
+         (goon t)
+         (result)
+       )
+       (if (< (length explosion) (length charexpl))
+         (set! result (list nil wordexpl))
+         (begin 
+           (while (and (< i (length charexpl)) goon)
+               (if (string-equal (nth i charexpl) (car explosion))
+                   (begin 
+                     (set! goon t)
+                     (set! explosion (cdr explosion))
+                     (set! i (+ i 1))
+                   )
+                   (set! goon nil)
+               )
+           )
+           (if (not goon)
+              (set! result (list nil wordexpl))
+              (set! result (list t explosion))
+           )
+         )
+       )
+      result
+  )
+)
+
 (define (split name character)
 "(split NAME CHARACTER)
 Example: (split \"hello/my/friend\" \"/\") returns (\"hello\" \"my\" \"friend\")"
@@ -1045,19 +1261,27 @@ Example: (split \"hello/my/friend\" \"/\") returns (\"hello\" \"my\" \"friend\")
          (result) 
          (currstring "") 
          (currsymbol)
+         (characterexpl (symbolexplode character))
+         (longsplitcomparison)
        )
      
      ;Check position is in lengthname:
      (while (car explosion)
         (set! currsymbol (car explosion))
-        (if (string-equal currsymbol character)
+        (set! longsplitcomparison (comparelongsplit explosion characterexpl))
+
+        (if (car longsplitcomparison)
             (begin 
                    (set! result (append result (list currstring)))
                    (set! currstring "")
+                   (set! explosion (car (cdr longsplitcomparison)))
             )
-            (set! currstring (string-append currstring currsymbol))
+            (begin 
+                   (set! currstring (string-append currstring currsymbol))
+                   (set! explosion (cdr explosion))
+            )
         )
-        (set! explosion (cdr explosion))
+       
      )
      (set! result (append result (list currstring)))
   result
@@ -1094,6 +1318,73 @@ Example: (join (\"hello\" \"my\" \"friend\") \"/\") returns \"hello/my/friend\""
 )
 
 
+(define (string-before-regex ATOM REGEX)
+"Like string before, but with a regular expression. 
+Limited regular expressions that can be applied
+to a single character at a time"
+  (let ( (text (symbolexplode ATOM))
+         (output "")
+         (continue t)
+         (character)
+       )
+    (while (and (> (length text) 0) continue)
+       (set! character (car text))
+       (if (string-matches character REGEX)
+           (begin 
+              (set! continue nil)
+           )
+           (begin
+              (set! output (string-append output character))
+           )
+       )
+       (set! text (cdr text))
+    )
+    (if continue
+       (set! output "")
+    )
+    output
+  )
+)
+
+(define (string-after-regex+ ATOM REGEX)
+"Like string after, but with a regular expression. 
+Limited regular expressions that can be applied
+to a single character at a time"
+  (let ( (text (symbolexplode ATOM))
+         (output "")
+         (continue t)
+         (character)
+       )
+    ;discard loop
+    (while (and (> (length text) 0) continue)
+       (set! character (car text))
+       (if (string-matches character REGEX)
+              (begin (set! continue nil))
+              (begin (set! text (cdr text)))
+       )
+    )
+    (if continue
+       (set! output "")
+       (begin
+         ; match loop
+         (set! continue t)
+         (while (and (> (length text) 0) continue)
+            (set! character (car text))
+            (if (string-matches character REGEX)
+	       (begin (set! text (cdr text)))
+               (begin (set! continue nil))
+            )
+         )
+         (if continue
+             (set! output "")
+             (set! output (strconcat  text))
+         )
+       )
+    )
+    output
+  )
+)
+
 (define (string-reverse STRING)
 "Reverses the string"
   (strconcat (reverse (symbolexplode STRING)))
@@ -1102,7 +1393,7 @@ Example: (join (\"hello\" \"my\" \"friend\") \"/\") returns \"hello/my/friend\""
 
 (define (string-after-greedy ATOM AFTER)
 "Like string after, but returning the least possible number of characters"
- (string-reverse (string-before (string-reverse ATOM) AFTER))
+ (string-reverse (string-before (string-reverse ATOM) (string-reverse AFTER)))
 )
 
 (define (string-after+ ATOM AFTER)
@@ -1146,12 +1437,12 @@ Split name in two words that start with a cap letter."
    (set! wordout1 (string-append "" (car letters)))
    (set! letters (cdr letters))
    (while (and (not (string-matches (car letters) catalan-regex-upcase-letters))
-               (not (eq? nil (car letters)))
+               (not (equal? nil (car letters)))
           )
           (set! wordout1 (string-append wordout1 (car letters)))
           (set! letters (cdr letters))
    )
-   (while (not (eq? nil (car letters)))
+   (while (not (equal? nil (car letters)))
           (set! wordout2 (string-append wordout2 (car letters)))
           (set! letters (cdr letters))
    )
@@ -1176,7 +1467,7 @@ every part. It will also add \"barra\" between each part leading to:
        ; Per cada resultat...
        (while (> (length tmplist) 0)
           (set! elem (car tmplist))
-         (if (eq? (length elem 0)) ; Afegim la paraula o les paraules del token_to_words a tmplist2, separades per la paraula barra.
+         (if (equal? (length elem 0)) ; Afegim la paraula o les paraules del token_to_words a tmplist2, separades per la paraula barra.
                                    ; TODO: Falta afegir una petita pausa?
           (set! tmplist2 (append tmplist2 (list elem)  (list separator_name ) ))
           (set! tmplist2 (append tmplist2       elem   (list separator_name)))
@@ -1198,6 +1489,5 @@ Return 1 if it's possible say name as a word, 0 otherwise"
    "1"
    "0")
 
-
-
 (provide 'upc_catalan_tokenizer)
+

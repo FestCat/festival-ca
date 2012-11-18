@@ -82,7 +82,7 @@ LANGUAGE_FILES =  festival/lib/languages/language_catalan.scm \
 BUILD_FILES = $(LIB_UPCCATALAN_FILES) $(LIB_DICTS_FILES) $(LANGUAGE_FILES)
 
 # Test files:
-TESTTOKENIZERTXT = test/characters.txt test/llista.txt test/CheckPunctuation.txt
+TESTTOKENIZERTXT = test/characters.txt test/full_llista.txt test/CheckPunctuation.txt
 TESTTOKENIZEROUT = $(addsuffix .out,$(TESTTOKENIZERTXT))
 TESTTOKENIZERREF = $(addsuffix .ref,$(TESTTOKENIZERTXT))
 TESTSRCFILES = $(TESTTOKENIZERTXT) $(TESTTOKENIZERREF) test/print_utterance
@@ -504,9 +504,10 @@ dist-src: clean
 	tar czf ../$(PACKAGE_TARNAME)-$(PACKAGE_VERSION)-src.tgz $(PACKAGE_TARNAME)-$(PACKAGE_VERSION)-src
 	rm -rf "$(PACKAGE_TARNAME)-$(PACKAGE_VERSION)-src"
 
-test/%.txt.out test/%.txt.diff: test/%.txt test/%.txt.ref 
+test/%.txt.out test/%.txt.out2  test/%.txt.diff  test/%.txt.diff2: test/%.txt test/%.txt.ref test/%.txt.ref2 
 	$(FESTIVAL) --script test/print_utterance "test" "$<" > "$@" || exit 1
 	diff "$<".ref "$@" > "$<".diff
+	diff "$<".ref2 "$@2" > "$<".diff2
 
 TEST += $(TESTTOKENIZEROUT)
 
