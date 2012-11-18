@@ -252,7 +252,7 @@ of words that expand given token with name."
                 (set! output (append output
                                      (list "tres" "#ws"))
                 )
-                (set! laweb (cadr (cut_string laweb (length "www."))))
+                (set! laweb (cadr (cut_string laweb (length "www"))))
              )
         )
         (if (string-matches laweb "\\..*")
