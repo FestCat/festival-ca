@@ -1523,7 +1523,7 @@ every part. It will also add \"barra\" between each part leading to:
           (set! tmplist (cdr tmplist))
        )
       ; Movem a tmplist el resultat, traient el darrer "barra" que sobra.
-         (set! tmplist (reverse (cdr (reverse tmplist2))) )
+         (set! tmplist (reverse (nth_cdr (length separator_name) (reverse tmplist2))) )
       ; Eliminem totes les paraules buides "":
       ; i tornem la resta de paraules:
        (remove_empty tmplist)
