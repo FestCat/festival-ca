@@ -29,6 +29,10 @@
 (defvar upclexdir (path-append lexdir "upc")
 "upclexdir is the directory where Catalan dictionaries are stored")
 
+(defvar upc_catalan::debug_token_to_words nil
+"upc_catalan::debug_token_to_words: If not nil, prints information
+about token to words")
+
 
 (define (load-catalan-support)
 "(load-catalan-support)

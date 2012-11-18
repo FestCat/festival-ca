@@ -1,0 +1,922 @@
+Loading test/CheckPunctuation.txt
+LINE TEXT MODE
+Frase: Bon dia, amics.
+===========
+  NAME: Bon
+  RULE: Paraula normal
+===========
+  NAME: dia
+  RULE: Paraula normal
+===========
+  NAME: amics
+  RULE: Paraula normal
+
+Frase: Bon dia,amics.
+===========
+  NAME: Bon
+  RULE: Paraula normal
+===========
+  NAME: dia,amics
+  RULE: Arregla puntuacio amb coma
+===========
+  NAME: dia
+  RULE: Paraula normal
+===========
+  NAME: amics
+  RULE: Paraula normal
+
+Frase: Bon dia ,amics.
+===========
+  NAME: Bon
+  RULE: Paraula normal
+===========
+  NAME: dia
+  RULE: Paraula normal
+===========
+  NAME: ,amics
+  RULE: Arregla puntuacio amb coma
+===========
+  NAME: amics
+  RULE: Paraula normal
+
+Frase: Bon dia , amics.
+===========
+  NAME: Bon
+  RULE: Paraula normal
+===========
+  NAME: dia
+  RULE: Paraula normal
+===========
+  NAME: ,
+  RULE: signes de puntuacio aillats
+===========
+  NAME: amics
+  RULE: Paraula normal
+
+Frase: Era gran. Molt gran.
+===========
+  NAME: Era
+  RULE: Paraula normal
+===========
+  NAME: gran
+  RULE: Paraula normal
+===========
+  NAME: Molt
+  RULE: Paraula normal
+===========
+  NAME: gran
+  RULE: Paraula normal
+
+Frase: Era gran.Molt gran.
+===========
+  NAME: Era
+  RULE: Paraula normal
+===========
+  NAME: gran.Molt
+  RULE: Arregla puntuacio amb punt
+===========
+  NAME: gran
+  RULE: Paraula normal
+===========
+  NAME: Molt
+  RULE: Paraula normal
+===========
+  NAME: gran
+  RULE: Paraula normal
+
+Frase: Era gran .Molt gran.
+===========
+  NAME: Era
+  RULE: Paraula normal
+===========
+  NAME: gran
+  RULE: Paraula normal
+===========
+  NAME: .Molt
+  RULE: Arregla puntuacio amb punt
+===========
+  NAME: Molt
+  RULE: Paraula normal
+===========
+  NAME: gran
+  RULE: Paraula normal
+
+Frase: Era gran . Molt gran.
+===========
+  NAME: Era
+  RULE: Paraula normal
+===========
+  NAME: gran
+  RULE: Paraula normal
+===========
+  NAME: .
+  RULE: signes de puntuacio aillats
+===========
+  NAME: Molt
+  RULE: Paraula normal
+===========
+  NAME: gran
+  RULE: Paraula normal
+
+Frase: (.)
+===========
+  NAME: .
+  RULE: signes de puntuacio aillats
+
+Frase: http://
+===========
+  NAME: http://
+  RULE: Pagina web
+===========
+  NAME: http
+  RULE: Paraules sense vocals
+===========
+  NAME: 
+  RULE: Sense nom
+
+Frase: ftp://
+===========
+  NAME: ftp://
+  RULE: Pagina web
+===========
+  NAME: ftp
+  RULE: Paraules sense vocals
+===========
+  NAME: 
+  RULE: Sense nom
+
+Frase: www
+===========
+  NAME: www
+  RULE: Pagina web
+===========
+  NAME: 
+  RULE: Sense nom
+
+Frase: WWW
+===========
+  NAME: WWW
+  RULE: Pagina web
+===========
+  NAME: 
+  RULE: Sense nom
+
+Frase: www.talp.cat
+===========
+  NAME: www.talp.cat
+  RULE: Pagina web
+===========
+  NAME: talp.cat
+  RULE: Domini web
+===========
+  NAME: talp
+  RULE: Paraula normal
+===========
+  NAME: cat
+  RULE: Paraula normal
+
+Frase: festcat.talp.cat
+===========
+  NAME: festcat.talp.cat
+  RULE: Pagina web
+===========
+  NAME: festcat.talp.cat
+  RULE: Domini web
+===========
+  NAME: festcat
+  RULE: Paraula normal
+===========
+  NAME: talp.cat
+  RULE: Domini web
+===========
+  NAME: talp
+  RULE: Paraula normal
+===========
+  NAME: cat
+  RULE: Paraula normal
+
+Frase: exemple.com
+===========
+  NAME: exemple.com
+  RULE: Pagina web
+===========
+  NAME: exemple.com
+  RULE: Domini web
+===========
+  NAME: exemple
+  RULE: Paraula normal
+===========
+  NAME: com
+  RULE: Paraula normal
+
+Frase: http://www.exemple.com
+===========
+  NAME: http://www.exemple.com
+  RULE: Pagina web
+===========
+  NAME: http
+  RULE: Paraules sense vocals
+===========
+  NAME: exemple.com
+  RULE: Domini web
+===========
+  NAME: exemple
+  RULE: Paraula normal
+===========
+  NAME: com
+  RULE: Paraula normal
+
+Frase: http://exemple2.com
+===========
+  NAME: http://exemple2.com
+  RULE: Pagina web
+===========
+  NAME: http
+  RULE: Paraules sense vocals
+===========
+  NAME: exemple2.com
+  RULE: Domini web
+===========
+  NAME: exemple2
+  RULE: Paraula amb num enganxat
+===========
+  NAME: exemple
+  RULE: Paraula normal
+===========
+  NAME: 2
+  RULE: Numeros
+===========
+  NAME: com
+  RULE: Paraula normal
+
+Frase: http://a.example.com
+===========
+  NAME: http://a.example.com
+  RULE: Pagina web
+===========
+  NAME: http
+  RULE: Paraules sense vocals
+===========
+  NAME: a.example.com
+  RULE: Domini web
+===========
+  NAME: a
+  RULE: Paraula normal
+===========
+  NAME: example.com
+  RULE: Domini web
+===========
+  NAME: example
+  RULE: Paraula normal
+===========
+  NAME: com
+  RULE: Paraula normal
+
+Frase: https://a.example.com
+===========
+  NAME: https://a.example.com
+  RULE: Pagina web
+===========
+  NAME: https
+  RULE: Paraules sense vocals
+===========
+  NAME: a.example.com
+  RULE: Domini web
+===========
+  NAME: a
+  RULE: Paraula normal
+===========
+  NAME: example.com
+  RULE: Domini web
+===========
+  NAME: example
+  RULE: Paraula normal
+===========
+  NAME: com
+  RULE: Paraula normal
+
+Frase: https://a.example.com/test.html
+===========
+  NAME: https://a.example.com/test.html
+  RULE: Pagina web
+===========
+  NAME: https
+  RULE: Paraules sense vocals
+===========
+  NAME: a.example.com/test.html
+  RULE: Token amb barra
+===========
+  NAME: a.example.com
+  RULE: Domini web
+===========
+  NAME: a
+  RULE: Paraula normal
+===========
+  NAME: example.com
+  RULE: Domini web
+===========
+  NAME: example
+  RULE: Paraula normal
+===========
+  NAME: com
+  RULE: Paraula normal
+===========
+  NAME: test.html
+  RULE: Domini web
+===========
+  NAME: test
+  RULE: Paraula normal
+===========
+  NAME: html
+  RULE: Paraules sense vocals
+
+Frase: https://a.example.com/a
+===========
+  NAME: https://a.example.com/a
+  RULE: Pagina web
+===========
+  NAME: https
+  RULE: Paraules sense vocals
+===========
+  NAME: a.example.com/a
+  RULE: Token amb barra
+===========
+  NAME: a.example.com
+  RULE: Domini web
+===========
+  NAME: a
+  RULE: Paraula normal
+===========
+  NAME: example.com
+  RULE: Domini web
+===========
+  NAME: example
+  RULE: Paraula normal
+===========
+  NAME: com
+  RULE: Paraula normal
+===========
+  NAME: a
+  RULE: Paraula normal
+
+Frase: https://a.example.com/
+===========
+  NAME: https://a.example.com/
+  RULE: Pagina web
+===========
+  NAME: https
+  RULE: Paraules sense vocals
+===========
+  NAME: a.example.com/
+  RULE: Token amb barra
+===========
+  NAME: a.example.com
+  RULE: Domini web
+===========
+  NAME: a
+  RULE: Paraula normal
+===========
+  NAME: example.com
+  RULE: Domini web
+===========
+  NAME: example
+  RULE: Paraula normal
+===========
+  NAME: com
+  RULE: Paraula normal
+===========
+  NAME: 
+  RULE: Sense nom
+
+Frase: https://example.com/test.html?doing_wp_cron=123
+===========
+  NAME: https://example.com/test.html?doing_wp_cron=123
+  RULE: Pagina web
+===========
+  NAME: https
+  RULE: Paraules sense vocals
+===========
+  NAME: example.com/test.html?doing_wp_cron=123
+  RULE: Token amb barra
+===========
+  NAME: example.com
+  RULE: Domini web
+===========
+  NAME: example
+  RULE: Paraula normal
+===========
+  NAME: com
+  RULE: Paraula normal
+===========
+  NAME: test.html?doing_wp_cron=123
+  RULE: Separa interrogant
+===========
+  NAME: test.html
+  RULE: Domini web
+===========
+  NAME: test
+  RULE: Paraula normal
+===========
+  NAME: html
+  RULE: Paraules sense vocals
+===========
+  NAME: doing_wp_cron=123
+  RULE: Separa iguals
+===========
+  NAME: doing_wp_cron
+  RULE: aquesta_regla
+===========
+  NAME: doing
+  RULE: Paraula normal
+===========
+  NAME: wp
+  RULE: Paraules sense vocals
+===========
+  NAME: cron
+  RULE: Paraula normal
+===========
+  NAME: 123
+  RULE: Numeros
+
+Frase: https://a.example.com/test.html?doing_wp_cron=123
+===========
+  NAME: https://a.example.com/test.html?doing_wp_cron=123
+  RULE: Pagina web
+===========
+  NAME: https
+  RULE: Paraules sense vocals
+===========
+  NAME: a.example.com/test.html?doing_wp_cron=123
+  RULE: Token amb barra
+===========
+  NAME: a.example.com
+  RULE: Domini web
+===========
+  NAME: a
+  RULE: Paraula normal
+===========
+  NAME: example.com
+  RULE: Domini web
+===========
+  NAME: example
+  RULE: Paraula normal
+===========
+  NAME: com
+  RULE: Paraula normal
+===========
+  NAME: test.html?doing_wp_cron=123
+  RULE: Separa interrogant
+===========
+  NAME: test.html
+  RULE: Domini web
+===========
+  NAME: test
+  RULE: Paraula normal
+===========
+  NAME: html
+  RULE: Paraules sense vocals
+===========
+  NAME: doing_wp_cron=123
+  RULE: Separa iguals
+===========
+  NAME: doing_wp_cron
+  RULE: aquesta_regla
+===========
+  NAME: doing
+  RULE: Paraula normal
+===========
+  NAME: wp
+  RULE: Paraules sense vocals
+===========
+  NAME: cron
+  RULE: Paraula normal
+===========
+  NAME: 123
+  RULE: Numeros
+
+Frase: https://a.example.com/test.html?id=2
+===========
+  NAME: https://a.example.com/test.html?id=2
+  RULE: Pagina web
+===========
+  NAME: https
+  RULE: Paraules sense vocals
+===========
+  NAME: a.example.com/test.html?id=2
+  RULE: Token amb barra
+===========
+  NAME: a.example.com
+  RULE: Domini web
+===========
+  NAME: a
+  RULE: Paraula normal
+===========
+  NAME: example.com
+  RULE: Domini web
+===========
+  NAME: example
+  RULE: Paraula normal
+===========
+  NAME: com
+  RULE: Paraula normal
+===========
+  NAME: test.html?id=2
+  RULE: Separa interrogant
+===========
+  NAME: test.html
+  RULE: Domini web
+===========
+  NAME: test
+  RULE: Paraula normal
+===========
+  NAME: html
+  RULE: Paraules sense vocals
+===========
+  NAME: id=2
+  RULE: Separa iguals
+===========
+  NAME: id
+  RULE: Paraula normal
+===========
+  NAME: 2
+  RULE: Numeros
+
+Frase: https://a.example.com/test.html?doing_wp_cron=123.43_432&id=2&cosa=abcd
+===========
+  NAME: https://a.example.com/test.html?doing_wp_cron=123.43_432&id=2&cosa=abcd
+  RULE: Pagina web
+===========
+  NAME: https
+  RULE: Paraules sense vocals
+===========
+  NAME: a.example.com/test.html?doing_wp_cron=123.43_432&id=2&cosa=abcd
+  RULE: Token amb barra
+===========
+  NAME: a.example.com
+  RULE: Domini web
+===========
+  NAME: a
+  RULE: Paraula normal
+===========
+  NAME: example.com
+  RULE: Domini web
+===========
+  NAME: example
+  RULE: Paraula normal
+===========
+  NAME: com
+  RULE: Paraula normal
+===========
+  NAME: test.html?doing_wp_cron=123.43_432&id=2&cosa=abcd
+  RULE: Separa interrogant
+===========
+  NAME: test.html
+  RULE: Domini web
+===========
+  NAME: test
+  RULE: Paraula normal
+===========
+  NAME: html
+  RULE: Paraules sense vocals
+===========
+  NAME: doing_wp_cron=123.43_432&id=2&cosa=abcd
+  RULE: Separa ampersand
+===========
+  NAME: doing_wp_cron=123.43_432
+  RULE: Separa iguals
+===========
+  NAME: doing_wp_cron
+  RULE: aquesta_regla
+===========
+  NAME: doing
+  RULE: Paraula normal
+===========
+  NAME: wp
+  RULE: Paraules sense vocals
+===========
+  NAME: cron
+  RULE: Paraula normal
+===========
+  NAME: 123.43_432
+  RULE: aquesta_regla
+===========
+  NAME: 123.43
+  RULE: Domini web
+===========
+  NAME: 123
+  RULE: Numeros
+===========
+  NAME: 43
+  RULE: Numeros
+===========
+  NAME: 432
+  RULE: Numeros
+===========
+  NAME: id=2
+  RULE: Separa iguals
+===========
+  NAME: id
+  RULE: Paraula normal
+===========
+  NAME: 2
+  RULE: Numeros
+===========
+  NAME: cosa=abcd
+  RULE: Separa iguals
+===========
+  NAME: cosa
+  RULE: Paraula normal
+===========
+  NAME: abcd
+  RULE: Paraula normal
+
+Frase: www.prova1.cat
+===========
+  NAME: www.prova1.cat
+  RULE: Pagina web
+===========
+  NAME: prova1.cat
+  RULE: Domini web
+===========
+  NAME: prova1
+  RULE: Paraula amb num enganxat
+===========
+  NAME: prova
+  RULE: Paraula normal
+===========
+  NAME: 1
+  RULE: Numeros
+===========
+  NAME: cat
+  RULE: Paraula normal
+
+Frase: www.1prova.cat
+===========
+  NAME: www.1prova.cat
+  RULE: Pagina web
+===========
+  NAME: 1prova.cat
+  RULE: Domini web
+===========
+  NAME: 1prova
+  RULE: Num amb paraula enganxada
+===========
+  NAME: 1
+  RULE: Numeros
+===========
+  NAME: prova
+  RULE: Paraula normal
+===========
+  NAME: cat
+  RULE: Paraula normal
+
+Frase: prova1.cat
+===========
+  NAME: prova1.cat
+  RULE: Pagina web
+===========
+  NAME: prova1.cat
+  RULE: Domini web
+===========
+  NAME: prova1
+  RULE: Paraula amb num enganxat
+===========
+  NAME: prova
+  RULE: Paraula normal
+===========
+  NAME: 1
+  RULE: Numeros
+===========
+  NAME: cat
+  RULE: Paraula normal
+
+Frase: 1prova.cat
+===========
+  NAME: 1prova.cat
+  RULE: Pagina web
+===========
+  NAME: 1prova.cat
+  RULE: Domini web
+===========
+  NAME: 1prova
+  RULE: Num amb paraula enganxada
+===========
+  NAME: 1
+  RULE: Numeros
+===========
+  NAME: prova
+  RULE: Paraula normal
+===========
+  NAME: cat
+  RULE: Paraula normal
+
+Frase: camisa20
+===========
+  NAME: camisa20
+  RULE: Paraula amb num enganxat
+===========
+  NAME: camisa
+  RULE: Paraula normal
+===========
+  NAME: 20
+  RULE: Numeros
+
+Frase: 20camisa
+===========
+  NAME: 20camisa
+  RULE: Num amb paraula enganxada
+===========
+  NAME: 20
+  RULE: Numeros
+===========
+  NAME: camisa
+  RULE: Paraula normal
+
+Frase: 10camisa20
+===========
+  NAME: 10camisa20
+  RULE: 1234paraula4321
+===========
+  NAME: 10
+  RULE: Numeros
+===========
+  NAME: camisa20
+  RULE: Paraula amb num enganxat
+===========
+  NAME: camisa
+  RULE: Paraula normal
+===========
+  NAME: 20
+  RULE: Numeros
+
+Frase: camisa10samarreta
+===========
+  NAME: camisa10samarreta
+  RULE: Paraula1234paraula
+===========
+  NAME: camisa
+  RULE: Paraula normal
+===========
+  NAME: 10samarreta
+  RULE: Num amb paraula enganxada
+===========
+  NAME: 10
+  RULE: Numeros
+===========
+  NAME: samarreta
+  RULE: Paraula normal
+
+Frase: http://
+===========
+  NAME: http://
+  RULE: Pagina web
+===========
+  NAME: http
+  RULE: Paraules sense vocals
+===========
+  NAME: 
+  RULE: Sense nom
+
+Frase: 1.234
+===========
+  NAME: 1.234
+  RULE: Numeros amb punts xxx.xxx xxx.xxx.xxx...
+
+Frase: 1,234
+===========
+  NAME: 1,234
+  RULE: Numeros amb decimals
+
+Frase: 1.234.234,234
+===========
+  NAME: 1.234.234,234
+  RULE: Numeros amb decimals (2)
+
+Frase: 53,8%
+===========
+  NAME: 53,8%
+  RULE: Percentatges
+
+Frase: 9.100%
+===========
+  NAME: 9.100%
+  RULE: Percentatges
+
+Frase: Qui menja; jo no.
+===========
+  NAME: Qui
+  RULE: Paraula normal
+===========
+  NAME: menja
+  RULE: Paraula normal
+===========
+  NAME: jo
+  RULE: Paraula normal
+===========
+  NAME: no
+  RULE: Paraula normal
+
+Frase: Qui menja;jo no.
+===========
+  NAME: Qui
+  RULE: Paraula normal
+===========
+  NAME: menja;jo
+  RULE: Arregla puntuacio amb punt i coma
+===========
+  NAME: menja
+  RULE: Paraula normal
+===========
+  NAME: jo
+  RULE: Paraula normal
+===========
+  NAME: no
+  RULE: Paraula normal
+
+Frase: Qui menja ;jo no.
+===========
+  NAME: Qui
+  RULE: Paraula normal
+===========
+  NAME: menja
+  RULE: Paraula normal
+===========
+  NAME: ;jo
+  RULE: Arregla puntuacio amb punt i coma
+===========
+  NAME: jo
+  RULE: Paraula normal
+===========
+  NAME: no
+  RULE: Paraula normal
+
+Frase: Qui menja ; jo no.
+===========
+  NAME: Qui
+  RULE: Paraula normal
+===========
+  NAME: menja
+  RULE: Paraula normal
+===========
+  NAME: ;
+  RULE: signes de puntuacio aillats
+===========
+  NAME: jo
+  RULE: Paraula normal
+===========
+  NAME: no
+  RULE: Paraula normal
+
+Frase: Menja pomes i peres... altres fruites no.
+===========
+  NAME: Menja
+  RULE: Paraula normal
+===========
+  NAME: pomes
+  RULE: Paraula normal
+===========
+  NAME: i
+  RULE: Paraula normal
+===========
+  NAME: peres
+  RULE: Paraula normal
+===========
+  NAME: altres
+  RULE: Paraula normal
+===========
+  NAME: fruites
+  RULE: Paraula normal
+===========
+  NAME: no
+  RULE: Paraula normal
+
+Frase: Menja pomes i peres ...altres fruites no.
+===========
+  NAME: Menja
+  RULE: Paraula normal
+===========
+  NAME: pomes
+  RULE: Paraula normal
+===========
+  NAME: i
+  RULE: Paraula normal
+===========
+  NAME: peres
+  RULE: Paraula normal
+===========
+  NAME: ...altres
+  RULE: Arregla puntuacio amb punts suspensius
+===========
+  NAME: altres
+  RULE: Paraula normal
+===========
+  NAME: fruites
+  RULE: Paraula normal
+===========
+  NAME: no
+  RULE: Paraula normal
+
+Frase: 
+
+Frase: 
+
