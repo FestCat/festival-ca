@@ -2,8 +2,10 @@
 ;;; Because this is a --script type file it has to explicitly
 ;;; load the initfiles: init.scm and user's .festivalrc
 
-(set! upclexdir (path-append (car argv) "../festival/lib/dicts/upc"))
-(set! catalan-path (path-append (car argv) "../festival/lib/upc_catalan"))
+(set! festlib "../festival/lib")
+(set! upclexdir (path-append (car argv) festlib "dicts/upc"))
+(set! catalan-path (path-append (car argv) festlib "upc_catalan"))
+(set! upc_catalan::debug_token_to_words t)
 
 (if (symbol-bound? 'datadir)
    (load (path-append datadir "init.scm"))
@@ -12,10 +14,12 @@
 (if (not (member_string catalan-path load-path))
                       (set! load-path (cons catalan-path load-path)))
 (require 'upc_catalan)
-
+(require 'upc_catalan_tokenizer)
+(set_backtrace t)
 (load-catalan-support)
 
 (define (llegeixfitxer fn)
+" Obre el fitxer de text fn i el volca en una variable."
   (let ( (fd (fopen fn "r"))
          (content "")
          (entry "")
@@ -31,6 +35,7 @@
 )
 
 (define (procesa utt)
+"Processa una utterance"
 (Initialize utt)
 (Text utt)
 (Token_POS utt)
@@ -46,10 +51,11 @@
 )
 
 
-(define (imprimeixutt utt1)
+(define (imprimeixutt utt1 llistarelacions)
+"Imprimeix una utterance."
 (let ( (relations "") (relation ""))
 (begin
-(set! relations (utt.relationnames utt1))
+(set! relations llistarelacions)
 (while relations
   (set! relation (car relations))
   (set! relations (cdr relations))
@@ -80,9 +86,28 @@
 )
 
 (set! texto (llegeixfitxer fitxentrada ))
-(set! utt1 (eval (list (quote Utterance) (quote Text) texto)))
-(procesa utt1)
-(imprimeixutt utt1)
+(if (string-matches (path-basename fitxentrada) "full_.*")
+  (begin 
+      (set! llistatexts (list texto))
+      (format stderr "FULL TEXT MODE\n")
+  )
+  (begin 
+      (set! llistatexts (split texto "\n"))
+      (format stderr "LINE TEXT MODE\n")
+  )
+)
+
+(while (> (length llistatexts) 0)
+  (set! texto (car llistatexts))
+  (format t "Frase: %s\n" texto)
+  (format stderr "Frase: %s\n" texto)
+  (set! utt1 (eval (list (quote Utterance) (quote Text) texto)))
+  (procesa utt1)
+  (imprimeixutt utt1 (list "Token" "Word"))
+  (format t "\n" )
+  (format stderr "\n")
+  (set! llistatexts (cdr llistatexts))
+)
 
 
 

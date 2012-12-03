@@ -204,18 +204,17 @@ Returns 1 if telephone or some call verb form is within 4, 3, 2 o 1 tokens befor
 		trucaven trucaves truco trucà trucàrem trucàreu trucàvem trucàveu truquem
 		truquen truques truquessin truquessis truqueu truqui truquin truquis truqués
 		truquéssim truquéssiu truquí)))
-
     (if (or (member_string 
-	     (catala_downcase_string (item.feat sc "R:Token.pp.name"))
+	     (catala_downcase_string (item.feat sc "pp.name"))
 	     telph)
 	    (member_string 
-	     (catala_downcase_string (item.feat sc "R:Token.pp.p.name"))
+	     (catala_downcase_string (item.feat sc "pp.p.name"))
 	     telph)
 	    (member_string 
-	     (catala_downcase_string (item.feat sc "R:Token.pp.pp.name"))
+	     (catala_downcase_string (item.feat sc "pp.pp.name"))
 	     telph)
 	    (member_string 
-	     (catala_downcase_string (item.feat sc "R:Token.p.name"))
+	     (catala_downcase_string (item.feat sc "p.name"))
 	     telph))
 	"1"
 	"0"
