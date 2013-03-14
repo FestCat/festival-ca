@@ -171,7 +171,7 @@ DISTSRCFILES+= $(BUILDDICT)/CreateInternalFormat.pl \
 DISTSRCFILES+= $(BUILDDICT)/addfinalentries-central.sh \
                $(BUILDDICT)/allo2pho-central.pl
 
-COMPLETE_LEXICON_CENTRAL=$(BUILDDICT)/final/upcdict_catalan-central.out
+COMPLETE_LEXICON_CENTRAL=$(BUILDDICT)/final/central/upcdict_catalan.out
 # Step 1:
 $(COMPLETE_LEXICON_CENTRAL): $(DICTANDTRANSCRIPTIONS) $(DICTANDTRANSCRIPTIONS_CENTRAL) $(BUILDDICT)/CreateInternalFormat.pl $(BUILDDICT)/CompileDictionary.sh $(BUILDDICT)/addfinalentries-central.sh $(BUILDDICT)/allo2pho-central.pl $(BUILDDICT)/list2festival.pl
 	echo "Creating dictionary in internal format" && \
