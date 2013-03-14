@@ -47,8 +47,8 @@ CLEAN =
 DISTCLEAN = 
 
 # File lists:
-LTS_RULES = festival/lib/dicts/upc/upc_catalan_lts_rules.scm
-REDUCED_LEXICON = festival/lib/dicts/upc/upcdict_catalan-1.0.out
+LTS_RULES_CENTRAL = festival/lib/dicts/upc/upc_catalan_lts_rules-central.scm
+REDUCED_LEXICON_CENTRAL = festival/lib/dicts/upc/upcdict_catalan-1.0-central.out
 POSLEX = festival/lib/dicts/upc/upc_freeling_catalan.poslex
 
 LIB_UPCCATALAN_FILES = festival/lib/upc_catalan/cat_intro.text \
@@ -70,8 +70,9 @@ LIB_UPCCATALAN_FILES = festival/lib/upc_catalan/cat_intro.text \
               festival/lib/upc_catalan/upc_catalan_tokenizer.scm \
               festival/lib/upc_catalan/upc_catalan_tokenpos.scm
 
-LIB_DICTS_FILES = $(LTS_RULES) \
-              $(REDUCED_LEXICON) \
+ALLOWABLES = 
+LIB_DICTS_FILES = $(LTS_RULES_CENTRAL) \
+              $(REDUCED_LEXICON_CENTRAL) \
               $(POSLEX) \
               festival/lib/dicts/upc/upc_freeling_catalan.tri.ngrambin \
               festival/lib/dicts/upc/upclex_catalan.scm
@@ -110,7 +111,10 @@ BUILDPOSLEX = src/03-Poslex
 BUILDNGRAM = src/04-ngram
 BUILDDATA = src/data
 BUILDFUNC = src/functions
-DICTANDTRANSCRIPTIONS = src/data/withtranscriptions/all.orto src/data/withtranscriptions/all.phon
+
+DICTANDTRANSCRIPTIONS = src/data/withtranscriptions/ca.orto
+DICTANDTRANSCRIPTIONS_CENTRAL  = src/data/withtranscriptions/ca-central.phon
+DICTANDTRANSCRIPTIONS_VALENCIA = src/data/withtranscriptions/ca-valencia.phon
 
 .PHONY: all build install dist-bin dist-src test
 
@@ -134,7 +138,7 @@ $(LANGUAGE_FILES) $(LIB_UPCCATALAN_FILES) festival/lib/dicts/upc/upclex_catalan.
 # Phonetic transcriptions are distributed under a free license and 
 # editing and correcting them is quite easy if you find mistakes or you would
 # like to adapt them to other Catalan dialects.
-src/data/withtranscriptions/all.orto src/data/withtranscriptions/all.phon:
+src/data/withtranscriptions/ca.orto src/data/withtranscriptions/ca-central.phon:
 	if [ -f `which phonetic_trn` ]; then \
 	cd $(BUILDDATA) && \
 	( ./transcribe.sh "withtranscriptions/from_phonetic_trn" from_freeling/*  || exit 1) && \
@@ -153,66 +157,92 @@ src/data/withtranscriptions/all.orto src/data/withtranscriptions/all.phon:
 ##    transcription predicted by the LTS rules. Iff there is a mismatch between the transcriptions
 ##    the word with the correct transcription is kept in the lexicon, otherwise it is removed. 
 
-
-
-COMPLETE_LEXICON=$(BUILDDICT)/final/upcdict_catalan.out
-# Step 1:
-$(COMPLETE_LEXICON): $(DICTANDTRANSCRIPTIONS) $(BUILDDICT)/CreateInternalFormat.pl $(BUILDDICT)/CompileDictionary.sh $(BUILDDICT)/addfinalentries.sh $(BUILDDICT)/allo2pho.pl $(BUILDDICT)/list2festival.pl
-	echo "Creating dictionary in internal format" && \
-	cd $(BUILDDICT) && \
-	( $(PERL) ./CreateInternalFormat.pl "../data/withtranscriptions/all.orto" "../data/withtranscriptions/all.phon" "merged/freeling.dic" || exit 1 ) && \
-	echo "Adding other dictionaries" && \
-	cp ../data/otherdic/*.dic "merged/" && \
-	echo "Compiling dictionary" && \
-	( ./CompileDictionary.sh "final" merged/*.dic || exit 1 ) && \
-	echo "Adding final entries" && \
-	( ./addfinalentries.sh "final/upcdict_catalan.out" || exit 1 ) && \
-	echo "Removing duplicates" && \
-	cat "final/upcdict_catalan.out" | LANG=C uniq > "final/upcdict_catalan.out2" && \
-	rm -f "final/upcdict_catalan.out" && mv "final/upcdict_catalan.out2" "final/upcdict_catalan.out"
-
+# Clean and distclean and src files for dialect-independent:
 CLEAN+= $(BUILDDICT)/merged $(BUILDDICT)/final
 DISTCLEAN+= $(BUILDDICT)/CompileDictionary.sh
 
 DISTSRCFILES+= $(BUILDDICT)/CreateInternalFormat.pl \
                $(BUILDDICT)/CompileDictionary.sh.in \
-               $(BUILDDICT)/addfinalentries.sh \
-               $(BUILDDICT)/allo2pho.pl \
                $(BUILDDICT)/list2festival.pl
+
+
+## Catala central:
+
+DISTSRCFILES+= $(BUILDDICT)/addfinalentries-central.sh \
+               $(BUILDDICT)/allo2pho-central.pl
+
+COMPLETE_LEXICON_CENTRAL=$(BUILDDICT)/final/upcdict_catalan-central.out
+# Step 1:
+$(COMPLETE_LEXICON_CENTRAL): $(DICTANDTRANSCRIPTIONS) $(DICTANDTRANSCRIPTIONS_CENTRAL) $(BUILDDICT)/CreateInternalFormat.pl $(BUILDDICT)/CompileDictionary.sh $(BUILDDICT)/addfinalentries-central.sh $(BUILDDICT)/allo2pho-central.pl $(BUILDDICT)/list2festival.pl
+	echo "Creating dictionary in internal format" && \
+	cd $(BUILDDICT) && \
+	( $(PERL) ./CreateInternalFormat.pl "../data/withtranscriptions/ca.orto" "../data/withtranscriptions/ca-central.phon" "merged/central/freeling.dic" || exit 1 ) && \
+	echo "Adding other dictionaries" && \
+	cp ../data/otherdic/central/*.dic "merged/central/" && \
+	echo "Compiling dictionary" && \
+	( ./CompileDictionary.sh "final/central/" "central" merged/central/*.dic || exit 1 ) && \
+	echo "Adding final entries" && \
+	( ./addfinalentries-central.sh "final/central/upcdict_catalan.out" || exit 1 ) && \
+	echo "Removing duplicates" && \
+	cat "final/central/upcdict_catalan.out" | LANG=C uniq > "final/central/upcdict_catalan.out2" && \
+	rm -f "final/central/upcdict_catalan.out" && mv "final/central/upcdict_catalan.out2" "final/central/upcdict_catalan.out"
+
+## Valencià
+
+DISTSRCFILES+= $(BUILDDICT)/addfinalentries-valencia.sh \
+               $(BUILDDICT)/allo2pho-valencia.pl
+
+COMPLETE_LEXICON_VALENCIA=$(BUILDDICT)/final/upcdict_catalan-valencia.out
+# Step 1:
+$(COMPLETE_LEXICON_VALENCIA): $(DICTANDTRANSCRIPTIONS) $(DICTANDTRANSCRIPTIONS_VALENCIA) $(BUILDDICT)/CreateInternalFormat.pl $(BUILDDICT)/CompileDictionary.sh $(BUILDDICT)/addfinalentries-valencia.sh $(BUILDDICT)/allo2pho-valencia.pl $(BUILDDICT)/list2festival.pl
+	echo "Creating dictionary in internal format" && \
+	cd $(BUILDDICT) && \
+	( $(PERL) ./CreateInternalFormat.pl "../data/withtranscriptions/ca.orto" "../data/withtranscriptions/ca-valencia.phon" "merged/valencia/freeling.dic" || exit 1 ) && \
+	echo "Adding other dictionaries" && \
+	cp ../data/otherdic/valencia/*.dic "merged/valencia/" && \
+	echo "Compiling dictionary" && \
+	( ./CompileDictionary.sh "final/valencia/" "valencia" merged/valencia/*.dic || exit 1 ) && \
+	echo "Adding final entries" && \
+	( ./addfinalentries-valencia.sh "final/valencia/upcdict_catalan.out" || exit 1 ) && \
+	echo "Removing duplicates" && \
+	cat "final/valencia/upcdict_catalan.out" | LANG=C uniq > "final/valencia/upcdict_catalan.out2" && \
+	rm -f "final/valencia/upcdict_catalan.out" && mv "final/valencia/upcdict_catalan.out2" "final/valencia/upcdict_catalan.out"
+
+
+
 # Step 2: 
 
+# Just to make thinks harder, Festival creates invalid filenames that cannot be represented in a UTF-8 Makefile.
+# Makefilevars.inc contains the required makefile variables that must be encoded in ISO-8859-15
 include Makefilevars.inc
-ltsdataTRAINfeats = $(addprefix $(BUILDLTS)/lts_scratch/,$(ltsdataTRAINfeatsfn))
-ltsdataTESTfeats  = $(addprefix $(BUILDLTS)/lts_scratch/,$(subst ltsdataTRAIN,ltsdataTEST,$(ltsdataTRAINfeatsfn)))
-ltsNYtree         = $(addprefix $(BUILDLTS)/lts_scratch/,$(ltsNYtreefn))
-ltsNYtreesrc      = $(BUILDLTS)/lts.ny.tree
-ltsNYTRAINfeats        = $(addprefix $(BUILDLTS)/lts_scratch/,$(subst lts,ltsdataTRAIN,$(ltsNYtreefn:.tree=.feats)))
-ltsNYTESTfeats        = $(addprefix $(BUILDLTS)/lts_scratch/,$(subst lts,ltsdataTEST,$(ltsNYtreefn:.tree=.feats)))
-ltsdataTRAINtree  = $(subst ltsdataTRAIN,lts,$(ltsdataTRAINfeats:.feats=.tree))  $(ltsNYtree)
-laNY              = $(subst lts.,,$(ltsNYtreefn:.tree=))
+
+ltsdataTRAINfeats_central = $(addprefix $(BUILDLTS)/lts_scratch/central/,$(ltsdataTRAINfeatsfn))
+ltsdataTESTfeats_central  = $(addprefix $(BUILDLTS)/lts_scratch/central/,$(subst ltsdataTRAIN,ltsdataTEST,$(ltsdataTRAINfeatsfn)))
+ltsNYtree_central         = $(addprefix $(BUILDLTS)/lts_scratch/central/,$(ltsNYtreefn))
+ltsNYtreesrc_central      = $(BUILDLTS)/lts.ny.tree
+ltsNYTRAINfeats_central        = $(addprefix $(BUILDLTS)/lts_scratch/central/,$(subst lts,ltsdataTRAIN,$(ltsNYtreefn:.tree=.feats)))
+ltsNYTESTfeats_central        = $(addprefix $(BUILDLTS)/lts_scratch/central/,$(subst lts,ltsdataTEST,$(ltsNYtreefn:.tree=.feats)))
+ltsdataTRAINtree_central  = $(subst ltsdataTRAIN,lts,$(ltsdataTRAINfeats:.feats=.tree))  $(ltsNYtree)
+laNY_central              = $(subst lts.,,$(ltsNYtreefn:.tree=))
 
 # Building the LTS rules requires some intermediate files.
+ALLOWABLES += $(BUILDLTS)/allowables-1.1-central.scm
+$(BUILDLTS)/lts_scratch/central/lex_entries.out: $(COMPLETE_LEXICON)
+	$(MKDIR_P) $(BUILDLTS)/lts_scratch/central && \
+	$(BUILDLTS)/purge_fest_dic < $(COMPLETE_LEXICON) | $(BUILDLTS)/fest2wagon > $(BUILDLTS)/lts_scratch/central/lex_entries.out
 
-ALLOWABLES:=$(BUILDLTS)/allowables-1.1.scm
-$(BUILDLTS)/allowables.scm:
-	cp $(ALLOWABLES) $@ || exit 1
+$(BUILDLTS)/lts_scratch/central/lex-pl-tablesp.scm: $(BUILDLTS)/lts_scratch/central/lex_entries.out $(BUILDLTS)/allowables-1.1-central.scm
+	cd $(BUILDLTS) && ./build_lts cummulate  "allowables-1.1-central.scm" "lts_scratch/central" || exit 1
 
-$(BUILDLTS)/lts_scratch/lex_entries.out: $(COMPLETE_LEXICON)
-	$(MKDIR_P) $(BUILDLTS)/lts_scratch && \
-	$(BUILDLTS)/purge_fest_dic < $(COMPLETE_LEXICON) | $(BUILDLTS)/fest2wagon > $(BUILDLTS)/lts_scratch/lex_entries.out
+$(BUILDLTS)/lts_scratch/central/lex.feats: $(BUILDLTS)/lts_scratch/central/lex-pl-tablesp.scm $(BUILDLTS)/lts_scratch/central/lex_entries.out $(BUILDLTS)/allowables-1.1-central.scm
+	cd $(BUILDLTS) && ./build_lts align "allowables-1.1-central.scm" "lts_scratch/central" || exit 1
 
-$(BUILDLTS)/lts_scratch/lex-pl-tablesp.scm: $(BUILDLTS)/lts_scratch/lex_entries.out $(BUILDLTS)/allowables.scm
-	cd $(BUILDLTS) && ./build_lts cummulate || exit 1
-
-$(BUILDLTS)/lts_scratch/lex.feats: $(BUILDLTS)/lts_scratch/lex-pl-tablesp.scm $(BUILDLTS)/lts_scratch/lex_entries.out $(BUILDLTS)/allowables.scm
-	cd $(BUILDLTS) && ./build_lts align || exit 1
-
-$(BUILDLTS)/lts_scratch/lex.feats.train $(BUILDLTS)/lts_scratch/lex.feats.test \
-$(BUILDLTS)/lts_scratch/lex.align.train $(BUILDLTS)/lts_scratch/lex.align.test: $(BUILDLTS)/lts_scratch/lex.feats
-	cd $(BUILDLTS) && ./build_lts traintest || exit 1
+$(BUILDLTS)/lts_scratch/central/lex.feats.train $(BUILDLTS)/lts_scratch/central/lex.feats.test \
+$(BUILDLTS)/lts_scratch/central/lex.align.train $(BUILDLTS)/lts_scratch/central/lex.align.test: $(BUILDLTS)/lts_scratch/central/lex.feats
+	cd $(BUILDLTS) && ./build_lts traintest "allowables-1.1-central.scm" "lts_scratch/central" || exit 1
 
 
-$(BUILDLTS)/lts_scratch/ltsLTS.desc: $(BUILDLTS)/lts_scratch/lex.feats $(BUILDLTS)/lts_scratch/lex.feats.train
+$(BUILDLTS)/lts_scratch/central/ltsLTS.desc: $(BUILDLTS)/lts_scratch/central/lex.feats $(BUILDLTS)/lts_scratch/central/lex.feats.train
 	echo "Creating ltsLTS.desc"
 	export LANG=C; \
 	echo "((Relation.LTS.down.name" > $@ ; \
@@ -240,7 +270,7 @@ $(BUILDLTS)/lts_scratch/ltsLTS.desc: $(BUILDLTS)/lts_scratch/lex.feats $(BUILDLT
 	echo '))' >> $@
 	echo "ltsLTS.desc created"
 
-$(ltsdataTESTfeats): $(BUILDLTS)/lts_scratch/lex.feats.test
+$(ltsdataTESTfeats): $(BUILDLTS)/lts_scratch/central/lex.feats.test
 	echo "Building $@"
 	$(eval LETRA := $(subst .,,$(suffix $(basename $@))))
 	echo "Letra: $(LETRA)"
@@ -248,7 +278,7 @@ $(ltsdataTESTfeats): $(BUILDLTS)/lts_scratch/lex.feats.test
 	cat $< | \
 	$(AWK) '{if ($$6 == "$(LETRA)") print $$0}' > $@; 
 
-$(ltsdataTRAINfeats): $(BUILDLTS)/lts_scratch/lex.feats.train
+$(ltsdataTRAINfeats): $(BUILDLTS)/lts_scratch/central/lex.feats.train
 	echo "Building $@"
 	$(eval LETRA := $(subst .,,$(suffix $(basename $@))))
 	echo "Letra: $(LETRA)"
@@ -265,31 +295,31 @@ $(ltsNYTRAINfeats) $(ltsNYTESTfeats):
 #	echo "This is copied"
 #	cp $< $@ || exit 1
 	
-$(BUILDLTS)/lts_scratch/lts.%.tree: $(BUILDLTS)/lts_scratch/ltsdataTRAIN.%.feats $(BUILDLTS)/lts_scratch/ltsdataTEST.%.feats
+$(BUILDLTS)/lts_scratch/central/lts.%.tree: $(BUILDLTS)/lts_scratch/central/ltsdataTRAIN.%.feats $(BUILDLTS)/lts_scratch/central/ltsdataTEST.%.feats
 	echo "Wagon with $*"
 	if [ $(laNY) = "$*" ]; then \
 		cp $(ltsNYtreesrc) $@ || exit 1; \
 	else \
-	$(WAGON) -data $(BUILDLTS)/lts_scratch/ltsdataTRAIN.$*.feats -test $(BUILDLTS)/lts_scratch/ltsdataTEST.$*.feats \
-          -desc $(BUILDLTS)/lts_scratch/ltsLTS.desc -stop 3 -output $(BUILDLTS)/lts_scratch/lts.$*.tree || exit 1; \
+	$(WAGON) -data $(BUILDLTS)/lts_scratch/central/ltsdataTRAIN.$*.feats -test $(BUILDLTS)/lts_scratch/central/ltsdataTEST.$*.feats \
+          -desc $(BUILDLTS)/lts_scratch/central/ltsLTS.desc -stop 3 -output $(BUILDLTS)/lts_scratch/central/lts.$*.tree || exit 1; \
 	fi \
 
-$(BUILDLTS)/lex_lts_rules.scm: $(BUILDLTS)/lts_scratch/ltsLTS.desc  $(ltsdataTRAINtree)
-	cd $(BUILDLTS) && ./build_lts merge || exit 1
+$(BUILDLTS)/lts_scratch/central/lex_lts_rules.scm: $(BUILDLTS)/lts_scratch/central/ltsLTS.desc  $(ltsdataTRAINtree)
+	cd $(BUILDLTS) && ./build_lts merge  "allowables-1.1-central.scm" "lts_scratch/central" || exit 1
 
-$(BUILDLTS)/lts_scratch/lts_test.log: $(BUILDLTS)/lex_lts_rules.scm $(BUILDLTS)/lts_scratch/lex.align $(BUILDLTS)/lts_scratch/lex.align.test $(BUILDLTS)/allowables.scm
-	cd $(BUILDLTS) && ./build_lts test
+$(BUILDLTS)/lts_scratch/central/lts_test.log: $(BUILDLTS)/lex_lts_rules.scm $(BUILDLTS)/lts_scratch/central/lex.align $(BUILDLTS)/lts_scratch/central/lex.align.test $(BUILDLTS)/allowables-1.1-central.scm
+	cd $(BUILDLTS) && ./build_lts test  "allowables-1.1-central.scm" "lts_scratch/central"
 
 
-$(LTS_RULES): $(BUILDLTS)/lex_lts_rules.scm
+$(LTS_RULES_CENTRAL): $(BUILDLTS)/lex_lts_rules.scm
 	$(MKDIR_P) "$(BUILDLTS)/final" && \
-	$(SED) -e 's/·/"·"/g' -e 's/lex_lts_rules/upc_catalan_lts_rules/g' "$(BUILDLTS)/lex_lts_rules.scm" > "$(BUILDLTS)/final/upc_catalan_lts_rules.scm" && \
+	$(SED) -e 's/·/"·"/g' -e 's/lex_lts_rules/upc_catalan_lts_rules/g' "$(BUILDLTS)/lts_scratch/central/lex_lts_rules.scm" > "$(BUILDLTS)/final/upc_catalan_lts_rules-central.scm" && \
 	$(MKDIR_P) $(@D) && \
-	cp $(BUILDLTS)/final/upc_catalan_lts_rules.scm $@ || exit 1
+	cp $(BUILDLTS)/final/upc_catalan_lts_rules-central.scm $@ || exit 1
 
-TEST += $(BUILDLTS)/lts_scratch/lts_test.log
+TEST += $(BUILDLTS)/lts_scratch/central/lts_test.log
 
-CLEAN+= $(BUILDLTS)/lex_lts_rules.scm  $(BUILDLTS)/allowables.scm $(BUILDLTS)/lts_scratch/ $(BUILDLTS)/final
+CLEAN+= $(BUILDLTS)/lex_lts_rules.scm  $(BUILDLTS)/allowables-1.1-central.scm $(BUILDLTS)/lts_scratch/central/ $(BUILDLTS)/final
 DISTCLEAN+= $(BUILDLTS)/build_lts
 
 DISTSRCFILES+= $(ALLOWABLES) \
@@ -307,18 +337,18 @@ DISTSRCFILES+= $(ALLOWABLES) \
 $(BUILDLTS)/upclex_catalan.scm: $(BUILDDATA)/festival/lib/dicts/upc/upclex_catalan.scm
 	cp $< $@ || exit 1
 
-$(REDUCED_LEXICON): $(LTS_RULES) $(BUILDLTS)/upclex_catalan.scm
+$(REDUCED_LEXICON_CENTRAL): $(LTS_RULES_CENTRAL) $(BUILDLTS)/upclex_catalan.scm
 	echo "Reducing dictionary" && \
 	cd $(BUILDLTS) && \
-	$(MKDIR_P) "final_dict_reduced/dicttmp" && \
-	cp "upclex_catalan.scm" "final_dict_reduced/dicttmp" && \
-	cp "final/upc_catalan_lts_rules.scm" "final_dict_reduced/dicttmp/" && \
-	cp ../../$(BUILDDICT)/final/upcdict_catalan.out "final_dict_reduced/dicttmp/upcdict_catalan-1.0.out" && \
+	$(MKDIR_P) "final_dict_reduced_central/dicttmp" && \
+	cp "upclex_catalan.scm" "final_dict_reduced_central/dicttmp" && \
+	cp "final/upc_catalan_lts_rules-central.scm" "final_dict_reduced_central/dicttmp/" && \
+	cp ../../$(BUILDDICT)/final/central/upcdict_catalan.out "final_dict_reduced_central/dicttmp/upcdict_catalan-1.0.out" && \
 	$(FESTIVAL) -b "reduce_dict"
 	$(MKDIR_P) $(@D)
-	cp $(BUILDLTS)/final_dict_reduced/upcdict_catalan.out  $@
+	cp $(BUILDLTS)/final_dict_reduced_central/upcdict_catalan.out  $@
 
-CLEAN+= $(BUILDLTS)/upclex_catalan.scm $(BUILDLTS)/final_dict_reduced
+CLEAN+= $(BUILDLTS)/upclex_catalan.scm $(BUILDLTS)/final_dict_reduced_central
 
 #### END OF LEXICON AND LTS RULES #####
 #######################################
