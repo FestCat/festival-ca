@@ -19,6 +19,7 @@
 use strict;
 use warnings;
 use File::Basename;
+use File::Path;
 
 if ( $#ARGV != 2 ) { print "$#ARGV arguments given instead of 3. Not enough input arguments\n";exit 1;}
 
@@ -28,7 +29,7 @@ my $outfile=$ARGV[2];
 
 
 my $output_dir=dirname($outfile);
-mkdir $output_dir;
+mkpath($output_dir);
 
 open (ORTO, "<$infileorto") || die "Could not read dictionary";
 open (PHONE, "<$infilephon") || die "Could not read phonetic transcriptions of the dictionary";
