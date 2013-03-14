@@ -1,6 +1,6 @@
 #! /bin/bash
 # This file converts Unicode phonetic transcriptions to something closer to SAMPA (Festival phonemes).
-
+# usage: ./unicode2sampa.sh < unicode_file.txt > sampa_output.txt
 
 rm -f tempA
 while read line; do
