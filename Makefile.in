@@ -227,9 +227,9 @@ laNY_central              = $(subst lts.,,$(ltsNYtreefn:.tree=))
 
 # Building the LTS rules requires some intermediate files.
 ALLOWABLES += $(BUILDLTS)/allowables-1.1-central.scm
-$(BUILDLTS)/lts_scratch/central/lex_entries.out: $(COMPLETE_LEXICON)
+$(BUILDLTS)/lts_scratch/central/lex_entries.out: $(COMPLETE_LEXICON_CENTRAL)
 	$(MKDIR_P) $(BUILDLTS)/lts_scratch/central && \
-	$(BUILDLTS)/purge_fest_dic < $(COMPLETE_LEXICON) | $(BUILDLTS)/fest2wagon > $(BUILDLTS)/lts_scratch/central/lex_entries.out
+	$(BUILDLTS)/purge_fest_dic < $(COMPLETE_LEXICON_CENTRAL) | $(BUILDLTS)/fest2wagon > $(BUILDLTS)/lts_scratch/central/lex_entries.out
 
 $(BUILDLTS)/lts_scratch/central/lex-pl-tablesp.scm: $(BUILDLTS)/lts_scratch/central/lex_entries.out $(BUILDLTS)/allowables-1.1-central.scm
 	cd $(BUILDLTS) && ./build_lts cummulate  "allowables-1.1-central.scm" "lts_scratch/central" || exit 1
