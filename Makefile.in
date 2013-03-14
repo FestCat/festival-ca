@@ -185,7 +185,7 @@ $(COMPLETE_LEXICON_CENTRAL): $(DICTANDTRANSCRIPTIONS) $(DICTANDTRANSCRIPTIONS_CE
 	( ./addfinalentries-central.sh "final/central/upcdict_catalan.out" || exit 1 ) && \
 	echo "Removing duplicates" && \
 	cat "final/central/upcdict_catalan.out" | LANG=C uniq > "final/central/upcdict_catalan.out2" && \
-	rm -f "final/central/upcdict_catalan.out" && mv "final/central/upcdict_catalan.out2" "final/central/upcdict_catalan.out"
+	rm -f "final/central/upcdict_catalan.out" && mv "final/central/upcdict_catalan.out2" "final/central/upcdict_catalan.out" || exit 1
 
 ## Valencià
 
@@ -206,7 +206,7 @@ $(COMPLETE_LEXICON_VALENCIA): $(DICTANDTRANSCRIPTIONS) $(DICTANDTRANSCRIPTIONS_V
 	( ./addfinalentries-valencia.sh "final/valencia/upcdict_catalan.out" || exit 1 ) && \
 	echo "Removing duplicates" && \
 	cat "final/valencia/upcdict_catalan.out" | LANG=C uniq > "final/valencia/upcdict_catalan.out2" && \
-	rm -f "final/valencia/upcdict_catalan.out" && mv "final/valencia/upcdict_catalan.out2" "final/valencia/upcdict_catalan.out"
+	rm -f "final/valencia/upcdict_catalan.out" && mv "final/valencia/upcdict_catalan.out2" "final/valencia/upcdict_catalan.out" || exit 1
 
 
 
