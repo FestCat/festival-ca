@@ -65,7 +65,7 @@ then
    echo Find probabilities of letter-phone pairs
    $FESTIVAL -b --heap 10000000 "${allowables}" '(begin
        (cummulate-pairs "'"${outdir}"'/lex_entries.out")
-       (save-table "lts_scratch/lex-") )' || exit 1
+       (save-table "'"${outdir}"'/lex-") )' || exit 1
    exit 0
 fi
 
@@ -85,7 +85,7 @@ if [ "${action}" = "traintest" ]
 then
    echo "Split into training and test sets"
    #$FESTVOXDIR/src/general/traintest lts_scratch/lex.align
-   ./traintest lts_scratch/lex.align
+   ./traintest "${outdir}/lex.align"
    $FESTIVAL -b --heap 10000000 "${allowables}" "${outdir}/lex-pl-tablesp.scm" '(begin
       (build-feat-file "'"${outdir}"'/lex.align.train" "'"${outdir}"'/lex.feats.train"))'
    $FESTIVAL -b --heap 10000000 "${allowables}" "${outdir}/lex-pl-tablesp.scm" '(begin
@@ -99,7 +99,7 @@ if [ "${action}" = "build" ]
 then
 
    echo "Build letter to phone CART trees"
-   if [ -f "lts_scratch/lex.align.train" ]
+   if [ -f "${outdir}/lex.align.train" ]
    then
         echo "With traintest split"
    fi
@@ -111,7 +111,7 @@ fi
 if [ "${action}" = "merge" ]
 then
    echo Build complete model
-   (COSA=${PWD}; cd lts_scratch;
+   (COSA=${PWD}; cd "${outdir}";
        $FESTIVAL -b --heap 10000000 "${COSA}/${allowables}" '(begin
          (merge_models "lex_lts_rules" "lex_lts_rules.scm" allowables))')
    exit 0
@@ -120,7 +120,7 @@ fi
 if [ "${action}" = "test" ]
 then
   echo Test model
-  if [ -f lts_scratch/lex.align.test ]
+  if [ -f "${outdir}/lex.align.test" ]
   then
      $FESTIVAL -b --heap 10000000 "${allowables}" "${outdir}/lex_lts_rules.scm" '(lts_testset "'"${outdir}"'/lex.align.test" lex_lts_rules)' | tee "${outdir}/lts_test.log"
      echo "with TEST set"
