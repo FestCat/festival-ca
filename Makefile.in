@@ -311,7 +311,7 @@ $(BUILDLTS)/lts_scratch/central/lts_test.log: $(BUILDLTS)/lex_lts_rules.scm $(BU
 	cd $(BUILDLTS) && ./build_lts test  "allowables-1.1-central.scm" "lts_scratch/central"
 
 
-$(LTS_RULES_CENTRAL): $(BUILDLTS)/lex_lts_rules.scm
+$(LTS_RULES_CENTRAL): $(BUILDLTS)/lts_scratch/central/lex_lts_rules.scm
 	$(MKDIR_P) "$(BUILDLTS)/final" && \
 	$(SED) -e 's/·/"·"/g' -e 's/lex_lts_rules/upc_catalan_lts_rules/g' "$(BUILDLTS)/lts_scratch/central/lex_lts_rules.scm" > "$(BUILDLTS)/final/upc_catalan_lts_rules-central.scm" && \
 	$(MKDIR_P) $(@D) && \
