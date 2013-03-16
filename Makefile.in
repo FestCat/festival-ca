@@ -222,7 +222,7 @@ ltsNYtree_central         = $(addprefix $(BUILDLTS)/lts_scratch/central/,$(ltsNY
 ltsNYtreesrc_central      = $(BUILDLTS)/lts.ny.tree
 ltsNYTRAINfeats_central        = $(addprefix $(BUILDLTS)/lts_scratch/central/,$(subst lts,ltsdataTRAIN,$(ltsNYtreefn:.tree=.feats)))
 ltsNYTESTfeats_central        = $(addprefix $(BUILDLTS)/lts_scratch/central/,$(subst lts,ltsdataTEST,$(ltsNYtreefn:.tree=.feats)))
-ltsdataTRAINtree_central  = $(subst ltsdataTRAIN,lts,$(ltsdataTRAINfeats:.feats=.tree))  $(ltsNYtree)
+ltsdataTRAINtree_central  = $(subst ltsdataTRAIN,lts,$(ltsdataTRAINfeats_central:.feats=.tree))  $(ltsNYtree_central)
 laNY_central              = $(subst lts.,,$(ltsNYtreefn:.tree=))
 
 # Building the LTS rules requires some intermediate files.
@@ -304,7 +304,7 @@ $(BUILDLTS)/lts_scratch/central/lts.%.tree: $(BUILDLTS)/lts_scratch/central/ltsd
           -desc $(BUILDLTS)/lts_scratch/central/ltsLTS.desc -stop 3 -output $(BUILDLTS)/lts_scratch/central/lts.$*.tree || exit 1; \
 	fi \
 
-$(BUILDLTS)/lts_scratch/central/lex_lts_rules.scm: $(BUILDLTS)/lts_scratch/central/ltsLTS.desc  $(ltsdataTRAINtree)
+$(BUILDLTS)/lts_scratch/central/lex_lts_rules.scm: $(BUILDLTS)/lts_scratch/central/ltsLTS.desc  $(ltsdataTRAINtree_central)
 	cd $(BUILDLTS) && ./build_lts merge  "allowables-1.1-central.scm" "lts_scratch/central" || exit 1
 
 $(BUILDLTS)/lts_scratch/central/lts_test.log: $(BUILDLTS)/lex_lts_rules.scm $(BUILDLTS)/lts_scratch/central/lex.align $(BUILDLTS)/lts_scratch/central/lex.align.test $(BUILDLTS)/allowables-1.1-central.scm
