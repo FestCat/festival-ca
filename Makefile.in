@@ -270,7 +270,7 @@ $(BUILDLTS)/lts_scratch/central/ltsLTS.desc: $(BUILDLTS)/lts_scratch/central/lex
 	echo '))' >> $@
 	echo "ltsLTS.desc created"
 
-$(ltsdataTESTfeats): $(BUILDLTS)/lts_scratch/central/lex.feats.test
+$(ltsdataTESTfeats_central): $(BUILDLTS)/lts_scratch/central/lex.feats.test
 	echo "Building $@"
 	$(eval LETRA := $(subst .,,$(suffix $(basename $@))))
 	echo "Letra: $(LETRA)"
@@ -278,7 +278,7 @@ $(ltsdataTESTfeats): $(BUILDLTS)/lts_scratch/central/lex.feats.test
 	cat $< | \
 	$(AWK) '{if ($$6 == "$(LETRA)") print $$0}' > $@; 
 
-$(ltsdataTRAINfeats): $(BUILDLTS)/lts_scratch/central/lex.feats.train
+$(ltsdataTRAINfeats_central): $(BUILDLTS)/lts_scratch/central/lex.feats.train
 	echo "Building $@"
 	$(eval LETRA := $(subst .,,$(suffix $(basename $@))))
 	echo "Letra: $(LETRA)"
@@ -286,12 +286,12 @@ $(ltsdataTRAINfeats): $(BUILDLTS)/lts_scratch/central/lex.feats.train
 	cat $< | \
 	$(AWK) '{if ($$6 == "$(LETRA)") print $$0}' > $@; 
 
-$(ltsNYTRAINfeats) $(ltsNYTESTfeats):
+$(ltsNYTRAINfeats_central) $(ltsNYTESTfeats_central):
 	echo "La ny castellana ja se sap quin so té i no cal entrenar-la"
 	$(MKDIR_P) $(@D) && \
 	touch $@
 
-#$(ltstreeNY): $(ltsNYtreesrc)
+#$(ltstreeNY_central): $(ltsNYtreesrc_central)
 #	echo "This is copied"
 #	cp $< $@ || exit 1
 	
