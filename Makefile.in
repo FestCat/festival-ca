@@ -410,9 +410,9 @@ $(BUILDPOSLEX)/final/dicTAGGERcomplet.poslexR_desord $(VOCABULARY): $(BUILDPOSLE
 $(BUILDPOSLEX)/01-FormatDiccComplet.pl: $(BUILDFUNC)/functions_perl.pl
 	touch $@
 
-$(BUILDPOSLEX)/simplifiedpos.orto: $(BUILDDATA)/withtranscriptions/all.orto $(BUILDPOSLEX)/01-FormatDiccComplet.pl
+$(BUILDPOSLEX)/simplifiedpos.orto: $(BUILDDATA)/withtranscriptions/ca.orto $(BUILDPOSLEX)/01-FormatDiccComplet.pl
 	$(MKDIR_P) $(@D)
-	cat $(BUILDDATA)/withtranscriptions/all.orto | \
+	cat $(BUILDDATA)/withtranscriptions/ca.orto | \
 	$(BUILDPOSLEX)/01-FormatDiccComplet.pl | \
 	LANG=C sort | uniq >  $@ || exit 1
 
@@ -476,8 +476,9 @@ DISTSRCFILES+= $(BUILDFUNC)/functions_perl.pl \
                $(BUILDDATA)/pos/crea_dictag.pl \
                $(BUILDDATA)/pos/crea_corpusca.pl \
                $(BUILDDATA)/pos/ancora-ca \
-               $(BUILDDATA)/withtranscriptions/all.orto \
-               $(BUILDDATA)/withtranscriptions/all.phon
+               $(BUILDDATA)/withtranscriptions/ca.orto \
+               $(BUILDDATA)/withtranscriptions/ca-central.phon \
+               $(BUILDDATA)/withtranscriptions/ca-valencia.phon \
 
 # Create directories, copy files and then:
 # If we have a libdir/languages directory, 
