@@ -346,7 +346,7 @@ $(REDUCED_LEXICON_CENTRAL): $(LTS_RULES_CENTRAL) $(BUILDDATA)/festival/lib/dicts
 	cp ../../$(BUILDDICT)/final/central/upcdict_catalan.out "final_dict_reduced_central/dicttmp/upcdict_catalan-1.0.out" && \
 	$(FESTIVAL) --script "./reduce_dict" "final_dict_reduced_central/dicttmp/" "central" || exit 1
 	$(MKDIR_P) $(@D) || exit 1
-	cp $(BUILDLTS)/final_dict_reduced_central/upcdict_catalan.out  $@ || exit 1
+	cp $(BUILDLTS)/final_dict_reduced_central/dicttmp/upcdict_catalan.out  $@ || exit 1
 
 CLEAN+= $(BUILDLTS)/final_dict_reduced_central
 
