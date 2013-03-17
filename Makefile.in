@@ -297,8 +297,8 @@ $(ltsNYTRAINfeats_central) $(ltsNYTESTfeats_central):
 	
 $(BUILDLTS)/lts_scratch/central/lts.%.tree: $(BUILDLTS)/lts_scratch/central/ltsdataTRAIN.%.feats $(BUILDLTS)/lts_scratch/central/ltsdataTEST.%.feats
 	echo "Wagon with $*"
-	if [ $(laNY) = "$*" ]; then \
-		cp $(ltsNYtreesrc) $@ || exit 1; \
+	if [ $(laNY_central) = "$*" ]; then \
+		cp $(ltsNYtreesrc_central) $@ || exit 1; \
 	else \
 	$(WAGON) -data $(BUILDLTS)/lts_scratch/central/ltsdataTRAIN.$*.feats -test $(BUILDLTS)/lts_scratch/central/ltsdataTEST.$*.feats \
           -desc $(BUILDLTS)/lts_scratch/central/ltsLTS.desc -stop 3 -output $(BUILDLTS)/lts_scratch/central/lts.$*.tree || exit 1; \
