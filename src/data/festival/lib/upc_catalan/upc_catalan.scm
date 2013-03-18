@@ -33,8 +33,13 @@
 "upc_catalan::debug_token_to_words: If not nil, prints information
 about token to words")
 
-
 (define (load-catalan-support)
+"(load-catalan-support)
+Loads dictionaries, phoneset and all the voice independent language tools for Catalan."
+  (load-catalan-support-dialect "central")
+)  
+
+(define (load-catalan-support-dialect dialect)
 "(load-catalan-support)
 Loads dictionaries, phoneset and all the voice independent language tools for Catalan."
  
@@ -53,7 +58,7 @@ Loads dictionaries, phoneset and all the voice independent language tools for Ca
     (require 'upc_ca_generic_intonation)
 
     ;; Select appropriate phone set
-    (upc_ca_generic::select_phoneset)
+    (upc_ca_generic::select_phoneset_dialect dialect)
 
     ;; Select appropriate tokenization
     (upc_ca_generic::select_tokenizer)
@@ -61,7 +66,7 @@ Loads dictionaries, phoneset and all the voice independent language tools for Ca
     ;; For part of speech tagging
     (upc_ca_generic::select_tagger)
 
-    (upc_ca_generic::select_lexicon)
+    (upc_ca_generic::select_lexicon_dialect dialect)
     (upc_ca_generic::select_phrasing)
     
     (upc_ca_generic::select_duration)

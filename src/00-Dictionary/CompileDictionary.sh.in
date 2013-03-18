@@ -26,7 +26,7 @@ mkdir -p "$outdir"
 
 FESTIVAL="@FESTIVALBIN@"
 
-cat $infile | ./allo2pho-${dialect}.pl | \
+cat $infile | ./allo2pho.pl "${dialect}" | \
    perl -pe 's/^ +//; s/ +$//; s/  +/ /g; s/ *\t */\t/g' |\
    LC_ALL=POSIX sort -u | ./list2festival.pl > "$outdir/upcdict_catalan.scm"
 

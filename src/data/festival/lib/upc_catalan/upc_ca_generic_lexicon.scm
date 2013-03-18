@@ -49,10 +49,24 @@
 (define (upc_ca_generic::select_lexicon)
   "(upc_ca_generic::select_lexicon)
 Set up the UPC lexicon for Catalan."
-  (lex.select "upc_catalan")
-  ;; Post lexical rules
-  (set! postlex_rules_hooks (list upc_catalan::postlex_rule1))
+  (upc_ca_generic::select_lexicon_dialect "central")
+)
 
+(define (upc_ca_generic::select_lexicon_dialect dialect)
+  "(upc_ca_generic::select_lexicon)
+Set up the UPC lexicon for Catalan."
+  (cond 
+    ( (string-equal dialect "central")
+       (lex.select "upc_catalan-central")
+       ;; Post lexical rules
+       (set! postlex_rules_hooks (list upc_catalan::postlex_rule1))
+    )
+    ( (string-equal dialect "valencian")
+       (lex.select "upc_catalan-valencian")
+       ;; Post lexical rules
+       (set! postlex_rules_hooks (list upc_catalan::postlex_rule1))
+    )
+  )
 )
 
 (define (upc_ca_generic::reset_lexicon)

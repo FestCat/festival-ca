@@ -44,13 +44,31 @@
 ;;; Basically the SAMPA symbols defined by Llisterri, including lexical stress
 ;;;
 
-(require 'upc_catalan_phones)
+(require 'upc_catalan_phones-central)
+(require 'upc_catalan_phones-valencia)
+
 
 (define (upc_ca_generic::select_phoneset)
   "(upc_ca_generic::select_phoneset)
 Set up phone set for catalan"
-  (Param.set 'PhoneSet 'upc_catalan)
-  (PhoneSet.select 'upc_catalan)
+  (format stderr "upc_ca_generic::select_phoneset, choosing \"central\" as default dialect")
+  (upc_ca_generic::select_phoneset_dialect "central")
+)
+
+(define (upc_ca_generic::select_phoneset_dialect dialect)
+  "(upc_ca_generic::select_phoneset)
+Set up phone set for catalan"
+  (cond 
+    ( (string-matches dialect "central")
+         (Param.set 'PhoneSet 'upc_catalan-central)
+         (PhoneSet.select 'upc_catalan-central)
+    )
+
+    ( (string-matches dialect "valencian")
+         (Param.set 'PhoneSet 'upc_catalan-valencia)
+         (PhoneSet.select 'upc_catalan-valencia)
+    )
+  )
 )
 
 (define (upc_ca_generic::reset_phoneset)
