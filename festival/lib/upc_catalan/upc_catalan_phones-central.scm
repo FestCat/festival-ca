@@ -43,7 +43,7 @@
 ;; (error "You have not yet defined a phoneset for ca (and others things ?)\n            Define it in festvox/upc_ca_mar_phoneset.scm\n")
 
 (defPhoneSet
-  upc_catalan
+  upc_catalan-central
   ;;;  Phone Features
   (;; vowel or consonant
    (vc + -)  
@@ -132,4 +132,4 @@
 )
 
 (PhoneSet.silences '(pau))
-(provide 'upc_catalan_phones)
+(provide 'upc_catalan_phones-central)
