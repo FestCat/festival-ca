@@ -508,7 +508,7 @@ DISTSRCFILES+= $(ALLOWABLES) \
 $(BUILDLTS)/upclex_%.scm:  $(BUILDDATA)/festival/lib/dicts/upc/upclex_%.scm
 	cp $< $@ || exit 1
 
-$(REDUCED_LEXICON_CENTRAL): $(LTS_RULES_CENTRAL) $(addprefix $(BUILDLTS),$(notdir $(LIB_DICTS_UPCLEX)))
+$(REDUCED_LEXICON_CENTRAL): $(LTS_RULES_CENTRAL) $(addprefix $(BUILDLTS)/,$(notdir $(LIB_DICTS_UPCLEX)))
 	echo "Reducing dictionary" && \
 	cd $(BUILDLTS) && \
 	$(MKDIR_P) "final_dict_reduced_central/dicttmp" && \

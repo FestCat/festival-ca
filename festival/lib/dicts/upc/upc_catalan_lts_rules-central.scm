@@ -1,5 +1,5 @@
 ;; LTS rules 
-(set! upc_catalan_lts_rules '(
+(set! upc_catalan_lts_rules-central '(
 (a
  ((n.n.name is #)
   ((p.p.p.name is ò)
@@ -25941,3 +25941,4 @@
 (· (((_epsilon_ 1) _epsilon_)))
 (- (((_epsilon_ 1) _epsilon_)))
 ))
+(provide 'upc_catalan_lts_rules-central)
