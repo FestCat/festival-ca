@@ -76,14 +76,19 @@ LIB_UPCCATALAN_FILES = festival/lib/upc_catalan/cat_intro.text \
               festival/lib/upc_catalan/upc_catalan_tokenpos.scm
 
 ALLOWABLES = 
+LIB_DICTS_UPCLEX = festival/lib/dicts/upc/upclex_catalan.scm \
+              festival/lib/dicts/upc/upclex_central.scm \
+              festival/lib/dicts/upc/upclex_valencia.scm \
+              festival/lib/dicts/upc/upclex_postlex.scm \
+              festival/lib/dicts/upc/upclex_syl.scm
+
 LIB_DICTS_FILES = $(LTS_RULES_CENTRAL) \
               $(REDUCED_LEXICON_CENTRAL) \
               $(LTS_RULES_VALENCIA) \
               $(REDUCED_LEXICON_VALENCIA) \
               $(POSLEX) \
               festival/lib/dicts/upc/upc_freeling_catalan.tri.ngrambin \
-              festival/lib/dicts/upc/upclex_catalan.scm
-
+              $(LIB_DICTS_UPCLEX)
 LANGUAGE_FILES =  festival/lib/languages/language_catalan.scm \
               festival/lib/languages.scm
 
@@ -136,7 +141,7 @@ all: $(DEFAULTACTION)
 build: $(BUILD_FILES)
 
 # Files to be copied from src/data/festival...:
-$(LANGUAGE_FILES) $(LIB_UPCCATALAN_FILES) festival/lib/dicts/upc/upclex_catalan.scm:
+$(LANGUAGE_FILES) $(LIB_UPCCATALAN_FILES) $(LIB_DICTS_UPCLEX):
 	$(MKDIR_P) $(@D) && \
 	cp "$(BUILDDATA)/$@" "$@" || exit 1
 
@@ -500,14 +505,14 @@ DISTSRCFILES+= $(ALLOWABLES) \
 ##############################################################################
 ##############################################################################
 # Step 3:
-$(BUILDLTS)/upclex_catalan.scm: $(BUILDDATA)/festival/lib/dicts/upc/upclex_catalan.scm
+$(BUILDLTS)/upclex_%.scm:  $(BUILDDATA)/festival/lib/dicts/upc/upclex_%.scm
 	cp $< $@ || exit 1
 
-$(REDUCED_LEXICON_CENTRAL): $(LTS_RULES_CENTRAL) $(BUILDDATA)/festival/lib/dicts/upc/upclex_catalan.scm
+$(REDUCED_LEXICON_CENTRAL): $(LTS_RULES_CENTRAL) $(addprefix $(BUILDLTS),$(notdir $(LIB_DICTS_UPCLEX)))
 	echo "Reducing dictionary" && \
 	cd $(BUILDLTS) && \
 	$(MKDIR_P) "final_dict_reduced_central/dicttmp" && \
-	cp ../../$(BUILDDATA)/festival/lib/dicts/upc/upclex_catalan.scm "final_dict_reduced_central/dicttmp" && \
+	cp $(addprefix ../../$(BUILDDATA)/festival/lib/dicts/upc/,$(notdir $(LIB_DICTS_UPCLEX))) "final_dict_reduced_central/dicttmp" && \
 	cp "final/upc_catalan_lts_rules-central.scm" "final_dict_reduced_central/dicttmp/upc_catalan_lts_rules.scm" && \
 	cp ../../$(BUILDDICT)/final/central/upcdict_catalan.out "final_dict_reduced_central/dicttmp/upcdict_catalan-1.0.out" && \
 	$(FESTIVAL) --script "./reduce_dict" "final_dict_reduced_central/dicttmp/" "central" || exit 1
@@ -525,14 +530,11 @@ CLEAN+= $(BUILDLTS)/final_dict_reduced_central
 ##############################################################################
 ##############################################################################
 # Step 3:
-$(BUILDLTS)/upclex_catalan.scm: $(BUILDDATA)/festival/lib/dicts/upc/upclex_catalan.scm
-	cp $< $@ || exit 1
-
-$(REDUCED_LEXICON_VALENCIA): $(LTS_RULES_VALENCIA) $(BUILDDATA)/festival/lib/dicts/upc/upclex_catalan.scm
+$(REDUCED_LEXICON_VALENCIA): $(LTS_RULES_VALENCIA) $(addprefix $(BUILDLTS),$(notdir $(LIB_DICTS_UPCLEX)))
 	echo "Reducing dictionary" && \
 	cd $(BUILDLTS) && \
 	$(MKDIR_P) "final_dict_reduced_valencia/dicttmp" && \
-	cp ../../$(BUILDDATA)/festival/lib/dicts/upc/upclex_catalan.scm "final_dict_reduced_valencia/dicttmp" && \
+	cp $(addprefix ../../$(BUILDDATA)/festival/lib/dicts/upc/,$(notdir $(LIB_DICTS_UPCLEX))) "final_dict_reduced_valencia/dicttmp" && \
 	cp "final/upc_catalan_lts_rules-valencia.scm" "final_dict_reduced_valencia/dicttmp/upc_catalan_lts_rules.scm" && \
 	cp ../../$(BUILDDICT)/final/valencia/upcdict_catalan.out "final_dict_reduced_valencia/dicttmp/upcdict_catalan-1.0.out" && \
 	$(FESTIVAL) --script "./reduce_dict" "final_dict_reduced_valencia/dicttmp/" "valencia" || exit 1

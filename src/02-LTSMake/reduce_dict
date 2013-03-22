@@ -104,6 +104,6 @@ model, if appropriate)."
 (set! entryfile (path-append workdir "upcdict_catalan-1.0.out"))
 (set! exceptionfile (path-append workdir "upcdict_catalan.out"))
 (set! mylogfile (path-append workdir "upcdict_catalan.log"))
-
+(upc_catalan_lex_select_dialect upc_catalan::dialect)
 (set! lts_function upc_catalan_lts_function)
 (reduce_lexicon2 entryfile exceptionfile lts_function mylogfile)
