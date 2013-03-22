@@ -530,7 +530,7 @@ CLEAN+= $(BUILDLTS)/final_dict_reduced_central
 ##############################################################################
 ##############################################################################
 # Step 3:
-$(REDUCED_LEXICON_VALENCIA): $(LTS_RULES_VALENCIA) $(addprefix $(BUILDLTS),$(notdir $(LIB_DICTS_UPCLEX)))
+$(REDUCED_LEXICON_VALENCIA): $(LTS_RULES_VALENCIA) $(addprefix $(BUILDLTS)/,$(notdir $(LIB_DICTS_UPCLEX)))
 	echo "Reducing dictionary" && \
 	cd $(BUILDLTS) && \
 	$(MKDIR_P) "final_dict_reduced_valencia/dicttmp" && \
