@@ -337,7 +337,8 @@ $(BUILDLTS)/lts_scratch/central/lts_test.log: $(BUILDLTS)/lex_lts_rules.scm $(BU
 
 $(LTS_RULES_CENTRAL): $(BUILDLTS)/lts_scratch/central/lex_lts_rules.scm
 	$(MKDIR_P) "$(BUILDLTS)/final" && \
-	$(SED) -e 's/·/"·"/g' -e 's/lex_lts_rules/upc_catalan_lts_rules/g' "$(BUILDLTS)/lts_scratch/central/lex_lts_rules.scm" > "$(BUILDLTS)/final/upc_catalan_lts_rules-central.scm" && \
+	$(SED) -e 's/·/"·"/g' -e 's/lex_lts_rules/upc_catalan_lts_rules-central/g' "$(BUILDLTS)/lts_scratch/central/lex_lts_rules.scm" > "$(BUILDLTS)/final/upc_catalan_lts_rules-central.scm" && \
+	echo "(provide 'upc_catalan_lts_rules-central)" >> "$(BUILDLTS)/final/upc_catalan_lts_rules-central.scm" && \
 	$(MKDIR_P) $(@D) && \
 	cp $(BUILDLTS)/final/upc_catalan_lts_rules-central.scm $@ || exit 1
 
@@ -467,9 +468,12 @@ $(BUILDLTS)/lts_scratch/valencia/lts_test.log: $(BUILDLTS)/lex_lts_rules.scm $(B
 
 $(LTS_RULES_VALENCIA): $(BUILDLTS)/lts_scratch/valencia/lex_lts_rules.scm
 	$(MKDIR_P) "$(BUILDLTS)/final" && \
-	$(SED) -e 's/·/"·"/g' -e 's/lex_lts_rules/upc_catalan_lts_rules/g' "$(BUILDLTS)/lts_scratch/valencia/lex_lts_rules.scm" > "$(BUILDLTS)/final/upc_catalan_lts_rules-valencia.scm" && \
+	$(SED) -e 's/·/"·"/g' -e 's/lex_lts_rules/upc_catalan_lts_rules-valencia/g' "$(BUILDLTS)/lts_scratch/valencia/lex_lts_rules.scm" > "$(BUILDLTS)/final/upc_catalan_lts_rules-valencia.scm" && \
+	echo "(provide 'upc_catalan_lts_rules-valencia)" >> "$(BUILDLTS)/final/upc_catalan_lts_rules-valencia.scm" && \
 	$(MKDIR_P) $(@D) && \
 	cp $(BUILDLTS)/final/upc_catalan_lts_rules-valencia.scm $@ || exit 1
+
+
 
 TEST += $(BUILDLTS)/lts_scratch/valencia/lts_test.log
 

@@ -45,24 +45,90 @@
 (defvar upclexdir (path-append lexdir "upc"))
 (defvar upc_catalan::dialect "central") ; we need a default value. if it is already set then it will not be changed
 
-;;;"  Function called when word not found in lexicon
+(require 'lts)
+
+; depend on dialect information
+(require 'upclex_syl)
+(require 'upclex_central)
+(require 'upclex_valencia)
+(require 'upclex_postlex)
+
+
+(define (upc_catalan_lex_select_dialect dialect)
+"(upc_catalan_lex_select_dialect dialect)
+Sets the lexicon attributes depending on the dialect given"
+   (cond 
+      ( (string-equal dialect "central")
+           (require 'upclex_central)
+           (if (not (member_string "upc_catalan-central" (lex.list)))
+               (begin
+		   (lex.create "upc_catalan-central")
+		   (lex.set.compile.file (path-append upclexdir "upcdict_catalan-1.0-central.out"))
+		   (lex.set.phoneset "upc_catalan-central")
+                   (upc_catalan_add_ruleset_catala_downcase)
+                   (upclex_catalan_define_ruleset_syl_central)
+		   (lex.set.lts.method 'upc_catalan_lts_function)
+		   (upc_catalan_addenda)
+                   (upc_catalan_addenda_central)
+                   (require 'upc_catalan_lts_rules-central)
+                   (set! upc_catalan::dialect "central")
+               )
+               (begin
+                   (lex.select "upc_catalan-central")
+                   (set! upc_catalan::dialect "central")
+               )
+           )
+           
+      )
+      ( (string-equal dialect "valencia")
+           (require 'upclex_valencia)
+           (if (not (member_string "upc_catalan-valencia" (lex.list)))
+               (begin
+		   (lex.create "upc_catalan-valencia")
+		   (lex.set.compile.file (path-append upclexdir "upcdict_catalan-1.0-valencia.out"))
+		   (lex.set.phoneset "upc_catalan-valencia")
+                   (upc_catalan_add_ruleset_catala_downcase)
+                   (upclex_catalan_define_ruleset_syl_valencia)
+		   (lex.set.lts.method 'upc_catalan_lts_function)
+		   (upc_catalan_addenda)
+                   (upc_catalan_addenda_valencia)
+                   (require 'upc_catalan_lts_rules-valencia)
+                   (set! upc_catalan::dialect "valencia")
+               )
+               (begin
+                   (lex.select "upc_catalan-valencia")
+                   (set! upc_catalan::dialect "valencia")
+               )
+           )
+      )
+   )
+)
+
+
+(define (upc_catalan_select_lts_rules dialect)
+"(upc_catalan_select_lts_rules dialect)
+Sets the lexicon attributes depending on the dialect given"
+   (cond 
+      ( (string-equal dialect "central")
+           upc_catalan_lts_rules-central
+      )
+      ( (string-equal dialect "valencia")
+           upc_catalan_lts_rules-valencia
+      )
+   )
+)
+
+;;;  Function called when word not found in lexicon
 ;;;  and you've trained letter to sound rules
 (define (upc_catalan_lts_function word features)
-
   "(upc_catalan_lts_function word features)
 Return pronunciation of word not in lexicon."
-  (require 'lts)
 ; (format t "Word not found in lexicon: \"%s\"\n" word)
-  
-  (set! ltsrules_dialect (string-append "upc_catalan_lts_rules-" upc_catalan::dialect) )
-  (if (not (boundp (intern ltsrules_dialect)))
-      (load (path-append upclexdir (string-append ltsrules_dialect ".scm"))))
-
   (let ((dcword) (syls) (phones))
      (if (lts.in.alphabet word 'catala_downcase)
          (begin 
               (set! dcword (apply string-append (lts.apply word 'catala_downcase)))
-              (set! phones (lts_predict dcword ltsrules_dialect))
+              (set! phones (lts_predict dcword (upc_catalan_select_lts_rules upc_catalan::dialect)))
     (set! syl (lts.apply phones 'upc_catalan_syl)) ;; Handwritten rules for syllabification
 ;;  (set! syls (upc_ca_lex_syllabify_phstress phones)) ;; Automatic rules for syllabification
               (set! syls (upc_catalan_brackets syl))
@@ -115,8 +181,6 @@ Basic lexicon should (must ?) have basic letters, symbols and punctuation."
   (lex.add.entry '(">" punc nil))
   )
 
-
-
 (define (upc_catalan_brackets phones)
   "(upc_catalan_brackets phones)
 Takes a list of phones containing - as syllable boundary.  Construct the
@@ -137,22 +201,22 @@ Festival bracket structure."
 	   (set! syls (cons (list (reverse syl) stress) syls)))
     (reverse syls)))   
 
+
 (define (catala_downcase word)
   "(catala_downcase WORD)
-Downs case word by letter to sound rules because or accented form
-this can't use the builtin downcase function."
-
-
+Downs case word using a letter to sound rules table because accented characters
+are note included in the builtin function."
    (if (lts.in.alphabet word 'catala_downcase)
      (lts.apply word 'catala_downcase)
      (symbolexplode word)
    )
 )
 
- (define (catala_simplify_vowels word)
+(define (catala_simplify_vowels word)
    "(catala_simplify_vowels WORD)
- Simplifies forbidden vowels such as î."
-   (lts.apply word 'catala_simplify_vowels))
+ Simplifies forbidden vowels such as î by converting them in regular i."
+   (lts.apply word 'catala_simplify_vowels)
+)
 
 
 (define (catala_trans word)
@@ -178,20 +242,22 @@ Apply stress and syllabification to phone list (phones)"
 (define (catala_trans3_festival word phones)
   " (catala_trans3 WORD)
 Apply stress and automatic syllabification to phone list (phones)"
-  (let ((syl) (syls))
+  (let ((syls))
     (set! syls (upc_ca_lex_syllabify_phstress phones)) 
     (list word syls)))
 
 (define (catala_trans4 word)
   " (catala_trans WORD)
 Downs case word, apply LTS, stress and syllabification"
-  (let ((dword (apply string-append (lts.apply word 'catala_downcase))) (phones) (phones2) (syls))
+  (let ((dword (apply string-append (lts.apply word 'catala_downcase))) (syl) (phones) (phones2) (syls))
 					; (format t "Paraula %s\n" dword)
     (set! phones (lts_predict dword upc_catalan_lts_rules))
     (set! phones2 (lts.apply phones 'upc_ca_correct_LTS))
     (set! syl (upc_ca_lex_syllabify_phstress phones2)) 
 					;(set! syls (upc_ca_brackets syl))
-    (list word syl)))  
+    (list word syl)
+  )
+)  
 
 ;Thanks to Nickolay V. Shmyrev for strconcat:
 (define (strconcat list)
@@ -244,312 +310,252 @@ t if this is a syl break, nil otherwise."
 		      (set! syl (cons (car p) syl)))
 		  (set! p (cdr p)))
 	   (set! syls (cons (list (reverse syl) stress) syls)))
-    (reverse syls)))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;
-;;; Lexicon definition
-;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(lex.create "upc_catalan-generic")
-
-;(lex.set.lts.ruleset 'catala) ; this is useless I believe
-
-
-(lts.ruleset
- catala_downcase
- ( )
-
- ;; Transforma els caràcters en el seu format en minúscula.
-
- (
-
-  ;; MINÚSCULES
-
-  ;; Vocals accentuades codificació occidental
-  ( [ á ] = à )
-  ( [ à ] = à )
-  ( [ é ] = é )
-  ( [ è ] = è )
-  ( [ í ] = í )
-  ( [ ì ] = ì )
-  ( [ ó ] = ó )
-  ( [ ò ] = ò )
-  ( [ ú ] = ú )
-  ( [ ù ] = ù )
-
-  ;; Vocals no accentuades 
-  ( [ a ] = a )
-  ( [ e ] = e )
-  ( [ i ] = i )
-  ( [ o ] = o )
-  ( [ u ] = u )
-  
-  ;; Vocals amb diéresi
-  ( [ ä ] = ä ) ;some foreign word
-  ( [ ë ] = ë ) ;some foreign word
-  ( [ ï ] = ï )
-  ( [ ö ] = ö ) ;some foreign word
-  ( [ ü ] = ü )
-
-
-  ;; Vocals amb circumflex
-  ( [ â ] = â ) ;some foreign word
-  ( [ ê ] = ê ) ;some foreign word
-  ( [ î ] = î ) ;some foreign word
-  ( [ ô ] = ô ) ;some foreign word
-  ( [ û ] = û ) ;some foreign word
-
-
-  ;; Consonants
-  ( [ b ] = b )
-  ( [ c ] = c )
-  ( [ ç ] = ç )
-  ( [ d ] = d )
-  ( [ f ] = f )
-  ( [ g ] = g )
-  ( [ h ] = h )
-  ( [ j ] = j )
-  ( [ k ] = k )
-  ( [ l ] = l )
-  ( [ m ] = m )
-  ( [ n ] = n )
-  ( [ ñ ] = ñ )
-  ( [ p ] = p )
-  ( [ q ] = q )
-  ( [ r ] = r )
-  ( [ s ] = s )
-  ( [ t ] = t )
-  ( [ v ] = v )
-  ( [ w ] = w )
-  ( [ x ] = x )
-  ( [ y ] = y )
-  ( [ z ] = z )
-
-;;; Símbols
-  ( [ "·" ] = "·" )
-  ( [ "'" ] = "" )
-  ( [ "\·" ] = "\·" )
-  ( [ "\!" ] = "\!" )
-  ( [ "\"" ] = "\"" )
-  ( [ "\#" ] = "\#" )
-  ( [ "\$" ] = "\$" )
-  ( [ "\£" ] = "\£" )
-  ( [ "\¤" ] = "\¤" )
-  ( [ "\%" ] = "\%" )
-  ( [ "\&" ] = "\&" )
-  ( [ "\'" ] = "\'" )
-  ( [ "\(" ] = "\(" )
-  ( [ "\)" ] = "\)" )
-  ( [ "\*" ] = "\*" )
-  ( [ "\+" ] = "\+" )
-  ( [ "\," ] = "\," )
-  ( [ "\-" ] = "\-" )
-  ( [ "\." ] = "\." )
-  ( [ "\/" ] = "\/" )
-  ( [ "\:" ] = "\:" )
-  ( [ "\;" ] = "\;" )
-  ( [ "\<" ] = "\<" )
-  ( [ "\=" ] = "\=" )
-  ( [ "\>" ] = "\>" )
-  ( [ "\?" ] = "\?" )
-  ( [ "\@" ] = "\@" )
-  ( [ "\[" ] = "\[" )
-  ( [ "\\" ] = "\\" )
-  ( [ "\^" ] = "\^" )
-  ( [ "\_" ] = "\_" )
-  ( [ "\`" ] = "\`" )
-  ( [ "\{" ] = "\{" )
-  ( [ "\|" ] = "\|" )
-  ( [ "\}" ] = "\}" )
-  ( [ "\~" ] = "\~" )
-  ( [ " " ] =  " "  )
-  ( [ "%" ] = "%" )
-  
-  ;; MAJÚSCULES
-
-  
-  ;; Vocals accentuades amb codificació occidental
-
-  ( [ Á ] = á )
-  ( [ À ] = à )
-  ( [ É ] = é )
-  ( [ È ] = è )
-  ( [ Í ] = í )
-  ( [ Ì ] = ì )
-  ( [ Ó ] = ó )
-  ( [ Ò ] = ò )
-  ( [ Ú ] = ú )
-  ( [ Ù ] = ù )
-
-
-  ;; Vocals amb diéresi
-  ( [ Ä ] = à ) ;some foreign word
-  ( [ Ë ] = é ) ;some foreign word
-  ( [ Ï ] = ï )
-  ( [ Ü ] = ü )
-  ( [ Ö ] = ö ) ;some foreign word
-
-  ;; Vocals amb circumflex
-  ( [ Â ] = â ) ;some foreign word
-  ( [ Ê ] = ê ) ;some foreign word
-  ( [ Î ] = î ) ;some foreign word
-  ( [ Ô ] = ô ) ;some foreign word
-  ( [ Û ] = û ) ;some foreign word
-
-  ;; Vocals no accentuades
-  
-  ( [ A ] = a )
-  ( [ E ] = e )
-  ( [ I ] = i )
-  ( [ O ] = o )
-  ( [ U ] = u )
-  ;; Consonants 
-  ( [ B ] = b )
-  ( [ C ] = c )
-  ( [ Ç ] = ç )
-  ( [ D ] = d )
-  ( [ F ] = f )
-  ( [ G ] = g )
-  ( [ H ] = h )
-  ( [ J ] = j )
-  ( [ K ] = k )
-  ( [ L ] = l )
-  ( [ M ] = m )
-  ( [ N ] = n )
-  ( [ Ñ ] = ñ )
-  ( [ P ] = p )
-  ( [ Q ] = q )
-  ( [ R ] = r )
-  ( [ S ] = s )
-  ( [ T ] = t )
-  ( [ V ] = v )
-  ( [ W ] = w )
-  ( [ X ] = x )
-  ( [ Y ] = y )
-  ( [ Z ] = z )
-
-  ;; Números
-
-  ( [ 0 ] = 0 )
-  ( [ 1 ] = 1 )
-  ( [ 2 ] = 2 )
-  ( [ 3 ] = 3 )
-  ( [ 4 ] = 4 )
-  ( [ 5 ] = 5 )
-  ( [ 6 ] = 6 )
-  ( [ 7 ] = 7 )
-  ( [ 8 ] = 8 )
-  ( [ 9 ] = 9 )
-  ))
-
-(lts.ruleset
- catala_simplify_vowels
- ( )
-
- ;; Transforma vocals lletges. S'utilitza en el tokenizer
-
- (
-  ;; MINÚSCULES
-  ;; Vocals accentuades codificació occidental
-  ( [ a ] = a )
-  ( [ à ] = a )
-  ( [ á ] = a )
-  ( [ ä ] = a )
-  ( [ â ] = a )
-
-  ( [ e ] = e )
-  ( [ é ] = e )
-  ( [ è ] = e )
-  ( [ ë ] = e )
-  ( [ ê ] = e )
-
-  ( [ i ] = i )
-  ( [ ì ] = i )
-  ( [ í ] = i )
-  ( [ ï ] = i )
-  ( [ î ] = i )
-
-  ( [ o ] = o )
-  ( [ ó ] = o )
-  ( [ ò ] = o )
-  ( [ ö ] = o )
-  ( [ ô ] = o )
-
-  ( [ u ] = u )
-  ( [ ú ] = u )
-  ( [ ù ] = u )
-  ( [ ü ] = u )
-  ( [ û ] = u )
-
-  ))
+    (reverse syls)
+  )
+)
 
 
 
-(lts.ruleset
- upc_ca_correct_LTS
- ( )
- (
+(define (upc_catalan_add_ruleset_catala_downcase)
+"(upc_catalan_add_ruleset_catala_downcase)
+Loads into the current lexicon a ruleset used to downcase words.
+Ideally it should be loaded in a single Catalan-generic lexicon, but
+code needs to be cleaned in order to do this."
+   (lts.ruleset
+    catala_downcase
+    ( )
+   
+    ;; Transforma els caràcters en el seu format en minúscula.
+   
+    (
+   
+     ;; MINÚSCULES
+   
+     ;; Vocals accentuades codificació occidental
+     ( [ á ] = à )
+     ( [ à ] = à )
+     ( [ é ] = é )
+     ( [ è ] = è )
+     ( [ í ] = í )
+     ( [ ì ] = ì )
+     ( [ ó ] = ó )
+     ( [ ò ] = ò )
+     ( [ ú ] = ú )
+     ( [ ù ] = ù )
+   
+     ;; Vocals no accentuades 
+     ( [ a ] = a )
+     ( [ e ] = e )
+     ( [ i ] = i )
+     ( [ o ] = o )
+     ( [ u ] = u )
+     
+     ;; Vocals amb diéresi
+     ( [ ä ] = ä ) ;some foreign word
+     ( [ ë ] = ë ) ;some foreign word
+     ( [ ï ] = ï )
+     ( [ ö ] = ö ) ;some foreign word
+     ( [ ü ] = ü )
+   
+   
+     ;; Vocals amb circumflex
+     ( [ â ] = â ) ;some foreign word
+     ( [ ê ] = ê ) ;some foreign word
+     ( [ î ] = î ) ;some foreign word
+     ( [ ô ] = ô ) ;some foreign word
+     ( [ û ] = û ) ;some foreign word
+   
+   
+     ;; Consonants
+     ( [ b ] = b )
+     ( [ c ] = c )
+     ( [ ç ] = ç )
+     ( [ d ] = d )
+     ( [ f ] = f )
+     ( [ g ] = g )
+     ( [ h ] = h )
+     ( [ j ] = j )
+     ( [ k ] = k )
+     ( [ l ] = l )
+     ( [ m ] = m )
+     ( [ n ] = n )
+     ( [ ñ ] = ñ )
+     ( [ p ] = p )
+     ( [ q ] = q )
+     ( [ r ] = r )
+     ( [ s ] = s )
+     ( [ t ] = t )
+     ( [ v ] = v )
+     ( [ w ] = w )
+     ( [ x ] = x )
+     ( [ y ] = y )
+     ( [ z ] = z )
+   
+   ;;; Símbols
+     ( [ "·" ] = "·" )
+     ( [ "'" ] = "" )
+     ( [ "\·" ] = "\·" )
+     ( [ "\!" ] = "\!" )
+     ( [ "\"" ] = "\"" )
+     ( [ "\#" ] = "\#" )
+     ( [ "\$" ] = "\$" )
+     ( [ "\£" ] = "\£" )
+     ( [ "\¤" ] = "\¤" )
+     ( [ "\%" ] = "\%" )
+     ( [ "\&" ] = "\&" )
+     ( [ "\'" ] = "\'" )
+     ( [ "\(" ] = "\(" )
+     ( [ "\)" ] = "\)" )
+     ( [ "\*" ] = "\*" )
+     ( [ "\+" ] = "\+" )
+     ( [ "\," ] = "\," )
+     ( [ "\-" ] = "\-" )
+     ( [ "\." ] = "\." )
+     ( [ "\/" ] = "\/" )
+     ( [ "\:" ] = "\:" )
+     ( [ "\;" ] = "\;" )
+     ( [ "\<" ] = "\<" )
+     ( [ "\=" ] = "\=" )
+     ( [ "\>" ] = "\>" )
+     ( [ "\?" ] = "\?" )
+     ( [ "\@" ] = "\@" )
+     ( [ "\[" ] = "\[" )
+     ( [ "\\" ] = "\\" )
+     ( [ "\^" ] = "\^" )
+     ( [ "\_" ] = "\_" )
+     ( [ "\`" ] = "\`" )
+     ( [ "\{" ] = "\{" )
+     ( [ "\|" ] = "\|" )
+     ( [ "\}" ] = "\}" )
+     ( [ "\~" ] = "\~" )
+     ( [ " " ] =  " "  )
+     ( [ "%" ] = "%" )
+     
+     ;; MAJÚSCULES
+   
+     
+     ;; Vocals accentuades amb codificació occidental
+   
+     ( [ Á ] = á )
+     ( [ À ] = à )
+     ( [ É ] = é )
+     ( [ È ] = è )
+     ( [ Í ] = í )
+     ( [ Ì ] = ì )
+     ( [ Ó ] = ó )
+     ( [ Ò ] = ò )
+     ( [ Ú ] = ú )
+     ( [ Ù ] = ù )
+   
+   
+     ;; Vocals amb diéresi
+     ( [ Ä ] = à ) ;some foreign word
+     ( [ Ë ] = é ) ;some foreign word
+     ( [ Ï ] = ï )
+     ( [ Ü ] = ü )
+     ( [ Ö ] = ö ) ;some foreign word
+   
+     ;; Vocals amb circumflex
+     ( [ Â ] = â ) ;some foreign word
+     ( [ Ê ] = ê ) ;some foreign word
+     ( [ Î ] = î ) ;some foreign word
+     ( [ Ô ] = ô ) ;some foreign word
+     ( [ Û ] = û ) ;some foreign word
+   
+     ;; Vocals no accentuades
+     
+     ( [ A ] = a )
+     ( [ E ] = e )
+     ( [ I ] = i )
+     ( [ O ] = o )
+     ( [ U ] = u )
+     ;; Consonants 
+     ( [ B ] = b )
+     ( [ C ] = c )
+     ( [ Ç ] = ç )
+     ( [ D ] = d )
+     ( [ F ] = f )
+     ( [ G ] = g )
+     ( [ H ] = h )
+     ( [ J ] = j )
+     ( [ K ] = k )
+     ( [ L ] = l )
+     ( [ M ] = m )
+     ( [ N ] = n )
+     ( [ Ñ ] = ñ )
+     ( [ P ] = p )
+     ( [ Q ] = q )
+     ( [ R ] = r )
+     ( [ S ] = s )
+     ( [ T ] = t )
+     ( [ V ] = v )
+     ( [ W ] = w )
+     ( [ X ] = x )
+     ( [ Y ] = y )
+     ( [ Z ] = z )
+   
+     ;; Números
+   
+     ( [ 0 ] = 0 )
+     ( [ 1 ] = 1 )
+     ( [ 2 ] = 2 )
+     ( [ 3 ] = 3 )
+     ( [ 4 ] = 4 )
+     ( [ 5 ] = 5 )
+     ( [ 6 ] = 6 )
+     ( [ 7 ] = 7 )
+     ( [ 8 ] = 8 )
+     ( [ 9 ] = 9 )
+     ))
+)
 
-  ( E1 [ j ] ax = j )
-  ( ax [ j ] E1 = j ) 
-  ( ax [ j ] e1 = j )
-  ( u1 [ j ] ax = j )
-  ( [ j ] = i )
+(define (upc_catalan_add_ruleset_catala_simplify_vowels)
+"(upc_catalan_add_ruleset_catala_simplify_vowels)
+Loads into the current lexicon a ruleset used to simplify weird accents in characters
+in order to spell words in tokenizer.
+Ideally it should be loaded in a single Catalan-generic lexicon, but
+code needs to be cleaned in order to do this."
 
-  ( [ b ] = b )
-  ( [ z ] = z )
-  ( [ d ] = d )
-  ( [ f ] = f )
-  ( [ g ] = g )
-  ( [ S ] = S )
-  ( [ k ] = k )
-  ( [ l ] = l )
-  ( [ Z ] = Z )
-  ( [ m ] = m )
-  ( [ n ] = n )
-  ( [ J ] = J )
-  ( [ p ] = p )
-  ( [ r ] = r )
-  ( [ rr ] = rr )
-  ( [ s ] = s )
-  ( [ t ] = t )
-  ( [ L ] = L )
-  ( [ j ] = j )
-  ( [ w ] = w )
-  ( [ j ] = j )
-
-  ( [ a1  ] = a1  )
-  ( [ a   ] = a   )
-  ( [ E1  ] = E1  )
-  ( [ E   ] = E   )
-  ( [ e1  ] = e1  )
-  ( [ e   ] = e   )
-  ( [ i1  ] = i1  )
-  ( [ i  ] = i  )
-  ( [ O1  ] = O1  )
-  ( [ O   ] = O   )
-  ( [ o1  ] = o1  )
-  ( [ o   ] = o   )
-  ( [ u1  ] = u1  )
-  ( [ u   ] = u   )
-  ( [ ax  ] = ax  )
-  ))
-
-
-(require 'upclex_syl)
-(require 'upclex_postlex)
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;
-;;; Lexicon definition (continue)
-;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(lex.set.compile.file (path-append upclexdir "upcdict_catalan-1.0.out"))
-(lex.set.phoneset "upc_catalan")
-(lex.set.lts.method 'upc_catalan_lts_function)
-(upc_catalan_addenda)
+   (lts.ruleset
+    catala_simplify_vowels
+    ( )
+   
+    ;; Transforma vocals lletges. S'utilitza en el tokenizer
+   
+    (
+     ;; MINÚSCULES
+     ;; Vocals accentuades codificació occidental
+     ( [ a ] = a )
+     ( [ à ] = a )
+     ( [ á ] = a )
+     ( [ ä ] = a )
+     ( [ â ] = a )
+   
+     ( [ e ] = e )
+     ( [ é ] = e )
+     ( [ è ] = e )
+     ( [ ë ] = e )
+     ( [ ê ] = e )
+   
+     ( [ i ] = i )
+     ( [ ì ] = i )
+     ( [ í ] = i )
+     ( [ ï ] = i )
+     ( [ î ] = i )
+   
+     ( [ o ] = o )
+     ( [ ó ] = o )
+     ( [ ò ] = o )
+     ( [ ö ] = o )
+     ( [ ô ] = o )
+   
+     ( [ u ] = u )
+     ( [ ú ] = u )
+     ( [ ù ] = u )
+     ( [ ü ] = u )
+     ( [ û ] = u )
+   
+     ))
+)
 
 (provide 'upclex_catalan)
