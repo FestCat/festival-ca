@@ -215,7 +215,7 @@ $(COMPLETE_LEXICON_CENTRAL): $(DICTANDTRANSCRIPTIONS) $(DICTANDTRANSCRIPTIONS_CE
 
 DISTSRCFILES+= $(BUILDDICT)/addfinalentries-valencia.sh
 
-COMPLETE_LEXICON_VALENCIA=$(BUILDDICT)/final/upcdict_catalan-valencia.out
+COMPLETE_LEXICON_VALENCIA=$(BUILDDICT)/final/valencia/upcdict_catalan.out
 # Step 1:
 $(COMPLETE_LEXICON_VALENCIA): $(DICTANDTRANSCRIPTIONS) $(DICTANDTRANSCRIPTIONS_VALENCIA) $(BUILDDICT)/CreateInternalFormat.pl $(BUILDDICT)/CompileDictionary.sh $(BUILDDICT)/addfinalentries-valencia.sh $(BUILDDICT)/allo2pho.pl $(BUILDDICT)/list2festival.pl
 	echo "Creating dictionary in internal format" && \
