@@ -196,7 +196,7 @@ $(COMPLETE_LEXICON_CENTRAL): $(DICTANDTRANSCRIPTIONS) $(DICTANDTRANSCRIPTIONS_CE
 	cd $(BUILDDICT) && \
 	( $(PERL) ./CreateInternalFormat.pl "../data/withtranscriptions/ca.orto" "../data/withtranscriptions/ca-central.phon" "merged/central/freeling.dic" || exit 1 ) && \
 	echo "Adding other dictionaries" && \
-	cp ../data/otherdic/central/*.dic "merged/central/" && \
+	[ -d "../data/otherdic/central" ] && [ -e ../data/otherdic/central/*.dic ] && cp ../data/otherdic/central/*.dic "merged/central/" ; \
 	echo "Compiling dictionary" && \
 	( ./CompileDictionary.sh "final/central/" "central" merged/central/*.dic || exit 1 ) && \
 	echo "Adding final entries" && \
@@ -222,7 +222,7 @@ $(COMPLETE_LEXICON_VALENCIA): $(DICTANDTRANSCRIPTIONS) $(DICTANDTRANSCRIPTIONS_V
 	cd $(BUILDDICT) && \
 	( $(PERL) ./CreateInternalFormat.pl "../data/withtranscriptions/ca.orto" "../data/withtranscriptions/ca-valencia.phon" "merged/valencia/freeling.dic" || exit 1 ) && \
 	echo "Adding other dictionaries" && \
-	cp ../data/otherdic/valencia/*.dic "merged/valencia/" && \
+	[ -d "../data/otherdic/valencia" ] && [ -e ../data/otherdic/valencia/*.dic ] && cp ../data/otherdic/valencia/*.dic "merged/valencia/" ; \
 	echo "Compiling dictionary" && \
 	( ./CompileDictionary.sh "final/valencia/" "valencia" merged/valencia/*.dic || exit 1 ) && \
 	echo "Adding final entries" && \
