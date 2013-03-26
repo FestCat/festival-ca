@@ -44,7 +44,6 @@ ltsdataTRAIN.y.feats \
 ltsdataTRAIN.z.feats \
 ltsdataTRAIN.·.feats \
 ltsdataTRAIN.à.feats \
-ltsdataTRAIN.á.feats \
 ltsdataTRAIN.ç.feats \
 ltsdataTRAIN.è.feats \
 ltsdataTRAIN.é.feats \
