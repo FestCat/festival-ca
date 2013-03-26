@@ -46,7 +46,6 @@
         (x _epsilon_ S k k-s g g-z tS)
         (y _epsilon_ J)
         (z _epsilon_ z s)
-	(á _epsilon_ a1)
         (à _epsilon_ a1 a)
 	(è _epsilon_ E1) 
 	(é _epsilon_ e1 e)
