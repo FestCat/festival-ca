@@ -43,9 +43,10 @@ Loads dictionaries, phoneset and all the voice independent language tools for Ca
 "(load-catalan-support)
 Loads dictionaries, phoneset and all the voice independent language tools for Catalan."
  
-    (if (not (member_string "upc_catalan" (lex.list)))
-       (load (path-append upclexdir "upclex_catalan.scm")))
-
+    (if (not (member_string upclexdir load-path))
+                      (set! load-path (cons upclexdir load-path)))
+    (require 'upclex_catalan)
+    (upc_catalan_lex_select_dialect dialect)
     (require 'upc_ca_generic_phoneset)
     (require 'upc_ca_generic_tokenizer)
     (require 'upc_ca_generic_tagger)
