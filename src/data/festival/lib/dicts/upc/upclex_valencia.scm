@@ -70,7 +70,7 @@ Addenda for valencian lexicon."
       (SV j w ) ;; Sons semi-vocàlics (allophones removed)
       (GQ k g ) 
       (C p t b d k g f s z S Z m n J l L r rr N v dZ tS)
-      (A a a1 E E1 e e1 O O1 o o1 u u1 i i1 p t k b d g f s z S Z m n J l L r rr w j )
+      (A a a1 E E1 e e1 O O1 o o1 u u1 i i1 p t k b d g f v s z S Z m n J l L r rr w j )
       
       )
    ;; Rules will add - at syllable boundary
