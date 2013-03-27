@@ -101,7 +101,7 @@ model, if appropriate)."
 (require 'lts_build)
 (require 'upclex_catalan)
 
-(set! entryfile (path-append workdir (string-append "upcdict_catalan-1.0" upc_catalan::dialect ".out")))
+(set! entryfile (path-append workdir (string-append "upcdict_catalan-1.0-" upc_catalan::dialect ".out")))
 (set! exceptionfile (path-append workdir "upcdict_catalan.out"))
 (set! mylogfile (path-append workdir "upcdict_catalan.log"))
 (upc_catalan_lex_select_dialect upc_catalan::dialect)
