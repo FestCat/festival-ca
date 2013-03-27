@@ -113,7 +113,7 @@ then
    echo Build complete model
    (COSA=${PWD}; cd "${outdir}";
        $FESTIVAL -b --heap 10000000 "${COSA}/${allowables}" '(begin
-         (merge_models "lex_lts_rules" "lex_lts_rules.scm" allowables))')
+         (merge_models "lex_lts_rules" "lex_lts_rules.scm" allowables))' || exit 1)
    exit 0
 fi
 
@@ -122,10 +122,10 @@ then
   echo Test model
   if [ -f "${outdir}/lex.align.test" ]
   then
-     $FESTIVAL -b --heap 10000000 "${allowables}" "${outdir}/lex_lts_rules.scm" '(lts_testset "'"${outdir}"'/lex.align.test" lex_lts_rules)' | tee "${outdir}/lts_test.log"
+     $FESTIVAL -b --heap 10000000 "${allowables}" "${outdir}/lex_lts_rules.scm" '(lts_testset "'"${outdir}"'/lex.align.test" lex_lts_rules)' | tee "${outdir}/lts_test.log" || exit 1
      echo "with TEST set"
   else
-     $FESTIVAL -b --heap 10000000 "${allowables}" "${outdir}/lex_lts_rules.scm" '(lts_testset "'"${outdir}"'/lex.align" lex_lts_rules)' | tee "${outdir}/lts_test.log"
+     $FESTIVAL -b --heap 10000000 "${allowables}" "${outdir}/lex_lts_rules.scm" '(lts_testset "'"${outdir}"'/lex.align" lex_lts_rules)' | tee "${outdir}/lts_test.log" || exit 1
      echo "with ALL data -- no held out test set"
   fi
   exit 0

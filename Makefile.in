@@ -514,7 +514,7 @@ $(REDUCED_LEXICON_CENTRAL): $(LTS_RULES_CENTRAL) $(addprefix $(BUILDLTS)/,$(notd
 	$(MKDIR_P) "final_dict_reduced_central/dicttmp" && \
 	cp $(addprefix ../../$(BUILDDATA)/festival/lib/dicts/upc/,$(notdir $(LIB_DICTS_UPCLEX))) "final_dict_reduced_central/dicttmp" && \
 	cp "final/upc_catalan_lts_rules-central.scm" "final_dict_reduced_central/dicttmp/upc_catalan_lts_rules-central.scm" && \
-	cp ../../$(BUILDDICT)/final/central/upcdict_catalan.out "final_dict_reduced_central/dicttmp/upcdict_catalan-1.0.out" && \
+	cp ../../$(BUILDDICT)/final/central/upcdict_catalan.out "final_dict_reduced_central/dicttmp/upcdict_catalan-1.0-central.out" && \
 	$(FESTIVAL) --script "./reduce_dict" "final_dict_reduced_central/dicttmp/" "central" || exit 1
 	$(MKDIR_P) $(@D) || exit 1
 	cp $(BUILDLTS)/final_dict_reduced_central/dicttmp/upcdict_catalan.out  $@ || exit 1
@@ -536,7 +536,7 @@ $(REDUCED_LEXICON_VALENCIA): $(LTS_RULES_VALENCIA) $(addprefix $(BUILDLTS)/,$(no
 	$(MKDIR_P) "final_dict_reduced_valencia/dicttmp" && \
 	cp $(addprefix ../../$(BUILDDATA)/festival/lib/dicts/upc/,$(notdir $(LIB_DICTS_UPCLEX))) "final_dict_reduced_valencia/dicttmp" && \
 	cp "final/upc_catalan_lts_rules-valencia.scm" "final_dict_reduced_valencia/dicttmp/upc_catalan_lts_rules-valencia.scm" && \
-	cp ../../$(BUILDDICT)/final/valencia/upcdict_catalan.out "final_dict_reduced_valencia/dicttmp/upcdict_catalan-1.0.out" && \
+	cp ../../$(BUILDDICT)/final/valencia/upcdict_catalan.out "final_dict_reduced_valencia/dicttmp/upcdict_catalan-1.0-valencia.out" && \
 	$(FESTIVAL) --script "./reduce_dict" "final_dict_reduced_valencia/dicttmp/" "valencia" || exit 1
 	$(MKDIR_P) $(@D) || exit 1
 	cp $(BUILDLTS)/final_dict_reduced_valencia/dicttmp/upcdict_catalan.out  $@ || exit 1
