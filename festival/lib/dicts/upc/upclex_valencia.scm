@@ -44,10 +44,10 @@ Addenda for valencian lexicon."
 ; FIXME: This has been copied from central Catalan.
 ; Only considered things are:
 ;    - "ax" rules are removed
-;    - dZ is not splitted ; FIXME: Should not be...
-;    - N is added ; FIXME: Should not be...
-;    - tS is added ; FIXME: Should not be...
-;    - v is added ; FIXME: Should not be...
+;    - dZ is not splitted ; FIXME: Check if any particular rule is needed.
+;    - N is added ; FIXME:  Rules copied from "n".
+;    - tS is added ; FIXME:  Check if any particular rule is needed.
+;    - v is added ; FIXME:  Rules copied from "b"
 
 
   (let (
@@ -70,7 +70,7 @@ Addenda for valencian lexicon."
       (SV j w ) ;; Sons semi-vocàlics (allophones removed)
       (GQ k g ) 
       (C p t b d k g f s z S Z m n J l L r rr N v dZ tS)
-      (A a a1 E E1 e e1 O O1 o o1 u u1 i i1 p t k b d g f s z S Z m n J l L r rr w j )
+      (A a a1 E E1 e e1 O O1 o o1 u u1 i i1 p t k b d g f s z S Z m n N J l L r rr w j dZ tS)
       
       )
    ;; Rules will add - at syllable boundary
@@ -229,6 +229,8 @@ Addenda for valencian lexicon."
     ( VA [ u ] t = - u1 )  
     ( V [ n t ] # = n )
     ( [ n t s ] = n s )
+    ( V [ N t ] # = N )
+    ( [ N t s ] = N s )
     ( [ d s ] # = s )
     ( [ d ] # = t )
     ( C [ t ] # = t ) 
@@ -241,6 +243,9 @@ Addenda for valencian lexicon."
     ( [ rr n ] # = rr n )
     ( j [ t ] # = t )
     ( [ rr n s ] # = rr n s )
+    ( [ rr N ] # = rr N )
+    ( j [ t ] # = t )
+    ( [ rr N s ] # = rr N s )
     ( [ l m ] # = l m )
     ( [ l m s ] # = l m s )
     ( [ k s t ] # = k s t )
@@ -265,6 +270,7 @@ Addenda for valencian lexicon."
     ;; ( V SV [ C ] = - C ) ;; Ex: seitó: s ax j - t o1
     ( V SV [ p ] = - p )
     ( V SV [ b ] = - b )
+    ( V SV [ v ] = - v )
     ( V SV [ t ] = - t )
     ( V SV [ d ] = - d )
     ( V SV [ k ] = - k )
@@ -276,6 +282,7 @@ Addenda for valencian lexicon."
     ( V SV [ Z ] = - Z )
     ( V SV [ m ] = - m )
     ( V SV [ n ] = - n )
+    ( V SV [ N ] = - N )
     ( V SV [ J ] = - J )
     ( V SV [ l ] = - l )
     ( V SV [ L ] = - L )
@@ -289,6 +296,9 @@ Addenda for valencian lexicon."
     ( V * [ s ] t = s )
     ( V C * [ b l ] V = - b l ) ;; Ex: blanca : b l a1 N - k ax
     ( V C * [ b r ] V = - b r ) ;; Ex: setembre : s ax - t e1 m - b r ax
+    ( V C * [ v l ] V = - v l ) ;; Ex: vlanca : b l a1 N - k ax
+    ( V C * [ v r ] V = - v r ) ;; Ex: setemvre : s ax - t e1 m - b r ax FIXME: Ok, vr and vl are wrong.. but who knows...
+
     ( V C * [ k l ] V = - k l ) ;; Ex: inclús :  i N - k l u1 s
     ( V C * [ k r ] V = - k r ) ;; Ex: concret : k u N - k r e1 t
     ( V [ k s ] # = k s )   ;; Ex: focs : f O1 k s
@@ -305,13 +315,18 @@ Addenda for valencian lexicon."
     ( [ t r ] = - t r )
     ( V C * [ n s ] C = n s )
     ( V C * [ n s ] V = n - s )
+    ( V C * [ N s ] C = N s )
+    ( V C * [ N s ] V = N - s )
     ( V C * [ J s ] = J s )
     ( w [ t r ] V = - t r )
     ( V [ s k ] # = s k ) ;; Ex: francesc : f r ax n - s e1 s k
     ( j [ b r ] V = - b r )
+    ( j [ v r ] V = - v r )
   
     ( # [ b l ] V = b l ) ;; Ex: blanca : b l a1 N k ax
     ( # [ b r ] V = b r ) ;; Ex: setembre : s ax t e1 m b r ax
+    ( # [ v l ] V = v l ) ;; Ex: vlanca : v l a1 N k ax
+    ( # [ v r ] V = v r ) ;; Ex: setemvre : s ax t e1 m v r ax
     ( # [ k l ] V = k l ) ;; Ex: inclús :  i N k l u1 s
     ( # [ k r ] V = k r ) ;; Ex: concret : k u N k r e1 t
     ( # [ k s ] # = k s )   ;; Ex: focs : f O1 k s
@@ -332,6 +347,7 @@ Addenda for valencian lexicon."
     ( V [ k w ] = - k w )
     ( V [ p s ] C = p s - )
     ( [ n z ] C V * = n z - )
+    ( [ N z ] C V * = N z - )
     ( j [ t ] C V = t - )
   
     
@@ -343,7 +359,10 @@ Addenda for valencian lexicon."
     ( rr [ s ] C = s - )	
     ( n [ g w ] = - g w )
     ( n [ g ] = - g ) 
+    ( N [ g w ] = - g w )
+    ( N [ g ] = - g ) 
     ( V C * [ b ] V = - b )
+    ( V C * [ v ] V = - v )
     ( V C * [ z ] V = - z )
     ( V C * [ d ] V = - d )
     ( V C * [ f ] V = - f )
@@ -354,6 +373,7 @@ Addenda for valencian lexicon."
     ( V C * [ Z ] V = - Z )
     ( V C * [ m ] V = - m )
     ( V C * [ n ] V = - n )
+    ( V C * [ N ] V = - N )
     ( V C * [ J ] V = - J )
     ( V C * [ p ] V = - p )
     ( V C * [ r ] V = - r )
@@ -367,11 +387,13 @@ Addenda for valencian lexicon."
     ( V C * [ w ] V = - w )
     ( C [ j ] C V = j - )
     ( [ n s ] C = n s - )
+    ( [ N s ] C = N s - )
   
     ;; Catch all consonants on their own (at end of word)
     ;; and vowels not preceded by vowels are just written as it
     ( C [ s ] # = s )
     ( C [ b ] = - b )
+    ( C [ v ] = - v )
     ( C [ z ] = - z )
     ( C [ d ] = - d )
     ( C [ f ] = - f )
@@ -382,6 +404,7 @@ Addenda for valencian lexicon."
     ( C [ Z ] = - Z )
     ( C [ m ] = - m )
     ( C [ n ] = - n )
+    ( C [ N ] = - N )
     ( C [ J ] = - J )
     ( C [ p ] = - p )
     ( t [ r ] = r )
@@ -396,6 +419,7 @@ Addenda for valencian lexicon."
   
   
     ( [ b ] = b )
+    ( [ v ] = v )
     ( [ z ] = z )
     ( [ d ] = d )
     ( [ f ] = f )
@@ -406,6 +430,7 @@ Addenda for valencian lexicon."
     ( [ Z ] = Z )
     ( [ m ] = m )
     ( [ n ] = n )
+    ( [ N ] = N )
     ( [ J ] = J )
     ( [ p ] = p )
     ( [ r ] = r )
@@ -430,7 +455,9 @@ Addenda for valencian lexicon."
     ( [ u  ] = u  )
     ( [ i1 ] = i1  )
     ( [ i  ] = i  )
-  
+    ( [ tS  ] = tS  )
+    ( [ dZ  ] = dZ  )
+
     )
    )
    (lex.select oldlex)
