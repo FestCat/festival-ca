@@ -48,6 +48,7 @@ Addenda for valencian lexicon."
 ;    - N is added ; FIXME:  Rules copied from "n".
 ;    - tS is added ; FIXME:  Check if any particular rule is needed.
 ;    - v is added ; FIXME:  Rules copied from "b"
+;    - "a" vowel must be properly considered in syllabification
 
 
   (let (
@@ -55,15 +56,15 @@ Addenda for valencian lexicon."
        )
   (lts.ruleset
    upc_catalan_syl
-   (  (V a1 E1 e1 e O1 o1 o u1 i1 i u ) ;; Sons vocàlics
-      (V a1 E1 e1 e O1 o1 o u1 i1 i u )
-      (VA2  e i o u ) ;; Sons vocàlics àtons
-      (VA e i o u )
+   (  (V a a1 E1 e1 e O1 o1 o u1 i1 i u ) ;; Sons vocàlics
+      (V a a1 E1 e1 e O1 o1 o u1 i1 i u )
+      (VA2 a e i o u ) ;; Sons vocàlics àtons
+      (VA a e i o u )
       (VNIU a1 e1 E1 e O1 O o o1) 
       (VGQ a1 o1 O1 o u)
-      (VW i u ) ;; Sons i u àtons 
-      (VWT i1 u1) ;; Sons i u tònics
-      (VT i1 u1 O1 o1 a1 e1 E1 ) ;; Sons vocàlics
+      (VW i u ) ;; Sons i u àtons  (vocals dèbils)
+      (VWT i1 u1) ;; Sons i u tònics (vocals dèbils en posició tònica)
+      (VT i1 u1 O1 o1 a1 e1 E1 ) ;; Sons vocàlics tònics
   ;    (SC y w ) ;; Sons semi-consonàntics
   ;    (SV j uw ) ;; Sons semi-vocàlics
       (SC j w ) ;; Sons semi-consonàntics (allophone removed)
