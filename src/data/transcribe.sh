@@ -22,13 +22,16 @@ which phonetic_trn > /dev/null || ( echo "phonetic_trn is not available (interna
 
 outdirpartial="$1"
 outdirpartialphon="$outdirpartial/phon"
+dialect="central"
+dialectcode="ca-ca"
+
 shift
 mkdir -p "$outdirpartial"
 mkdir -p "$outdirpartialphon"
 
 for infile in $@; do
     filename=$(basename $infile)
-    outfile="$outdirpartialphon"/${filename%.*}.phonetic
+    outfile="$outdirpartialphon"/${dialect}/${filename%.*}.phonetic
     
     if [ ! -f "$infile" ]; then
        echo "$infile not found. Skipping"
@@ -44,7 +47,7 @@ for infile in $@; do
     else
         cp "$infile" "${infile2}"
     fi
-    cat "${infile2}" | cut -d " " -f 1 | phonetic_trn -l ca-ca  | \
+    cat "${infile2}" | cut -d " " -f 1 | phonetic_trn -l ${dialectcode}  | \
     perl -pe "s/\'([^ ]+)/\1-1/g;
               s/\`//g;
               s/-1/1/g; 

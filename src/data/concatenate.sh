@@ -31,7 +31,7 @@
 #abaldufat abaldufat AQ0MS0
 #abaldufats abaldufat AQ0MP0
 #
-#    2. A directory named "phon" which contains:
+#    2. A directory named "phon/${dialect}" which contains:
 #      2.1 For each file in inputdir, a file with the same name and
 #          the suffix ".phonetic" appended to it and the following 
 #          format [ this file would be "adjs.phonetic" ]:
@@ -49,8 +49,9 @@
 
 outdir="$1"
 indir="$2"
-dicorto="$outdir/all.orto"
-dicphon="$outdir/all.phon"
+dialect="central"
+dicorto="$outdir/ca.orto"
+dicphon="$outdir/ca-${dialect}.phon"
 rm -rf "$dicorto" "$dicphon"
 mkdir -p "$outdir"
 
@@ -66,7 +67,7 @@ for infile in $(ls "$indir");do # for all files in indir
     fi
     # for this dictionary file, we determine it's phonetic transcriptions.
     filename=$(basename $infile)
-    phofile="$indir"/phon/${filename%.*}.phonetic
+    phofile="$indir"/phon/${dialect}/${filename%.*}.phonetic
     # If we don't find the corresponding phonetic transcriptions, we skip this file.
     if [ ! -f  "$phofile" ];then
        echo "Phonetic translation $phofile not found for $infile. Skipping."
