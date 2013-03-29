@@ -48,7 +48,8 @@ License:
 
 Files: 
  festival/lib/dicts/upc/upc_catalan_lts_rules.scm
- festival/lib/dicts/upc/upcdict_catalan-1.0.out
+ festival/lib/dicts/upc/upcdict_catalan-1.0-central.out
+ festival/lib/dicts/upc/upcdict_catalan-1.0-valencia.out
  festival/lib/dicts/upc/upc_freeling_catalan.poslex
  festival/lib/dicts/upc/upc_freeling_catalan.tri.ngrambin
 Copyright: 2007-2012, Antonio Bonafonte
@@ -57,7 +58,15 @@ Copyright: 2007-2012, Antonio Bonafonte
 License: LGPL-2.1
 
 Files: festival/lib/dicts/upc/upclex_catalan.scm
+ festival/lib/dicts/upc/upclex_central.scm
+ festival/lib/dicts/upc/upclex_valencia.scm
+ festival/lib/dicts/upc/upclex_syl.scm
+ festival/lib/dicts/upc/upclex_postlex.scm
  src/data/festival/lib/dicts/upc/upclex_catalan.scm
+ src/data/festival/lib/dicts/upc/upclex_central.scm
+ src/data/festival/lib/dicts/upc/upclex_valencia.scm
+ src/data/festival/lib/dicts/upc/upclex_syl.scm
+ src/data/festival/lib/dicts/upc/upclex_postlex.scm
 Copyright: 1998-2000, Carnegie Mellon University
            1998-2000, Alan W Black
            1998-2000, Kevin Lenzo
@@ -78,7 +87,8 @@ License: Festvox
 
 Files:
  src/data/festival/lib/upc_catalan/upc_catalan_numbers.scm
- src/data/festival/lib/upc_catalan/upc_catalan_phones.scm
+ src/data/festival/lib/upc_catalan/upc_catalan_phones-central.scm
+ src/data/festival/lib/upc_catalan/upc_catalan_phones-valencia.scm
  src/data/festival/lib/upc_catalan/upc_catalan_pos_tagger.scm
  src/data/festival/lib/upc_catalan/upc_catalan_tokenizer.scm
  src/data/festival/lib/upc_catalan/upc_ca_generic_duration.scm
@@ -90,7 +100,8 @@ Files:
  src/data/festival/lib/upc_catalan/upc_ca_generic_tagger.scm
  src/data/festival/lib/upc_catalan/upc_ca_generic_tokenizer.scm
  festival/lib/upc_catalan/upc_catalan_numbers.scm
- festival/lib/upc_catalan/upc_catalan_phones.scm
+ festival/lib/upc_catalan/upc_catalan_phones-central.scm
+ festival/lib/upc_catalan/upc_catalan_phones-valencia.scm
  festival/lib/upc_catalan/upc_catalan_pos_tagger.scm
  festival/lib/upc_catalan/upc_catalan_tokenizer.scm
  festival/lib/upc_catalan/upc_ca_generic_duration.scm
@@ -125,12 +136,14 @@ Files:
  festival/lib/upc_catalan/upc_catalan_hour.scm
  festival/lib/upc_catalan/upc_catalan.scm
  festival/lib/upc_catalan/upc_catalan_tokenpos.scm
- src/00-Dictionary/addfinalentries.sh
+ src/00-Dictionary/addfinalentries-central.sh
+ src/00-Dictionary/addfinalentries-valencia.sh
  src/00-Dictionary/allo2pho.pl
  src/00-Dictionary/CompileDictionary.sh.in
  src/00-Dictionary/CreateInternalFormat.pl
  src/00-Dictionary/list2festival.pl
- src/02-LTSMake/allowables-1.1.scm
+ src/02-LTSMake/allowables-1.1-central.scm
+ src/02-LTSMake/allowables-1.1-valencia.scm
  src/02-LTSMake/lts.ny.tree
  src/02-LTSMake/createmultiphonemes
  src/02-LTSMake/fest2wagon
@@ -152,12 +165,13 @@ Copyright: 2007-2012, Antonio Bonafonte
            2007-2012, Universitat Politècnica de Catalunya
 License: LGPL-2.1
 
-Files: src/data/withtranscriptions/all.phon
+Files: src/data/withtranscriptions/ca-central.phon
+ src/data/withtranscriptions/ca-valencia.phon
 Copyright: 2007-2012, Antonio Bonafonte
            2007-2012, Universitat Politècnica de Catalunya
 License: GPL-2+
 
-Files: src/data/withtranscriptions/all.orto
+Files: src/data/withtranscriptions/ca.orto
  src/data/from_freeling/adjs
  src/data/from_freeling/advs
  src/data/from_freeling/noms
