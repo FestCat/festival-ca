@@ -79,11 +79,13 @@ Addenda for valencian lexicon."
     
     ;; Diftongs creixents
     ;; ( [ GQ w VGQ ] = GQ w VQG ) ;; Ex: quotidià: k w u - t i - d i - a1
+    ( [ k w a ] = - k w a )
     ( [ k w a1 ] = - k w a1 )
     ( [ k w o1 ] = - k w o1 )
     ( [ k w O1 ] = - k w O1 )
     ( [ k w o ] = - k w o )
     ( [ k w u ] = - k w u )
+    ( [ g w a ] = - g w a )
     ( [ g w a1 ] = - g w a1 )
     ( [ g w o1 ] = - g w o1 )
     ( [ g w O1 ] = - g w O1 )
@@ -96,6 +98,7 @@ Addenda for valencian lexicon."
     
     ;; Semi-consonants break
     ;; ( # SC V [ A ] = - A ) ;; Ex: iode: y o - d ax
+    ( # SC V [ a ] = - a ) 
     ( # SC V [ a1 ] = - a1 ) 
     ( # SC V [ E1 ] = - E1 )
     ( # SC V [ e1 ] = - e1 ) 
@@ -114,23 +117,29 @@ Addenda for valencian lexicon."
   
     ;; hiat break
     ;; ( [ VWT VA ] = VWT - VA ) ;; Ex: hiat: i1 - ax t
-    ( [ i1 e ] = i1 - e )
-    ( [ i1 i ] = i1 - i )
-    ( [ i1 o ] = i1 - o )
-    ( [ i1 u ] = i1 - u )
+    ( [ i a ] = i - a )
+    ( [ i e ] = i - e )
+    ( [ i i ] = i - i )
+    ( [ i o ] = i - o )
+    ( [ i u ] = i - u )
+
+    ( [ i1 a ] = i1 - a )
     ( [ i1 e ] = i1 - e )
     ( [ i1 i ] = i1 - i )
     ( [ i1 o ] = i1 - o )
     ( [ i1 u ] = i1 - u )
   
+    ( [ u1 a ] = u1 - a )
     ( [ u1 e ] = u1 - e )
     ( [ u1 i ] = u1 - i )
     ( [ u1 o ] = u1 - o )
     ( [ u1 u ] = u1 - u )
-    ( [ u1 e ] = u1 - e )
-    ( [ u1 i ] = u1 - i )
-    ( [ u1 o ] = u1 - o )
-    ( [ u1 u ] = u1 - u )
+
+    ( [ u a ] = u - a )
+    ( [ u e ] = u - e )
+    ( [ u i ] = u - i )
+    ( [ u o ] = u - o )
+    ( [ u u ] = u - u )
         
     ( VT [ a1  ] = - a1  )
     ( VT [ E1  ] = - E1  )
@@ -145,6 +154,7 @@ Addenda for valencian lexicon."
     ( u [ u1 ] = - u1 )
     ( [ i u ] = i - u )
 
+    ( VNIU [ a ] = - a )
     ( VNIU [ a1 ] = - a1 )
     ( VNIU [ e1 ] = - e1 )
     ( VNIU [ E1 ] = - E1 )
@@ -178,6 +188,7 @@ Addenda for valencian lexicon."
     ;;  ( [ V SV ] = V SV ) ;; Ex: noi: n O1 j      
     ( [ a1 j ] C V = a1 j - )
     ( [ a1 j ] = a1 j )
+    ( [ a j ] = a j )
     ( [ E1 j ] = E1 j )
     ( [ e1 j ] = e1 j )
     ( [ e j ] = e j )
@@ -190,6 +201,7 @@ Addenda for valencian lexicon."
     ( [ u j ] = u j )
   
     ( [ a1 w ] = a1 w )
+    ( [ a w ] = a w )
     ( [ E1 w ] = E1 w )
     ( [ e1 w ] = e1 w )
     ( [ e w ] = e w )
@@ -205,6 +217,7 @@ Addenda for valencian lexicon."
     ;;  ( V [ V ] = - V ) ;; 
   
     ( V [ a1  ] = a1  )
+    ( V [ a  ] = a  )
     ( V [ E1  ] = E1  )
     ( V [ e1  ] = e1  )
     ( V [ e  ] = e  )
@@ -228,12 +241,12 @@ Addenda for valencian lexicon."
     ( [ g m ] = g - m )
     ( VA [ i ] t = - i1 )  
     ( VA [ u ] t = - u1 )  
-    ;( V [ n t ] # = n )
-    ;( [ n t s ] = n s )
-    ;( V [ N t ] # = N )
-    ;( [ N t s ] = N s )
-    ;( [ d s ] # = s )
-    ;( [ d ] # = t )
+    ( V [ n t ] # = n t )
+    ( [ n t s ] = n t s )
+    ( V [ N t ] # = N t )
+    ( [ N t s ] = N t s )
+    ( [ d s ] # = d s )
+    ( [ d ] # = t )
     ( C [ t ] # = t ) 
     ( V [ l k ] # = l k )
     ( V [ rr p s ] # = rr p s )

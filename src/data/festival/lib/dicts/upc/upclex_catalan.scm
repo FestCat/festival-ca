@@ -66,6 +66,7 @@ Sets the lexicon attributes depending on the dialect given"
 		   (lex.set.compile.file (path-append upclexdir "upcdict_catalan-1.0-central.out"))
 		   (lex.set.phoneset "upc_catalan-central")
                    (upc_catalan_add_ruleset_catala_downcase)
+                   (upc_catalan_add_ruleset_catala_simplify_vowels_lts)
                    (upclex_catalan_define_ruleset_syl_central)
 		   (lex.set.lts.method 'upc_catalan_lts_function)
 		   (upc_catalan_addenda)
@@ -88,6 +89,7 @@ Sets the lexicon attributes depending on the dialect given"
 		   (lex.set.compile.file (path-append upclexdir "upcdict_catalan-1.0-valencia.out"))
 		   (lex.set.phoneset "upc_catalan-valencia")
                    (upc_catalan_add_ruleset_catala_downcase)
+                   (upc_catalan_add_ruleset_catala_simplify_vowels_lts)
                    (upclex_catalan_define_ruleset_syl_valencia)
 		   (lex.set.lts.method 'upc_catalan_lts_function)
 		   (upc_catalan_addenda)
@@ -128,6 +130,7 @@ Return pronunciation of word not in lexicon."
      (if (lts.in.alphabet word 'catala_downcase)
          (begin 
               (set! dcword (apply string-append (lts.apply word 'catala_downcase)))
+              (set! dcword (lts.apply_if_exists dcword 'catala_simplify_vowels_lts))
               (set! phones (lts_predict dcword (upc_catalan_select_lts_rules upc_catalan::dialect)))
     (set! syl (lts.apply phones 'upc_catalan_syl)) ;; Handwritten rules for syllabification
 ;;  (set! syls (upc_ca_lex_syllabify_phstress phones)) ;; Automatic rules for syllabification
@@ -142,6 +145,23 @@ Return pronunciation of word not in lexicon."
   )
 )
 
+(define (lts.apply_if_exists word ruleset)
+  "(lts.apply_if_exists)
+Applies ruleset to word for the characters available in the ruleset.
+Leave the rest characters as they are.
+Not robust if the ruleset has rules, as context between characters is lost."
+ (let ( (symb (symbolexplode word) ) (current) (output "") )
+    (while (> (length symb) 0)
+        (set! current (car symb))
+        (set! symb (cdr symb))
+        (if (lts.in.alphabet current ruleset)
+           (set! output (string-append output (apply string-append (lts.apply current ruleset))))
+           (set! output (string-append output current))
+        )
+    )
+    output
+ )
+)
 
 
 (define (upc_catalan_addenda)
@@ -315,6 +335,35 @@ t if this is a syl break, nil otherwise."
 )
 
 
+(define (upc_catalan_add_ruleset_catala_simplify_vowels_lts)
+"(upc_catalan_add_ruleset_catala_simplify_vowels_lts)
+Loads into the current lexicon a ruleset used to simplify foreign vowels."
+   (lts.ruleset
+    catala_simplify_vowels_lts
+    ( )
+   
+    ;; Simplifica les lletres que no tenen LTS.
+   
+    (   
+     ;; Vocals amb dièresi
+     ( [ ä ] = a ) ;some foreign word
+     ( [ ë ] = e ) ;some foreign word
+     ( [ ï ] = i )
+     ( [ ö ] = o ) ;some foreign word
+     ( [ ü ] = u )
+   
+   
+     ;; Vocals amb circumflex
+     ( [ â ] = a ) ;some foreign word
+     ( [ ê ] = e ) ;some foreign word
+     ( [ î ] = i ) ;some foreign word
+     ( [ ô ] = o ) ;some foreign word
+     ( [ û ] = u ) ;some foreign word
+   
+   )
+  )
+)
+
 
 (define (upc_catalan_add_ruleset_catala_downcase)
 "(upc_catalan_add_ruleset_catala_downcase)
@@ -350,7 +399,7 @@ code needs to be cleaned in order to do this."
      ( [ o ] = o )
      ( [ u ] = u )
      
-     ;; Vocals amb diéresi
+     ;; Vocals amb dièresi
      ( [ ä ] = ä ) ;some foreign word
      ( [ ë ] = ë ) ;some foreign word
      ( [ ï ] = ï )
