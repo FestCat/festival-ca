@@ -519,7 +519,7 @@ $(REDUCED_LEXICON_CENTRAL): $(LTS_RULES_CENTRAL) $(addprefix $(BUILDLTS)/,$(notd
 	$(MKDIR_P) $(@D) || exit 1
 	cp $(BUILDLTS)/final_dict_reduced_central/dicttmp/upcdict_catalan.out  $@ || exit 1
 
-CLEAN+= $(BUILDLTS)/final_dict_reduced_central
+CLEAN+= $(BUILDLTS)/final_dict_reduced_central $(addprefix $(BUILDLTS)/,$(notdir $(LIB_DICTS_UPCLEX)))
 
 
 ##############################################################################
