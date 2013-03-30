@@ -42,17 +42,31 @@
 ;;; Lexicon, LTS and Postlexical rules for upc_ca
 ;;;
 
-(if (not (member_string "upc_catalan" (lex.list)))
-    (load (path-append lexdir "upc/upclex_catalan.scm")))
+(if (not (member_string upclexdir load-path))
+              (set! load-path (cons upclexdir load-path)))
+(require 'upclex_catalan)
 
 
 (define (upc_ca_generic::select_lexicon)
   "(upc_ca_generic::select_lexicon)
 Set up the UPC lexicon for Catalan."
-  (lex.select "upc_catalan")
-  ;; Post lexical rules
-  (set! postlex_rules_hooks (list upc_catalan::postlex_rule1))
+  (upc_ca_generic::select_lexicon_dialect "central")
+)
 
+(define (upc_ca_generic::select_lexicon_dialect dialect)
+  "(upc_ca_generic::select_lexicon)
+Set up the UPC lexicon for Catalan."
+  (upc_catalan_lex_select_dialect dialect)
+  (cond 
+    ( (string-equal dialect "central")
+       ;; Post lexical rules
+       (set! postlex_rules_hooks (list upc_catalan::postlex_rule1))
+    )
+    ( (string-equal dialect "valencian")
+       ;; Post lexical rules
+       (set! postlex_rules_hooks (list upc_catalan::postlex_rule1))
+    )
+  )
 )
 
 (define (upc_ca_generic::reset_lexicon)

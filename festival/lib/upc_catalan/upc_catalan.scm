@@ -37,10 +37,17 @@ about token to words")
 (define (load-catalan-support)
 "(load-catalan-support)
 Loads dictionaries, phoneset and all the voice independent language tools for Catalan."
- 
-    (if (not (member_string "upc_catalan" (lex.list)))
-       (load (path-append upclexdir "upclex_catalan.scm")))
+  (load-catalan-support-dialect "central")
+)  
 
+(define (load-catalan-support-dialect dialect)
+"(load-catalan-support)
+Loads dictionaries, phoneset and all the voice independent language tools for Catalan."
+ 
+    (if (not (member_string upclexdir load-path))
+                      (set! load-path (cons upclexdir load-path)))
+    (require 'upclex_catalan)
+    (upc_catalan_lex_select_dialect dialect)
     (require 'upc_ca_generic_phoneset)
     (require 'upc_ca_generic_tokenizer)
     (require 'upc_ca_generic_tagger)
@@ -53,7 +60,7 @@ Loads dictionaries, phoneset and all the voice independent language tools for Ca
     (require 'upc_ca_generic_intonation)
 
     ;; Select appropriate phone set
-    (upc_ca_generic::select_phoneset)
+    (upc_ca_generic::select_phoneset_dialect dialect)
 
     ;; Select appropriate tokenization
     (upc_ca_generic::select_tokenizer)
@@ -61,7 +68,7 @@ Loads dictionaries, phoneset and all the voice independent language tools for Ca
     ;; For part of speech tagging
     (upc_ca_generic::select_tagger)
 
-    (upc_ca_generic::select_lexicon)
+    (upc_ca_generic::select_lexicon_dialect dialect)
     (upc_ca_generic::select_phrasing)
     
     (upc_ca_generic::select_duration)

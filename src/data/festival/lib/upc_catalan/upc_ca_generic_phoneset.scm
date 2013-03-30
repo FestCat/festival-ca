@@ -51,7 +51,6 @@
 (define (upc_ca_generic::select_phoneset)
   "(upc_ca_generic::select_phoneset)
 Set up phone set for catalan"
-  (format stderr "upc_ca_generic::select_phoneset, choosing \"central\" as default dialect")
   (upc_ca_generic::select_phoneset_dialect "central")
 )
 
