@@ -62,7 +62,7 @@ Set up the UPC lexicon for Catalan."
        ;; Post lexical rules
        (set! postlex_rules_hooks (list upc_catalan::postlex_rule1))
     )
-    ( (string-equal dialect "valencian")
+    ( (string-equal dialect "valencia")
        ;; Post lexical rules
        (set! postlex_rules_hooks (list upc_catalan::postlex_rule1))
     )

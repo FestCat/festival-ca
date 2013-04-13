@@ -35,6 +35,6 @@
 ;;;
 
 (require 'upc_catalan_phones-central)
-(format stderr "Warning: upc_catalan_phones has been deprecated and will be removed in future versions. Replace it with upc_catalan_phones-central")
+(format stderr "Warning: upc_catalan_phones has been deprecated and will be removed in future versions. Replace it with upc_catalan_phones-central\n")
 
 (provide 'upc_catalan_phones)

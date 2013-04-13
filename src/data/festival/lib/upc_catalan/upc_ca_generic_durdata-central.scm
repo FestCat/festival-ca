@@ -31,7 +31,10 @@
 ;;;
 ;;;
 
-(set! upc_ca_generic::zdur_tree 
+(let ( (currphoneset (cadr (assoc_string "name" (PhoneSet.description))) ) )
+(PhoneSet.select "upc_catalan-central")
+
+(set! upc_ca_generic::zdur_tree-central
  '
    ((R:SylStructure.parent.R:Syllable.p.syl_break > 1 ) ;; clause initial
     ((1.5))
@@ -39,7 +42,7 @@
      ((1.5))
      ((1.0)))))
 
-(set! upc_ca_generic::phone_durs
+(set! upc_ca_generic::phone_durs-central
  ;; should be hand specified
  ;; '(
  ;;   (pau 0.0 0.250)
@@ -52,4 +55,7 @@
   (cadr (assoc_string 'phones (PhoneSet.description ))))
 )
 
-(provide 'upc_ca_generic_durdata)
+(PhoneSet.select currphoneset)
+)
+
+(provide 'upc_ca_generic_durdata-central)
