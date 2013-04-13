@@ -35,16 +35,39 @@
 ;;;
 
 ;;; Load any necessary files here
-(require 'upc_ca_generic_durdata)
 
 (define (upc_ca_generic::select_duration)
   "(upc_ca_generic::select_duration)
 Set up duration model."
-  (set! duration_cart_tree upc_ca_generic::zdur_tree)
-  (set! duration_ph_info upc_ca_generic::phone_durs)
-  (Param.set 'Duration_Method 'Tree_ZScores)
-  (Param.set 'Duration_Stretch 1.1)
+  (upc_ca_generic::select_duration_dialect "central")
 )
+
+
+(define (upc_ca_generic::select_duration_dialect dialect)
+  "(upc_ca_generic::select_duration_dialect)
+Set up duration model."
+  (cond 
+    ( (string-equal dialect "central")
+      (require 'upc_ca_generic_durdata-central)
+      (set! duration_cart_tree upc_ca_generic::select_zdur_tree-central)
+      (set! duration_ph_info upc_ca_generic::select_phone_durs-central)
+      (Param.set 'Duration_Method 'Tree_ZScores)
+      (Param.set 'Duration_Stretch 1.1)
+    )
+    ( (string-equal dialect "valencia")
+      (require 'upc_ca_generic_durdata-valencia)
+      (set! duration_cart_tree upc_ca_generic::select_zdur_tree-valencia)
+      (set! duration_ph_info upc_ca_generic::select_phone_durs-valencia)
+      (Param.set 'Duration_Method 'Tree_ZScores)
+      (Param.set 'Duration_Stretch 1.1)
+    )
+  )
+)
+
+
+
+
+
 
 (define (upc_ca_generic::reset_duration)
   "(upc_ca_generic::reset_duration)
