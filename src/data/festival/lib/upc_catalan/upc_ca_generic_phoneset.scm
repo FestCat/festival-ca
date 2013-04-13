@@ -63,7 +63,7 @@ Set up phone set for catalan"
          (PhoneSet.select 'upc_catalan-central)
     )
 
-    ( (string-matches dialect "valencian")
+    ( (string-matches dialect "valencia")
          (Param.set 'PhoneSet 'upc_catalan-valencia)
          (PhoneSet.select 'upc_catalan-valencia)
     )
