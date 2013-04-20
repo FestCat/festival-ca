@@ -27,7 +27,7 @@ which contains the compiled voices and data.
    3. Find out where the decompressed directory should be copied to. To do so, run: `festival -b "(if (boundp 'datadir) (print datadir) (print libdir))"`. A directory (e.g: `/usr/share/festival`) will be returned.
    4. Copy the decompressed directory `upc_ca_ona_hts` to the directory `$datadir/voices/catalan` (e.g: `/usr/share/festival/voices/catalan/upc_ca_ona_hts`). You may need superuser rights to do this.
 4. Install  festcat-utils (optional)
-   1. Install the dependencies: `id3`, `sox`, `file`, `csplit`, `iconv`, `perl`, `xclip`, `zenity`, `vorbiscomment` (from `vorbis-tools`), `grep`.
+   1. Install the dependencies: `id3`, `sox`, `file`, `csplit` (from `coreutils`), `iconv`, `perl`, `xclip`, `zenity`, `vorbiscomment` (from `vorbis-tools`), `grep`, `libhtsengine1`, `libhtsengine-dev`.
    2. Download `festcat-utils`.
    3. `./configure && make && sudo make install`
 5. Test that it is working: `festcat_llegeix <<< "Demà esmorzaré torrades amb melmelada."`.
