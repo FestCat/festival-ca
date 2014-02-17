@@ -47,6 +47,7 @@ Loads dictionaries, phoneset and all the voice independent language tools for Ca
     (if (not (member_string upclexdir load-path))
                       (set! load-path (cons upclexdir load-path)))
     (require 'upclex_catalan)
+    (Param.set 'Language 'catalan)
     (upc_catalan_lex_select_dialect dialect)
     (require 'upc_ca_generic_phoneset)
     (require 'upc_ca_generic_tokenizer)

@@ -28,7 +28,7 @@ manualment. Feu `./configure --help` per més detalls.
    3. Esbrineu on heu de copiar el directori. Per fer-ho Executeu: `festival -b "(if (boundp 'datadir) (print datadir) (print libdir))"`. Obtindreu un directori (p.ex: `/usr/share/festival`)
    4. Copieu el directori descomprimit `upc_ca_ona_hts` al directori `$datadir/voices/catalan` (p.ex: `/usr/share/festival/voices/catalan/upc_ca_ona_hts`). És possible que necessiteu permís de superusuari.
 4. Instal·leu festcat-utils (opcional)
-   1. Instal·leu les dependències: `id3`, `sox`, `file`, `csplit`, `iconv`, `perl`, `xclip`, `zenity`, `vorbiscomment` (de `vorbis-tools`), `grep`.
+   1. Instal·leu les dependències: `id3`, `sox`, `file`, `csplit` (de `coreutils`), `iconv`, `perl`, `xclip`, `zenity`, `vorbiscomment` (de `vorbis-tools`), `grep`, `libhtsengine1`, `libhtsengine-dev`.
    2. Descarregueu `festcat-utils`.
    3. `./configure && make && sudo make install`
 5. Proveu que funciona: `festcat_llegeix <<< "Demà esmorzaré torrades amb melmelada."`.
