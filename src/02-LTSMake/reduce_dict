@@ -52,6 +52,11 @@
 ;;;  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 
+;;; Because this is a --script type file I have to explicitly
+;;; load the initfiles: init.scm and user's .festivalrc
+(load (path-append (if (symbol-bound? 'datadir) datadir libdir) "init.scm"))
+
+
 (define (reduce_lexicon2 entryfile exceptionfile lts_function mylogfile)
   "(reduce_lexicon2 entryfile exceptionfile lts_function)
 Look up each word in entryfile using the current lexicon, if the entry
@@ -85,7 +90,10 @@ model, if appropriate)."
 	    wordcount correctwords (/ (* correctwords 100) wordcount))
     ))
 
-(set! upclexdir (path-append (pwd) "final_dict_reduced/dicttmp/"))
+(set! workdir (car argv))
+(set! upc_catalan::dialect (car (cdr argv))) ; unused right now. FIXME!
+
+(set! upclexdir (path-append (pwd) workdir))
 
 (if (not (member_string upclexdir load-path))
                       (set! load-path (cons upclexdir load-path)))
@@ -93,9 +101,9 @@ model, if appropriate)."
 (require 'lts_build)
 (require 'upclex_catalan)
 
-(set! entryfile "final_dict_reduced/dicttmp/upcdict_catalan-1.0.out")
-(set! exceptionfile "final_dict_reduced/upcdict_catalan.out")
-(set! mylogfile "final_dict_reduced/upcdict_catalan.log")
-
+(set! entryfile (path-append workdir (string-append "upcdict_catalan-1.0-" upc_catalan::dialect ".out")))
+(set! exceptionfile (path-append workdir "upcdict_catalan.out"))
+(set! mylogfile (path-append workdir "upcdict_catalan.log"))
+(upc_catalan_lex_select_dialect upc_catalan::dialect)
 (set! lts_function upc_catalan_lts_function)
 (reduce_lexicon2 entryfile exceptionfile lts_function mylogfile)
