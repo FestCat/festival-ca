@@ -338,7 +338,7 @@ $(BUILDLTS)/lts_scratch/central/lts.%.tree: $(BUILDLTS)/lts_scratch/central/ltsd
 $(BUILDLTS)/lts_scratch/central/lex_lts_rules.scm: $(BUILDLTS)/lts_scratch/central/ltsLTS.desc  $(ltsdataTRAINtree_central)
 	cd $(BUILDLTS) && ./build_lts merge  "allowables-1.1-central.scm" "lts_scratch/central" || exit 1
 
-$(BUILDLTS)/lts_scratch/central/lts_test.log: $(BUILDLTS)/lex_lts_rules.scm $(BUILDLTS)/lts_scratch/central/lex.align $(BUILDLTS)/lts_scratch/central/lex.align.test $(BUILDLTS)/allowables-1.1-central.scm
+$(BUILDLTS)/lts_scratch/central/lts_test.log: $(BUILDLTS)/lts_scratch/central/lex_lts_rules.scm $(BUILDLTS)/lts_scratch/central/lex.align $(BUILDLTS)/lts_scratch/central/lex.align.test $(BUILDLTS)/allowables-1.1-central.scm
 	cd $(BUILDLTS) && ./build_lts test  "allowables-1.1-central.scm" "lts_scratch/central"
 
 
@@ -469,7 +469,7 @@ $(BUILDLTS)/lts_scratch/valencia/lts.%.tree: $(BUILDLTS)/lts_scratch/valencia/lt
 $(BUILDLTS)/lts_scratch/valencia/lex_lts_rules.scm: $(BUILDLTS)/lts_scratch/valencia/ltsLTS.desc  $(ltsdataTRAINtree_valencia)
 	cd $(BUILDLTS) && ./build_lts merge  "allowables-1.1-valencia.scm" "lts_scratch/valencia" || exit 1
 
-$(BUILDLTS)/lts_scratch/valencia/lts_test.log: $(BUILDLTS)/lex_lts_rules.scm $(BUILDLTS)/lts_scratch/valencia/lex.align $(BUILDLTS)/lts_scratch/valencia/lex.align.test $(BUILDLTS)/allowables-1.1-valencia.scm
+$(BUILDLTS)/lts_scratch/valencia/lts_test.log: $(BUILDLTS)/lts_scratch/valencia/lex_lts_rules.scm $(BUILDLTS)/lts_scratch/valencia/lex.align $(BUILDLTS)/lts_scratch/valencia/lex.align.test $(BUILDLTS)/allowables-1.1-valencia.scm
 	cd $(BUILDLTS) && ./build_lts test  "allowables-1.1-valencia.scm" "lts_scratch/valencia"
 
 
@@ -737,7 +737,7 @@ dist-src: clean
 	rm -rf "$(PACKAGE_TARNAME)-$(PACKAGE_VERSION)-src"
 
 test/%.txt.out test/%.txt.out2  test/%.txt.diff  test/%.txt.diff2: test/%.txt test/%.txt.ref test/%.txt.ref2 
-	$(FESTIVAL) --script test/print_utterance "test" "$<" > "$@" || exit 1
+	$(FESTIVAL) --script test/print_utterance "test" "$<" > "$@" 2> "$<".out2 || exit 1
 	diff "$<".ref "$@" > "$<".diff
 	diff "$<".ref2 "$@2" > "$<".diff2
 
