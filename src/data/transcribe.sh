@@ -27,7 +27,7 @@ dialectcode="ca-ca"
 
 shift
 mkdir -p "$outdirpartial"
-mkdir -p "$outdirpartialphon"
+mkdir -p "$outdirpartialphon/${dialect}/"
 
 for infile in $@; do
     filename=$(basename $infile)
@@ -50,7 +50,9 @@ for infile in $@; do
     cat "${infile2}" | cut -d " " -f 1 | phonetic_trn -l ${dialectcode}  | \
     perl -pe "s/\'([^ ]+)/\1-1/g;
               s/\`//g;
-              s/-1/1/g; 
+              s/-1/1/g;
+              s/^x//g;
+              s/ x / /g;
               s/@/ax/g;" > "$outfile"
 done
 
