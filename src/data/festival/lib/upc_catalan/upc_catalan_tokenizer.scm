@@ -1088,6 +1088,18 @@ of words that expand given token with name."
     )  
    )
 
+  ((or(string-matches name ".+-.*")
+      (string-matches name ".*-.+")
+   )
+     (upc_catalan::token_to_words_debug token name "aquesta-regla")
+    (let ( (nomsimbol "" ) )
+     (if (string-equal upc_catalan::token_to_words_context "webpage")
+         (set! nomsimbol (list "guió"))
+     )
+     ( catala_divide_by_separator token name "-" nomsimbol)
+    )
+   )
+
   ((and (or (string-matches name ".*,.+")
             (string-matches name ".+,.*")
             (string-matches name ",.+,")
@@ -1129,7 +1141,7 @@ of words that expand given token with name."
 
   ;; Codis
    ((not (string-matches name "[A-Za-zÁÀÄÂÉÈËÊÍÌÏÎÓÒÖÔÚÙÜÛàáäâèéëêíìïîòóöôúùüûçÇñÑ'·]+"))
-   (upc_catalan::token_to_words_debug token name "Algo raro -> lletregem")
+   (upc_catalan::token_to_words_debug token name "Cosa estranya -> lletregem")
     (catala_speller name))
    (t ;; when no specific rules apply do the general ones
    ; (format stderr "General Rule: %s\n" name)

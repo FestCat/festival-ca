@@ -16,7 +16,7 @@
 
 
 # AC_INIT (package, version, [bug-report], [tarname], [url])
-AC_INIT([FestCat: Paquet bàsic], [3.0.5], [https://github.com/festcat/festival-ca/issues],[upc_ca_base], [http://festcat.talp.cat])
+AC_INIT([FestCat: Paquet bàsic], [3.0.6], [https://github.com/festcat/festival-ca/issues],[upc_ca_base], [http://festcat.talp.cat])
 AC_PREREQ([2.59])
 AC_PROG_SED
 AC_PROG_GREP
