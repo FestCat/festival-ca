@@ -99,6 +99,9 @@ BUILD_FILES = $(LIB_UPCCATALAN_FILES) $(LIB_DICTS_FILES) $(LANGUAGE_FILES)
 # Test files:
 TESTTOKENIZERTXT = test/characters.txt test/full_llista.txt test/CheckPunctuation.txt
 TESTTOKENIZEROUT = $(addsuffix .out,$(TESTTOKENIZERTXT))
+TESTTOKENIZEROUT2 = $(addsuffix .out2,$(TESTTOKENIZERTXT))
+TESTTOKENIZERDIFF = $(addsuffix .diff,$(TESTTOKENIZERTXT))
+TESTTOKENIZERDIFF2 = $(addsuffix .diff2,$(TESTTOKENIZERTXT))
 TESTTOKENIZERREF = $(addsuffix .ref,$(TESTTOKENIZERTXT))
 TESTTOKENIZERREF2 = $(addsuffix .ref2,$(TESTTOKENIZERTXT))
 TESTSRCFILES = $(TESTTOKENIZERTXT) $(TESTTOKENIZERREF) $(TESTTOKENIZERREF2) test/print_utterance
@@ -114,7 +117,7 @@ DISTBINFILES = Makefile.in Makefilevars.inc configure.ac configure \
 DISTSRCFILES = Makefile.in Makefilevars.inc configure.ac configure \
                install-sh $(DOCUMENTATIONFILES) $(BUILD_FILES) $(TESTSRCFILES)
 
-CLEAN += $(TESTTOKENIZEROUT)
+CLEAN += $(TESTTOKENIZEROUT) $(TESTTOKENIZEROUT2) $(TESTTOKENIZERDIFF) $(TESTTOKENIZERDIFF2)
 
 DISTCLEAN += Makefile config.status config.log
 
@@ -130,7 +133,7 @@ DICTANDTRANSCRIPTIONS = src/data/withtranscriptions/ca.orto
 DICTANDTRANSCRIPTIONS_CENTRAL  = src/data/withtranscriptions/ca-central.phon
 DICTANDTRANSCRIPTIONS_VALENCIA = src/data/withtranscriptions/ca-valencia.phon
 
-.PHONY: all build install dist-bin dist-src test
+.PHONY: all build install dist-bin dist-src test test-lts test-tokenizer
 
 ifeq ($(ONLYINSTALL),yes)
   DEFAULTACTION = install
@@ -349,7 +352,7 @@ $(LTS_RULES_CENTRAL): $(BUILDLTS)/lts_scratch/central/lex_lts_rules.scm
 	$(MKDIR_P) $(@D) && \
 	cp $(BUILDLTS)/final/upc_catalan_lts_rules-central.scm $@ || exit 1
 
-TEST += $(BUILDLTS)/lts_scratch/central/lts_test.log
+TESTLTS += $(BUILDLTS)/lts_scratch/central/lts_test.log
 
 CLEAN+= $(BUILDLTS)/lex_lts_rules-central.scm $(BUILDLTS)/lts_scratch/central/ $(BUILDLTS)/final
 DISTCLEAN+= $(BUILDLTS)/build_lts
@@ -482,7 +485,7 @@ $(LTS_RULES_VALENCIA): $(BUILDLTS)/lts_scratch/valencia/lex_lts_rules.scm
 
 
 
-TEST += $(BUILDLTS)/lts_scratch/valencia/lts_test.log
+TESTLTS += $(BUILDLTS)/lts_scratch/valencia/lts_test.log
 
 CLEAN+= $(BUILDLTS)/lex_lts_rules-valencia.scm $(BUILDLTS)/lts_scratch/valencia/ $(BUILDLTS)/final
 DISTCLEAN+= $(BUILDLTS)/build_lts
@@ -738,12 +741,17 @@ dist-src: clean
 
 test/%.txt.out test/%.txt.out2  test/%.txt.diff  test/%.txt.diff2: test/%.txt test/%.txt.ref test/%.txt.ref2 
 	$(FESTIVAL) --script test/print_utterance "test" "$<" > "$@" 2> "$<".out2 || exit 1
-	diff "$<".ref "$@" > "$<".diff
-	diff "$<".ref2 "$@2" > "$<".diff2
+	diff "$<".ref "$@" > "$<".diff ; diff "$<".ref2 "$@2" > "$<".diff2; \
+	test -s "$<".diff -a -s "$<".diff2 && (echo "TEST $< FAILED" ; exit 1) || echo "TEST $< OK"
 
-TEST += $(TESTTOKENIZEROUT)
+TEST = $(TESTTOKENIZEROUT) $(TESTLTS)
 
-test: $(TEST)
+
+test-lts: $(TESTLTS)
+
+test-tokenizer: $(TESTTOKENIZEROUT)
+
+test: test-tokenizer test-lts
 
 clean:
 	rm -rf $(CLEAN)
