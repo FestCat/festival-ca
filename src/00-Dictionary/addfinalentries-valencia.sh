@@ -17,9 +17,15 @@
 #  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 myfile="$1"
-mv "${myfile}" "${myfile}.tmp"
 
-echo "MNCL" > "$myfile"
+if [ ! -e "${myfile}" ]; then
+  echo "${myfile} does not exist. Aborting"
+  exit 1
+fi
+
+mv "${myfile}" "${myfile}.tmp" || exit 1
+
+echo "MNCL" > "${myfile}"
 cat  >> "${myfile}" << EOF
 ("#a" nn (((a1) 1)))
 ("#b" nn (((b E1) 1)))
@@ -52,4 +58,4 @@ cat  >> "${myfile}" << EOF
 ("#ñ" nn (((E1) 1) ((J a) 0)))
 EOF
 
-tail -n +2 "${myfile}.tmp" >> "${myfile}"
+tail -n +2 "${myfile}.tmp" >> "${myfile}" || exit 1
