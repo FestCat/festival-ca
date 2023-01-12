@@ -78,6 +78,7 @@ Sets the lexicon attributes depending on the dialect given"
                (begin
                    (lex.select "upc_catalan-central")
                    (set! upc_catalan::dialect "central")
+                   (set! lex_syllabification "NONE")
                )
            )
            
@@ -102,6 +103,7 @@ Sets the lexicon attributes depending on the dialect given"
                (begin
                    (lex.select "upc_catalan-valencia")
                    (set! upc_catalan::dialect "valencia")
+                   (set! lex_syllabification "NONE")
                )
            )
       )

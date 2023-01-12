@@ -31,6 +31,15 @@ cat $infile | ./allo2pho.pl "${dialect}" | \
    LC_ALL=POSIX sort -u | ./list2festival.pl > "$outdir/upcdict_catalan.scm" || exit 1
 
 
+# Syllabification is already done in list2festival.pl. We must set the
+# lex_syllabification variable to "NONE" to avoid extra syllabification
+# rules being applied from other languages (e.g. cmulex).
+$FESTIVAL -b "(unwind-protect 
+  (begin
+    (set! lex_syllabification \"NONE\") 
+    (lex.compile \"$outdir/upcdict_catalan.scm\" \"$outdir/upcdict_catalan.out\")
+  )
+  (exit 1)
+)" || exit 1
 
-#$FESTIVAL -b '(lex.compile "$outdir/upcdict_catalan.scm" "06/upcdict_catalan.out")'
-$FESTIVAL -b "(lex.compile \"$outdir/upcdict_catalan.scm\" \"$outdir/upcdict_catalan.out\")" || exit 1
+
